@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics & Acoustics Simulation Dashboard</title>
+    <link rel="stylesheet" href="assets/stylesheets/main.css">
+    <link rel="shortcut icon" href="https://aadcdn.msftauthimages.net/dbd5a2dd-wvekwocugzccd2tl-4riyby1yx-qh1smjma1yhffkbk/logintenantbranding/0/favicon?ts=638628017970719969">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* =======================================================
+           Field Log design system — ported for the acoustics app
+           ======================================================= */
+        :root{
+            --bg:#060b16; --bg-panel:#0b1729; --bg-panel2:#0e1c33; --line:#2a3c60;
+            --fg:#f1f4fb; --mid:#a8b6d6; --dim:#93a1c4;
+            --accent:#5fc2ff;
+            --sci:#5fc2ff; --hum:#b98aff; --bod:#ff8c66; --art:#ff6fa8; --wr:#8f5fe8;
+        }
+        *{box-sizing:border-box;}
+        html,body{margin:0;padding:0;}
+        body.dashboard-body{
+            background:
+              radial-gradient(ellipse 900px 500px at 20% -10%, #12203c 0%, transparent 60%),
+              radial-gradient(ellipse 700px 500px at 100% 0%, #1a1230 0%, transparent 55%),
+              var(--bg);
+            color:var(--fg);
+            font-family:'Inter',system-ui,sans-serif;
+            min-height:100vh;
+            padding:28px 28px 60px;
+        }
+
+        /* ---------- dashboard screens ---------- */
+        .dashboard-screen{max-width:1100px;margin:0 auto;}
+        .dashboard-title{
+            font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:30px;
+            letter-spacing:0.3px;color:var(--fg);margin:6px 0 26px;
+            border-bottom:1px solid var(--line);padding-bottom:18px;
+            position:relative;
+        }
+        .dashboard-title::before{
+            content:"FIELD SESSION";
+            display:block;font-family:'JetBrains Mono',monospace;font-size:11px;
+            letter-spacing:2px;color:var(--dim);font-weight:400;margin-bottom:8px;
+        }
+
+        /* ---------- card grid ---------- */
+        .card-container{
+            display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+            gap:16px;
+        }
+        .card{
+            background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;
+            padding:0;cursor:pointer;text-align:left;color:var(--fg);
+            font-family:inherit;overflow:hidden;position:relative;
+            display:flex;flex-direction:column;
+            transition:border-color .15s, transform .15s;
+        }
+        .card:hover{border-color:var(--accent2,var(--accent));transform:translateY(-2px);}
+        .card:focus-visible{outline:2px solid var(--accent2,var(--accent));outline-offset:2px;}
+        .card::before{
+            content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+            background:var(--accent2,var(--accent));
+        }
+        /* assign each category an accent, cycling the Field Log palette */
+        #card-universe{ --accent2: var(--sci); }
+        #card-music{ --accent2: var(--art); }
+        #card-astronomy{ --accent2: var(--sci); }
+        #card-astrophysics{ --accent2: var(--hum); }
+        #card-harmonics{ --accent2: var(--art); }
+        #card-clarinet{ --accent2: var(--wr); }
+
+        .card-image-box{
+            aspect-ratio: 16/10;
+            background:
+              radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--accent2,var(--accent)) 18%, transparent), transparent 60%),
+              var(--bg-panel2);
+            border-bottom:1px solid var(--line);
+            display:flex;align-items:center;justify-content:center;
+            position:relative;overflow:hidden;
+        }
+        .card-image-box img{width:100%;height:100%;object-fit:cover;display:block;}
+        .card-image-box::after{
+            /* visual placeholder since source images are blank */
+            content:"";
+            width:34px;height:34px;border-radius:50%;
+            border:1.5px solid var(--accent2,var(--accent));
+            box-shadow:0 0 0 8px color-mix(in srgb, var(--accent2,var(--accent)) 10%, transparent);
+            opacity:0.75;
+        }
+        .card-label{
+            font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;
+            padding:14px 16px 16px;line-height:1.35;color:var(--fg);
+        }
+
+        /* ---------- nav / back buttons ---------- */
+        .nav-btn, .back-btn{
+            font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.5px;
+            background:var(--bg-panel);border:1.5px solid var(--line);color:var(--mid);
+            padding:9px 16px;border-radius:8px;cursor:pointer;
+        }
+        .nav-btn:hover, .back-btn:hover{border-color:var(--accent);color:var(--fg);}
+        .nav-btn{margin-top:24px;}
+
+        /* ---------- simulation wrapper ---------- */
+        .sim-wrapper{max-width:1100px;margin:0 auto;}
+        .sim-header{
+            border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20px;
+            gap:14px;flex-wrap:wrap;
+        }
+        #sim-title{
+            font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:19px;
+            color:var(--fg);margin:0;
+        }
+        .header-worksheets-btn{
+            font-family:'JetBrains Mono',monospace !important;
+            background-color:var(--bg-panel2) !important;
+            border:1.5px solid var(--accent) !important;
+            color:var(--accent) !important;
+            padding:9px 16px !important;font-size:12px !important;font-weight:500 !important;
+            border-radius:8px !important;letter-spacing:0.4px;
+            transition:background-color .15s, color .15s;
+        }
+        .header-worksheets-btn:hover{
+            background-color:var(--bg-panel) !important;
+            color:var(--fg) !important;
+        }
+
+        #harmonics-app-container, #clarinet-app-container{
+            background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;
+            padding:16px;
+        }
+
+        /* ---------- native <dialog> info modal ---------- */
+        .info-dialog{
+            background:var(--bg-panel);color:var(--fg);border:1px solid var(--line);
+            border-radius:14px;padding:0;max-width:420px;width:90%;
+            box-shadow:0 20px 60px -12px #000;
+        }
+        .info-dialog::backdrop{background:rgba(2,6,14,0.72);}
+        .dialog-content{padding:22px 24px 20px;}
+        .dialog-title{
+            font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18px;
+            margin:0 0 10px;color:var(--fg);
+        }
+        .dialog-body{font-size:13.5px;line-height:1.65;color:var(--mid);margin:0 0 18px;}
+        .dialog-close-btn{
+            font-family:'JetBrains Mono',monospace;font-size:12px;background:none;
+            border:1.5px solid var(--line);color:var(--mid);padding:9px 16px;
+            border-radius:8px;cursor:pointer;
+        }
+        .dialog-close-btn:hover{border-color:var(--accent);color:var(--fg);}
+
+        /* ---------- worksheet modal ---------- */
+        .ws-overlay{
+            position:fixed;inset:0;z-index:9999;display:none;
+            align-items:flex-start;justify-content:center;padding:60px 20px;overflow:auto;
+        }
+        .ws-overlay.open{display:flex;}
+        .ws-backdrop{position:fixed;inset:0;background:rgba(2,6,14,0.72);}
+        .ws-panel{
+            position:relative;background:var(--bg-panel);border:1px solid var(--line);
+            border-radius:14px;max-width:400px;width:100%;padding:26px 26px 24px;
+            text-align:center;box-shadow:0 20px 60px -12px #000;
+            font-family:'Inter',sans-serif;
+        }
+        .ws-close{
+            position:absolute;right:16px;top:14px;background:none;border:1.5px solid var(--line);
+            color:var(--mid);width:30px;height:30px;border-radius:8px;font-size:16px;cursor:pointer;
+        }
+        .ws-close:hover{border-color:var(--accent);color:var(--accent);}
+        .ws-title{
+            font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:20px;
+            color:var(--fg);margin:0 0 8px;
+        }
+        .ws-title::before{
+            content:"WORKSHEETS";display:block;font-family:'JetBrains Mono',monospace;
+            font-size:10.5px;letter-spacing:1.5px;color:var(--dim);font-weight:400;margin-bottom:8px;
+        }
+        .ws-sub{color:var(--dim);font-size:13px;margin:0 0 22px;}
+        .ws-links{display:flex;flex-direction:column;gap:10px;}
+        .ws-link{
+            display:block;padding:13px;border-radius:8px;text-decoration:none;
+            font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.3px;
+            border:1.5px solid var(--sci);color:var(--sci);
+            background:var(--bg-panel2);transition:background-color .15s, color .15s;
+        }
+        .ws-link:hover{background:var(--bg-panel);color:var(--fg);}
+        .ws-link.alt{border-color:var(--hum);color:var(--hum);}
+    </style>
+</head>
+<body class="dashboard-body">
+
+    <div id="dashboard-main" class="dashboard-screen" role="region" aria-label="Main Navigation">
+        <h1 class="dashboard-title">Acoustics Intro</h1>
+        
+        <div class="card-container" role="group" aria-label="Acoustic Categories">
+            <button class="card" id="card-universe" type="button" aria-label="Harmonics in the Universe: Explore cosmic scales, physical wavelengths, and astronomical harmonics across 8 discrete steps.">
+                <div class="card-image-box">
+                <img src="" alt="Symmetric cosmic rings illustrating geometric gravity and harmonic ratios in solar systems.">
+                </div>
+                <div class="card-label">Harmonics in the Universe</div>
+            </button>
+
+            <button class="card" id="card-music" type="button" aria-label="Music Simulations: Explore instrument harmonics and real-time physical pipe acoustics.">
+                <div class="card-image-box">
+                    <img src="" alt="A set of piano keys blending into colorful vibrating string wave patterns.">
+                </div>
+                <div class="card-label">Music</div>
+            </button>
+
+            <button class="card" id="card-astronomy" type="button" aria-label="Astronomy: Explore stellar oscillations, harmonics, and the physics of asteroseismology.">
+                <div class="card-image-box">
+                    <img src="" alt="A dynamic spectrogram displaying radio frequencies captured from distant deep-space pulsars.">
+                </div>
+                <div class="card-label">Astronomy</div>
+            </button>
+
+            <button class="card" id="card-astrophysics" type="button" aria-label="Making Music with Astrophysics - Under Construction">
+                <div class="card-image-box">
+                    <img src="" alt="A stylized black hole radiating circular, expanding gravitational waves into space.">
+                </div>
+                <div class="card-label">Making Music w/ Astrophysics</div>
+            </button>
+        </div>
+    </div>
+
+    <div id="dashboard-music-screen" class="dashboard-screen" style="display: none;" role="region" aria-label="Music Simulations Selection">
+        <h1 class="dashboard-title">Music Simulations</h1>
+        
+        <div class="card-container" role="group" aria-label="Music Simulation Applications">
+            <button class="card" id="card-harmonics" type="button" aria-label="Instrument Harmonics: Mix overtones to synthesize different instrumental timbres.">
+                <div class="card-image-box">
+                    <img src="" alt="An overlay of multiple colored sine wave overtones combining to form a single complex wave.">
+                </div>
+                <div class="card-label">Instrument Harmonics</div>
+            </button>
+
+            <button class="card" id="card-clarinet" type="button" aria-label="Instrument Simulation: Watch 2D sound waves propagate and reflect in woodwind pipes.">
+                <div class="card-image-box">
+                    <img src="" alt="A detailed cross-section of an instrument pipe with wave compressions radiating outward.">
+                </div>
+                <div class="card-label">Instrument Simulation</div>
+            </button>
+        </div>
+        
+        <button id="btn-back-to-main" class="nav-btn">Back to Main</button>
+    </div>
+
+    <main id="sim-wrapper" class="sim-wrapper" style="display: none;">
+        <div class="sim-header" style="display: flex; align-items: center;">
+            <button id="btn-back-to-music" class="back-btn">← Back to Dashboard</button>
+            
+            <button id="openModalBtn" class="header-worksheets-btn">Worksheets</button>
+            
+            <h2 id="sim-title" tabindex="-1" style="margin-left: auto;">Simulation</h2>
+        </div>
+        
+        <div id="harmonics-app-container" style="display: none;">
+            <div id="harmonics-app"></div>
+        </div>
+
+        <div id="clarinet-app-container" style="display: none;">
+            <div id="clarinet-app"></div>
+        </div>
+
+        <div id="astronomy-app-container" style="display: none; width:100%; height:calc(100vh - 64px);">
+            <iframe id="astronomy-frame" src="astronomy-console.html" title="Pulse — Asteroseismology Console"
+                style="width:100%; height:100%; border:0; display:block;"></iframe>
+        </div>
+    </main>
+
+    <dialog id="info-modal" class="info-dialog" aria-labelledby="modal-title" aria-describedby="modal-body">
+        <div class="dialog-content">
+            <h3 id="modal-title" class="dialog-title">Information</h3>
+            <p id="modal-body" class="dialog-body">Description goes here.</p>
+            <button id="modal-close-btn" class="dialog-close-btn" type="button">Close</button>
+        </div>
+    </dialog>
+
+    <div id="worksheetModal" class="ws-overlay">
+      <div class="ws-backdrop"></div>
+      <div class="ws-panel">
+        <button id="closeModalBtn" class="ws-close" aria-label="Close">&times;</button>
+
+        <h2 class="ws-title">Select Your Worksheet</h2>
+        <p class="ws-sub">Choose a guided worksheet:</p>
+
+        <div class="ws-links">
+          <a href="https://drive.google.com/file/d/1Z2O3MJdsuFLxJEw3iG0BAUfPZ-MBwMJd/view?usp=drive_link" target="_blank" class="ws-link">
+            Physics Students
+          </a>
+          <a href="https://drive.google.com/file/d/1YP7piFvXmBzYb-T67c4bB87QMDfxibCi/view?usp=drive_link" target="_blank" class="ws-link alt">
+            Music Students
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <script src="dashboard.js"></script>
+
+    <script type="module">
+        import {} from './Tone.js';
+    </script> 
+    
+    <script type="module" src="harmonics.js"></script>
+    <script type="module" src="clarinet.js"></script>
+    <script type="module" src="universe.js"></script>
+
+    <script>
+      const modalBox = document.getElementById('worksheetModal');
+      const openBoxBtn = document.getElementById('openModalBtn');
+      const closeBoxBtn = document.getElementById('closeModalBtn');
+
+      openBoxBtn.addEventListener('click', () => { modalBox.classList.add('open'); });
+      closeBoxBtn.addEventListener('click', () => { modalBox.classList.remove('open'); });
+      window.addEventListener('click', (e) => { if (e.target === modalBox || e.target.classList.contains('ws-backdrop')) { modalBox.classList.remove('open'); } });
+    </script>
+        
+</body>
+</html>
