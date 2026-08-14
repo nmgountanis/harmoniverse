@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astronomy — Harmoniverse</title>
+<meta name="description" content="An interactive asteroseismology console: explore how stars oscillate and what those oscillations reveal about their interiors.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* Page-specific theme for the asteroseismology console.
+     Uses the same font stack and border radius as the rest of Harmoniverse,
+     with a colorblind-safe blue/orange accent pair used consistently. */
+  :root{
+    --bg:#060b16; --bg-panel:#0b1729; --bg-panel2:#0e1c33; --line:#2a3c60;
+    --fg:#f1f4fb; --mid:#a8b6d6; --dim:#93a1c4;
+    --accent:#5fc2ff; --type-accent:#5fc2ff; --cool:#5fc2ff; --warm:#ff8c66;
+  }
+  *{box-sizing:border-box;}
+  .astro-body{
+    background: radial-gradient(ellipse 780px 380px at 50% -12%, #16224a 0%, transparent 65%), var(--bg);
+  }
+  .console{max-width:1200px;margin:0 auto;padding:0 0 44px;}
+
+  .astro-intro{margin:0 0 22px;}
+  .astro-intro p{max-width:760px;}
+
+  .live-tag{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--type-accent);
+    border:1.5px solid var(--type-accent);border-radius:20px;padding:5px 12px;
+    display:flex;align-items:center;gap:7px;white-space:nowrap;transition:color .2s,border-color .2s;font-weight:500;}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--type-accent);
+    animation:pulse-dot 1.6s ease-in-out infinite;transition:background .2s;}
+  @keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .console-head{display:flex;align-items:center;justify-content:flex-end;margin-bottom:14px;}
+
+  .startype{display:flex;gap:10px;margin-bottom:18px;}
+  .st-btn{flex:1;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;
+    background:var(--bg-panel);border:1.5px solid var(--line);color:var(--fg);
+    padding:13px 16px;border-radius:10px;cursor:pointer;text-align:left;transition:border-color .15s,background .15s;}
+  .st-btn small{display:block;font-family:'Inter',sans-serif;font-weight:400;
+    font-size:13px;color:var(--mid);margin-top:4px;line-height:1.4;}
+  .st-btn:hover{border-color:var(--accent);}
+  .st-btn.active{color:var(--fg);border-color:var(--type-accent);border-width:2px;
+    background:var(--bg-panel2);}
+  .st-btn.active small{color:var(--fg);}
+
+  .controls{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 24px;
+    background:var(--bg-panel);border:1px solid var(--line);border-radius:12px;
+    padding:18px 20px;margin-bottom:18px;}
+  .ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:14px;color:var(--fg);
+    margin-bottom:7px;font-weight:500;}
+  .ctrl label .lname{display:flex;align-items:center;gap:6px;}
+  .ctrl label b{color:var(--type-accent);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:13.5px;transition:color .2s;}
+  .ctrl input[type=range]{width:100%;accent-color:var(--type-accent);height:22px;}
+  .ctrl select{width:100%;background:var(--bg-panel2);color:var(--fg);border:1.5px solid var(--line);
+    border-radius:6px;padding:9px 8px;font-family:'Inter',sans-serif;font-size:14.5px;}
+
+  .info-dot{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;
+    border-radius:50%;border:1.3px solid var(--dim);color:var(--dim);font-size:12px;font-weight:700;
+    cursor:pointer;flex:none;}
+  .info-dot:hover, .info-dot:focus{border-color:var(--type-accent);color:var(--type-accent);outline:none;}
+  .tip-pop{position:absolute;top:26px;left:50%;transform:translateX(-50%);width:250px;
+    background:var(--bg-panel2);border:1.5px solid var(--type-accent);border-radius:8px;
+    padding:10px 12px;font-size:13px;line-height:1.5;color:var(--fg);font-weight:400;
+    text-align:left;z-index:60;box-shadow:0 8px 24px -6px #000;pointer-events:none;}
+
+  .ctrl-wide{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;
+    border-top:1px solid var(--line);padding-top:16px;margin-top:2px;}
+  .ctrl-wide .ctrl{flex:1;min-width:230px;}
+  .audio-btn{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14.5px;
+    background:var(--bg-panel2);color:var(--fg);border:1.5px solid var(--line);
+    border-radius:8px;padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;height:41px;}
+  .audio-btn:hover{border-color:var(--accent);}
+  .audio-btn[aria-pressed="true"]{border-color:var(--type-accent);color:var(--type-accent);}
+  .vol-row{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--mid);height:41px;}
+  .vol-row input[type=range]{width:100px;accent-color:var(--type-accent);}
+  .noise-note{grid-column:1/-1;font-size:13.5px;color:var(--mid);line-height:1.6;margin:-6px 0 0;}
+  .noise-note b{color:var(--fg);}
+
+  .mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+  .mode-chip{background:var(--bg-panel2);border:1.5px solid var(--line);color:var(--mid);
+    border-radius:8px;padding:7px 4px;font-family:'JetBrains Mono',monospace;font-size:12px;
+    text-align:center;cursor:pointer;line-height:1.3;transition:border-color .15s,color .15s;display:flex;align-items:center;justify-content:center;gap:6px;}
+  .mode-chip:hover{border-color:var(--chip-color, var(--accent));}
+  .mode-chip .dot{width:9px;height:9px;border-radius:50%;background:var(--chip-color, var(--mid));flex:none;opacity:.55;transition:opacity .15s;}
+  .mode-chip.active{border-color:var(--chip-color, var(--type-accent));color:var(--fg);
+    background:var(--bg-panel2);box-shadow:0 0 0 1px var(--chip-color, var(--type-accent)) inset;}
+  .mode-chip.active .dot{opacity:1;}
+  .mode-hint{font-size:12px;color:var(--dim);margin-top:6px;line-height:1.4;}
+
+  .concept-box{background:var(--bg-panel);border:1px solid var(--line);border-left:4px solid var(--type-accent);
+    border-radius:10px;padding:15px 20px;margin-bottom:18px;font-size:14.5px;color:var(--mid);line-height:1.65;transition:border-color .2s;}
+  .concept-box .ctitle{display:block;color:var(--fg);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15.5px;margin-bottom:6px;}
+
+  .panels{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:16px;}
+  @media(max-width:680px){.panels{grid-template-columns:1fr;} .controls{grid-template-columns:1fr 1fr;} .mode-grid{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:480px){.controls{grid-template-columns:1fr;}}
+
+  .panel{background:var(--bg-panel);border:1px solid var(--line);border-radius:12px;
+    padding:15px 16px 14px;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+  .panel h3{font-family:'Space Grotesk',sans-serif;font-size:16px;margin:0 0 2px;
+    display:flex;justify-content:space-between;align-items:baseline;font-weight:600;gap:8px;flex-wrap:wrap;color:var(--fg);}
+  .panel h3 em{font-style:normal;font-family:'JetBrains Mono',monospace;font-weight:500;
+    font-size:12px;color:var(--type-accent);transition:color .2s;max-width:60%;text-align:right;}
+  .panel canvas{width:100%;aspect-ratio:4/3;display:block;border-radius:8px;
+    background:var(--bg-panel2);margin-top:8px;}
+  .panel .caption{margin:10px 0 2px;font-size:14.5px;color:var(--mid);line-height:1.6;min-height:44px;}
+
+  .legend{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:10px;font-size:13px;color:var(--mid);align-items:center;}
+  .legend .swatch{display:inline-flex;align-items:center;gap:6px;}
+  .legend .dash{width:22px;height:0;flex:none;}
+
+  .cbar{margin-top:10px;}
+  .cbar-title{font-size:13px;color:var(--mid);margin-bottom:6px;}
+  .cbar-track{height:13px;border-radius:6px;background:linear-gradient(90deg,#5fc2ff,#0f1c33,#ff8c66);border:1px solid var(--line);}
+  .cbar-ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--mid);margin-top:5px;font-family:'JetBrains Mono',monospace;}
+
+  .astro-footer{margin-top:18px;background:var(--bg-panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 18px;font-family:'JetBrains Mono',monospace;
+    font-size:13.5px;color:var(--mid);display:flex;flex-wrap:wrap;gap:7px 22px;}
+  .astro-footer b{color:var(--type-accent);font-weight:600;transition:color .2s;cursor:help;}
+
+  .equations{margin-top:22px;background:var(--bg-panel);border:1px solid var(--line);border-radius:12px;padding:22px 24px;}
+  .equations h2{font-family:'Space Grotesk',sans-serif;font-size:19px;margin:0 0 6px;color:var(--fg);}
+  .equations > p.lead{color:var(--mid);font-size:14.5px;margin:0 0 18px;line-height:1.6;max-width:780px;}
+  .eq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;}
+  .eq-card{background:var(--bg-panel2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;}
+  .eq-card h4{margin:0 0 8px;font-family:'Space Grotesk',sans-serif;font-size:14.5px;color:var(--type-accent);font-weight:600;}
+  .eq-tex{overflow-x:auto;padding:2px 0 10px;color:var(--fg);}
+  .eq-card p{margin:0;font-size:13.5px;color:var(--mid);line-height:1.6;}
+  .eq-note{font-size:12px;color:var(--dim);margin-top:8px;font-style:italic;}
+  .katex{color:var(--fg);font-size:1.05em;}
+</style>
+</head>
+<body class="astro-body">
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-icon" width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+        <path d="M2 13c2 0 2-7 4-7s2 14 4 14 2-14 4-14 2 14 4 14 2-7 4-7 2 0 2 0" stroke="#56b4e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Harmoniverse
+    </a>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Harmoniverse</a>
+      <span aria-hidden="true">/</span>
+      <span class="current">Astronomy</span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="page" style="max-width:1200px;">
+  <a class="back-link" href="index.html">&larr; Back to Harmoniverse</a>
+
+  <div class="astro-intro">
+    <p class="eyebrow">Astronomy</p>
+    <h1>Stars ring like bells</h1>
+    <p>Stars with an outer convective envelope (or an opacity-driven instability) support standing acoustic and gravity waves. Select one or more oscillation modes below — each panel shows their combined effect a different way: as a brightness signal, as a surface displacement pattern, as a wave propagating through the interior, and as a power spectrum.</p>
+  </div>
+
+  <div class="console">
+
+  <div class="console-head">
+    <div class="live-tag"><span class="live-dot" id="liveDot" aria-hidden="true"></span><span id="liveLabel">MAIN SEQUENCE</span></div>
+  </div>
+
+  <div class="startype">
+    <button class="st-btn active" id="btnMS" data-type="ms" aria-pressed="true">
+      Main sequence (Sun-like)
+      <small>Compact, dense star — p-modes ring on a timescale of minutes.</small>
+    </button>
+    <button class="st-btn" id="btnRG" data-type="rg" aria-pressed="false">
+      Red giant
+      <small>Expanded, evolved star with a degenerate core — mixed modes ring on a timescale of hours to days.</small>
+    </button>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h3>Light curve <em id="lightAxisTag"></em></h3>
+      <canvas id="cvLight" role="img" aria-label="Brightness over time"></canvas>
+      <p class="caption" id="capLight"></p>
+    </div>
+    <div class="panel">
+      <h3>Surface pattern <em id="modeTag">ℓ=0, m=0</em></h3>
+      <canvas id="cvSphere" role="img" aria-label="Animated spherical harmonic surface"></canvas>
+      <p class="caption" id="capSphere"></p>
+      <div class="cbar">
+        <div class="cbar-title">Radial displacement δr/R (normalized)</div>
+        <div class="cbar-track"></div>
+        <div class="cbar-ticks"><span>−1 (compressed)</span><span>0</span><span>+1 (expanded)</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Interior cross-section <em>wave propagation</em></h3>
+      <canvas id="cvCross" role="img" aria-label="Interior cross section showing a traveling wave"></canvas>
+      <p class="caption" id="capCross"></p>
+      <div class="cbar">
+        <div class="cbar-title">Local radial displacement (normalized)</div>
+        <div class="cbar-track"></div>
+        <div class="cbar-ticks"><span>−1 (compressed)</span><span>0</span><span>+1 (expanded)</span></div>
+      </div>
+      <div class="legend">
+        <span class="swatch"><span class="dash" style="border-top:2.5px dotted #ffe08a"></span> energy-generating core</span>
+        <span class="swatch"><span class="dash" style="border-top:2.5px dashed #ff9d66"></span> base of convective envelope</span>
+        <span class="swatch"><span class="dash" style="border-top:2.5px solid #9fb3dd"></span> surface</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Power spectrum <em id="axisTag">500–9000 μHz</em></h3>
+      <canvas id="cvSpec" role="img" aria-label="Power spectrum of oscillation frequencies"></canvas>
+      <p class="caption" id="capSpec"></p>
+      <div class="legend" id="specLegend"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl" style="grid-column:1/-1;">
+      <label><span class="lname">Oscillation modes — select one or more <span class="info-dot" tabindex="0"
+        data-tip="Select more than one mode to see interference: the Sphere and Interior panels sum the selected surface/wave patterns together, and the Light curve shows the resulting beat pattern from their slightly different frequencies.">?</span></span></label>
+      <div class="mode-grid" id="modeGrid"></div>
+      <div class="mode-hint" id="modeHint"></div>
+    </div>
+    <div class="ctrl">
+      <label><span class="lname">Mass</span> <b id="massVal"></b></label>
+      <input type="range" id="massSl" aria-label="Mass in solar masses">
+    </div>
+    <div class="ctrl">
+      <label><span class="lname">Radius</span> <b id="radiusVal"></b></label>
+      <input type="range" id="radiusSl" aria-label="Radius in solar radii">
+    </div>
+    <div class="ctrl">
+      <label><span class="lname">Rotational velocity</span> <b id="rotVal"></b></label>
+      <input type="range" id="rotSl" aria-label="Rotation velocity">
+    </div>
+    <div class="ctrl">
+      <label><span class="lname">Convective envelope depth <span class="info-dot" tabindex="0"
+        data-tip="The fraction of the stellar radius, measured inward from the surface, occupied by the convective envelope — the outer region where energy is carried by rising and sinking gas rather than by radiation.">?</span></span> <b id="convVal"></b></label>
+      <input type="range" id="convSl" aria-label="Convective envelope depth">
+    </div>
+    <div class="ctrl">
+      <label><span class="lname">Radial order (n) <span class="info-dot" tabindex="0"
+        data-tip="Counts the nodes in the wave's radial (in-out) structure, independent of l and m. Two modes with the same l, m but different n look identical on the surface but sit at different, evenly-spaced peaks in the power spectrum. This slider (1-8) is a simplified stand-in: a real solar p-mode near the peak frequency has n around 20.">?</span></span> <b id="nVal"></b></label>
+      <input type="range" id="nSl" min="1" max="8" step="1" value="3" aria-label="Radial order">
+    </div>
+    <div class="ctrl-wide">
+      <div class="ctrl">
+        <label><span class="lname">Noise source <span class="info-dot" tabindex="0"
+          data-tip="Real light curves are never perfectly clean. Choose a noise model to see how it obscures the oscillation signal.">?</span></span></label>
+        <select id="noiseSel" aria-label="Noise source">
+          <option value="none">None — clean signal</option>
+          <option value="white">White (shot) noise</option>
+          <option value="gran">Granulation (red) noise</option>
+          <option value="both">Both</option>
+        </select>
+      </div>
+      <button class="audio-btn" id="audioBtn" aria-pressed="false">🔈 Sonify: hear the oscillation(s)</button>
+      <span class="vol-row" id="volRow" style="display:none">Volume <input type="range" id="volSl" min="0" max="100" value="55" aria-label="Sonification volume"></span>
+    </div>
+    <p class="noise-note" id="noiseNote">No noise added — the light curve shows the pure oscillation signal.</p>
+  </div>
+
+  <div class="concept-box">
+    <span class="ctitle">Harmonics (ℓ, m) vs. radial order (n) — and how the four panels connect</span>
+    ℓ and m describe the <em>angular</em> pattern — the shape of ripples across the surface, drawn in the "Surface pattern" panel. Radial order n describes something the surface can't show you: how many ripples the same wave makes going <em>inward</em>, toward the center — visible only in the "Interior cross-section" panel. Two modes can share the same (ℓ, m) surface pattern but differ in n; they look identical on the sphere but sit at different, evenly-spaced peaks in the power spectrum (labeled n=… on the peaks below). Select more than one mode above and all four panels sum them together, so you can watch constructive and destructive interference directly.
+  </div>
+
+  <div class="astro-footer" id="readout"></div>
+
+  <section class="equations">
+    <h2>The physics behind the panels</h2>
+    <p class="lead">These are the scaling relations and asymptotic formulas driving the four panels above. They are the standard textbook relations used in solar-like and red-giant asteroseismology, simplified where noted for a live, interactive display.</p>
+    <div class="eq-grid">
+      <div class="eq-card">
+        <h4>Frequency of maximum power, ν<sub>max</sub></h4>
+        <div class="eq-tex" id="eqNumax"></div>
+        <p>Sets where oscillation power peaks in the spectrum. It scales with surface gravity g = GM/R² and, more weakly, with T<sub>eff</sub> through the acoustic cutoff frequency. Bigger, cooler, lower-gravity red giants oscillate at far lower frequency than the Sun.</p>
+      </div>
+      <div class="eq-card">
+        <h4>Large frequency separation, Δν</h4>
+        <div class="eq-tex" id="eqDeltanu"></div>
+        <p>The spacing between consecutive radial-order overtones of the same degree ℓ. It is set by the sound travel time across the star, so it scales as the square root of the mean stellar density.</p>
+      </div>
+      <div class="eq-card">
+        <h4>Asymptotic p-mode frequencies</h4>
+        <div class="eq-tex" id="eqAsymp"></div>
+        <p>Radial order n and angular degree ℓ combine into a near-regular frequency comb, offset by a small phase term ε and a small ℓ-dependent correction δν<sub>0ℓ</sub>. This is why the power spectrum shows evenly spaced ridges.</p>
+      </div>
+      <div class="eq-card">
+        <h4>Surface displacement pattern</h4>
+        <div class="eq-tex" id="eqYlm"></div>
+        <p>The radial displacement is a real spherical harmonic Y<sub>ℓ</sub><sup>m</sup>. ℓ is the total number of nodal lines on the surface; |m| of them are longitude lines through the poles, and the rest are latitude circles. Selecting several modes sums several such terms.</p>
+      </div>
+      <div class="eq-card">
+        <h4>Rotational splitting</h4>
+        <div class="eq-tex" id="eqRot"></div>
+        <p>Rotation breaks the (2ℓ+1)-fold degeneracy in azimuthal order m, splitting each mode into a multiplet spaced by roughly the rotation frequency Ω/2π, scaled by a structure-dependent factor C<sub>nℓ</sub> near 1 for p-modes.</p>
+      </div>
+      <div class="eq-card">
+        <h4>g-mode period spacing, ΔΠ₁</h4>
+        <div class="eq-tex" id="eqGmode"></div>
+        <p>In evolved stars, gravity waves trapped near the dense core are evenly spaced in <em>period</em>, not frequency, set by the buoyancy (Brunt–Väisälä) frequency N integrated through the radiative core. This mixes with p-modes to make the "mixed modes" seen in red giants.</p>
+        <p class="eq-note">This tool uses a simplified stand-in, ΔΠ₁ ≈ 77·(1−f<sub>conv</sub>)/√(M/R³) minutes, to mimic how a deeper envelope lowers ΔΠ₁ — not the full mode-physics integral above.</p>
+      </div>
+      <div class="eq-card">
+        <h4>Granulation noise (Harvey profile)</h4>
+        <div class="eq-tex" id="eqHarvey"></div>
+        <p>Convective granulation on the surface produces slowly evolving brightness variations well described by this profile: most of its power sits at low frequency, so it appears as a wandering baseline rather than sharp peaks, and must be modeled out to reveal the oscillation spectrum.</p>
+      </div>
+    </div>
+  </section>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <p style="margin:0;">Harmoniverse is an educational resource exploring the shared physics of sound and stars.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ───────────────────────── spherical harmonics ───────────────────────── */
+function legendre(l,m,x){
+  const s = Math.sqrt(Math.max(0,1-x*x));
+  const key = l*10+m;
+  switch(key){
+    case 0: return 1;
+    case 10: return x;
+    case 11: return -s;
+    case 20: return 0.5*(3*x*x-1);
+    case 21: return -3*x*s;
+    case 22: return 3*(1-x*x);
+    case 30: return 0.5*(5*x*x*x-3*x);
+    case 31: return -1.5*(5*x*x-1)*s;
+    case 33: return -15*Math.pow(s,3);
+    default: return 0;
+  }
+}
+function realY(l,m,theta,phi){
+  const x = Math.cos(theta);
+  const am = Math.abs(m);
+  const P = legendre(l,am,x);
+  if(m===0) return P;
+  if(m>0) return P*Math.cos(m*phi);
+  return P*Math.sin(am*phi);
+}
+
+const MODES = [
+  {l:0,m:0,label:'ℓ=0, m=0',freq:1.00,amp:0.20,
+    desc:'Radial mode: the whole star expands and contracts in phase, with no nodal surfaces. This is the easiest mode to detect in Sun-like stars.'},
+  {l:1,m:0,label:'ℓ=1, m=0',freq:1.02,amp:0.15,
+    desc:'Dipole, zonal mode: one hemisphere expands as the other contracts, with a single nodal circle at the equator.'},
+  {l:1,m:1,label:'ℓ=1, m=1',freq:1.02,amp:0.15,
+    desc:'Dipole, sectoral mode: two longitudinal lobes oscillate out of phase. Rotation splits this mode\u2019s frequency apart from the m=0 dipole.'},
+  {l:2,m:0,label:'ℓ=2, m=0',freq:1.05,amp:0.13,
+    desc:'Quadrupole, zonal mode: two nodal circles divide the star into three latitude bands that alternate in phase.'},
+  {l:2,m:1,label:'ℓ=2, m=1',freq:1.05,amp:0.13,
+    desc:'Quadrupole, tesseral mode: a mixed pattern with both latitudinal and longitudinal nodal lines.'},
+  {l:2,m:2,label:'ℓ=2, m=2',freq:1.05,amp:0.13,
+    desc:'Quadrupole, sectoral mode: four longitudinal sectors alternate in phase — a sensitive probe of rotation.'},
+  {l:3,m:0,label:'ℓ=3, m=0',freq:1.15,amp:0.11,
+    desc:'Octupole, zonal mode: three nodal circles produce a finer latitudinal pattern than the quadrupole.'},
+  {l:3,m:1,label:'ℓ=3, m=1',freq:1.15,amp:0.11,
+    desc:'Octupole, tesseral mode: a complex pattern mixing latitudinal and longitudinal nodal lines.'},
+  {l:3,m:3,label:'ℓ=3, m=3',freq:1.15,amp:0.11,
+    desc:'Octupole, sectoral mode: six alternating sectors — highly sensitive to rotation.'}
+];
+
+const NTHETA=18, NPHI=34;
+const grid=[];
+for(let i=0;i<NTHETA;i++){
+  const theta = 1e-3 + (Math.PI-2e-3)*i/(NTHETA-1);
+  for(let j=0;j<NPHI;j++){ grid.push({i,j,theta,phi:2*Math.PI*j/NPHI}); }
+}
+MODES.forEach(md=>{
+  let mx=1e-9;
+  grid.forEach(g=>{ mx=Math.max(mx,Math.abs(realY(md.l,md.m,g.theta,g.phi))); });
+  md.norm=mx;
+});
+const VISIBILITY = {0:1.0, 1:0.85, 2:0.55, 3:0.28};
+/* Each mode is also labeled by text (ℓ=…), so color is never the only cue —
+   these four hues are chosen to stay visually distinct even so. */
+const L_COLOR = {0:'#5fc2ff', 1:'#ff8c66', 2:'#b98aff', 3:'#ff6fa8'};
+
+const STYPES = {
+  ms:{ name:'Main sequence', tag:'MAIN SEQUENCE', accent:'#5fc2ff', teff:5777, coreFrac:0.20,
+    mass:{min:0.7,max:1.4,step:0.05,def:1.0}, radius:{min:0.7,max:1.6,step:0.05,def:1.0},
+    rot:{min:0,max:30,step:1,def:2}, conv:{min:0.15,max:0.35,step:0.01,def:0.28},
+    freqAxis:[300,9000], timeWindow:2.6, baseDisplayFreq:0.55, gModes:false, pitch:440,
+    specCaption:'A near-regular comb of ℓ=0,1,2 ridges spaced by Δν, inside an envelope centered on νmax — the classic solar-like oscillation pattern.'
+  },
+  rg:{ name:'Red giant', tag:'RED GIANT', accent:'#ff8c66', teff:4700, coreFrac:0.06,
+    mass:{min:1.0,max:2.2,step:0.05,def:1.4}, radius:{min:4,max:14,step:0.5,def:8},
+    rot:{min:0,max:5,step:0.1,def:0.5}, conv:{min:0.5,max:0.8,step:0.01,def:0.65},
+    freqAxis:[0,550], timeWindow:8.5, baseDisplayFreq:0.115, gModes:true, pitch:220,
+    specCaption:'A much denser forest of peaks at far lower frequency. Extra ℓ=1 peaks appear because p-modes in the envelope couple to g-modes trapped near the degenerate core, producing "mixed modes."'
+  }
+};
+
+const state = { type:'ms', activeModes:new Set([0]), phases:new Array(MODES.length).fill(0),
+  mass:1.0, radius:1.0, rot:2, conv:0.28, nRadial:3,
+  tSim:0, azim:0.6, light:[], noiseMode:'none', gran:0, audioOn:false, volume:0.55 };
+
+function nuMax(M,R,T){ return 3090*M/(R*R*Math.sqrt(T/5777)); }
+function deltaNu(M,R){ return 135.1*Math.sqrt(M/(R*R*R)); }
+function periodG(M,R,cv){ return 77/Math.sqrt(M/(R*R*R))*(1-cv)/60; }
+function formatDuration(sec){
+  if(sec<90) return sec.toFixed(0)+' s';
+  if(sec<5400) return (sec/60).toFixed(1)+' min';
+  if(sec<172800) return (sec/3600).toFixed(1)+' hr';
+  return (sec/86400).toFixed(1)+' days';
+}
+
+/* ───────────────────────── DOM: mode chips ───────────────────────── */
+const modeGrid=document.getElementById('modeGrid'), modeHint=document.getElementById('modeHint'), specLegend=document.getElementById('specLegend');
+const chips=MODES.map((md,i)=>{
+  const b=document.createElement('div');
+  b.className='mode-chip active-init'; b.tabIndex=0; b.setAttribute('role','button');
+  b.setAttribute('aria-pressed', state.activeModes.has(i) ? 'true':'false');
+  b.setAttribute('aria-label','Oscillation mode '+md.label);
+  b.style.setProperty('--chip-color', L_COLOR[md.l]);
+  const dot=document.createElement('span'); dot.className='dot'; dot.setAttribute('aria-hidden','true');
+  const txt=document.createElement('span'); txt.textContent=md.label;
+  b.appendChild(dot); b.appendChild(txt);
+  b.addEventListener('click',()=>toggleMode(i));
+  b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleMode(i);} });
+  modeGrid.appendChild(b);
+  return b;
+});
+function refreshChips(){
+  chips.forEach((b,i)=>{
+    const on=state.activeModes.has(i);
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true':'false');
+  });
+}
+function toggleMode(i){
+  if(state.activeModes.has(i)){ if(state.activeModes.size>1) state.activeModes.delete(i); }
+  else state.activeModes.add(i);
+  refreshChips(); refreshModeTag(); updateDynamicCaptions();
+}
+function refreshModeTag(){
+  const arr=[...state.activeModes].sort((a,b)=>a-b);
+  modeTag.textContent = arr.map(i=>MODES[i].label).join('  +  ');
+  modeHint.textContent = arr.length===1 ? MODES[arr[0]].desc :
+    'Superposition of '+arr.length+' modes: '+arr.map(i=>MODES[i].label).join(', ')+'.';
+  const activeLs=[...new Set(arr.map(i=>MODES[i].l))].sort((a,b)=>a-b);
+  specLegend.innerHTML = activeLs.map(l=>{
+    const note = l>2 ? ' (canceled — not plotted)' : '';
+    return '<span class="swatch"><span class="dot" style="display:inline-block;width:11px;height:11px;border-radius:50%;background:'+L_COLOR[l]+'"></span> ℓ='+l+note+'</span>';
+  }).join('');
+}
+
+/* ───────────────────────── other DOM ───────────────────────── */
+const massSl=document.getElementById('massSl'), radiusSl=document.getElementById('radiusSl'),
+      rotSl=document.getElementById('rotSl'), convSl=document.getElementById('convSl'), nSl=document.getElementById('nSl');
+const massVal=document.getElementById('massVal'), radiusVal=document.getElementById('radiusVal'),
+      rotVal=document.getElementById('rotVal'), convVal=document.getElementById('convVal'), nVal=document.getElementById('nVal');
+const btnMS=document.getElementById('btnMS'), btnRG=document.getElementById('btnRG');
+const liveLabel=document.getElementById('liveLabel');
+const axisTag=document.getElementById('axisTag'), modeTag=document.getElementById('modeTag'), lightAxisTag=document.getElementById('lightAxisTag');
+const capLight=document.getElementById('capLight'), capSpec=document.getElementById('capSpec'),
+      capSphere=document.getElementById('capSphere'), capCross=document.getElementById('capCross');
+const readout=document.getElementById('readout');
+const noiseSel=document.getElementById('noiseSel'), noiseNote=document.getElementById('noiseNote');
+const audioBtn=document.getElementById('audioBtn'), volRow=document.getElementById('volRow'), volSl=document.getElementById('volSl');
+
+function setSlider(sl,cfg){ sl.min=cfg.min; sl.max=cfg.max; sl.step=cfg.step; sl.value=cfg.def; }
+
+function applyStarType(type){
+  state.type=type;
+  const T=STYPES[type];
+  document.documentElement.style.setProperty('--type-accent',T.accent);
+  btnMS.classList.toggle('active',type==='ms');
+  btnRG.classList.toggle('active',type==='rg');
+  btnMS.setAttribute('aria-pressed', type==='ms' ? 'true':'false');
+  btnRG.setAttribute('aria-pressed', type==='rg' ? 'true':'false');
+  liveLabel.textContent=T.tag;
+  axisTag.textContent = T.freqAxis[0]+'–'+T.freqAxis[1]+' μHz';
+  capSpec.textContent = T.specCaption;
+  setSlider(massSl,T.mass); setSlider(radiusSl,T.radius);
+  setSlider(rotSl,T.rot); setSlider(convSl,T.conv);
+  state.mass=T.mass.def; state.radius=T.radius.def; state.rot=T.rot.def; state.conv=T.conv.def;
+  updateReadouts(); updateDynamicCaptions();
+  state.light.length=0; state.phases.fill(0); state.tSim=0; state.gran=0;
+}
+function updateReadouts(){
+  massVal.textContent=state.mass.toFixed(2)+' M☉';
+  radiusVal.textContent=state.radius.toFixed(2)+' R☉';
+  rotVal.textContent=state.rot.toFixed(state.rot<10?1:0)+' km/s';
+  convVal.textContent=state.conv.toFixed(2);
+  nVal.textContent=String(state.nRadial);
+}
+function updateDynamicCaptions(){
+  const T=STYPES[state.type];
+  const nmax=nuMax(state.mass,state.radius,T.teff);
+  const periodSec=1e6/Math.max(nmax,1e-6);
+  lightAxisTag.textContent = 'real period ≈ '+formatDuration(periodSec);
+  const active=[...state.activeModes].sort((a,b)=>a-b).map(i=>MODES[i]);
+  if(active.length===1){
+    const md=active[0];
+    const visPct=Math.round(VISIBILITY[md.l]*100);
+    capLight.textContent = 'The real oscillation period at the current νmax is about '+formatDuration(periodSec)+
+      '. This display is sped up so the cycle is visible in real time'+
+      (T.gModes?', including the slow amplitude beating from the mixed p–g mode. ':'. ')+
+      'At ℓ='+md.l+', disk-averaging cancellation leaves only about '+visPct+
+      '% of the intrinsic amplitude visible in brightness — higher-ℓ modes are progressively harder to detect this way.';
+  } else {
+    const list=active.map(m=>m.label).join('  +  ');
+    capLight.textContent = 'The real period near νmax is about '+formatDuration(periodSec)+'. '+active.length+
+      ' modes are summed here ('+list+'), each at a slightly different frequency and visibility — watch for beating as they drift in and out of phase.';
+  }
+  capCross.textContent = 'Radial order n = '+state.nRadial+': the wave completes '+state.nRadial+
+    ' full radial oscillations between the core and the surface. n is independent of ℓ, m — it does not change the surface pattern, only the interior ripple count here and the peak spacing in the power spectrum.'+
+    (active.length>1?' All selected modes share this radial order for the animation.':'');
+  refreshModeTag();
+}
+
+const NOISE_TEXT = {
+  none:'No noise added — the light curve shows the pure oscillation signal.',
+  white:'<b>White (shot) noise:</b> independent, frequency-flat scatter from Poisson photon-counting statistics. Every sample is an uncorrelated random kick — it looks the same at every timescale.',
+  gran:'<b>Granulation (red) noise:</b> a slowly wandering, correlated signal produced by convective granules rising and sinking on the stellar surface. Its power is concentrated at low frequency, so it looks like a drifting baseline rather than scatter, and it must be modeled and subtracted before the oscillation peaks are visible.',
+  both:'<b>White + granulation noise:</b> fast uncorrelated scatter layered on top of a slow correlated drift — similar to a real photometric light curve before any filtering is applied.'
+};
+noiseSel.addEventListener('change',()=>{ state.noiseMode=noiseSel.value; noiseNote.innerHTML=NOISE_TEXT[state.noiseMode]; });
+
+btnMS.addEventListener('click',()=>applyStarType('ms'));
+btnRG.addEventListener('click',()=>applyStarType('rg'));
+massSl.addEventListener('input',()=>{state.mass=+massSl.value; updateReadouts(); updateDynamicCaptions();});
+radiusSl.addEventListener('input',()=>{state.radius=+radiusSl.value; updateReadouts(); updateDynamicCaptions();});
+rotSl.addEventListener('input',()=>{state.rot=+rotSl.value; updateReadouts();});
+convSl.addEventListener('input',()=>{state.conv=+convSl.value; updateReadouts(); updateDynamicCaptions();});
+nSl.addEventListener('input',()=>{state.nRadial=+nSl.value; updateReadouts(); updateDynamicCaptions();});
+
+/* ───────────────────────── tooltips that work on hover, focus, and tap ───────────────────────── */
+document.querySelectorAll('.info-dot').forEach(el=>{
+  let pop=null;
+  function show(){ if(pop) return; pop=document.createElement('div'); pop.className='tip-pop'; pop.textContent=el.dataset.tip; el.appendChild(pop); }
+  function hide(){ if(pop){ pop.remove(); pop=null; } }
+  el.addEventListener('mouseenter',show);
+  el.addEventListener('mouseleave',()=>{ if(el.dataset.pinned!=='1') hide(); });
+  el.addEventListener('focus',show);
+  el.addEventListener('blur',()=>{ el.dataset.pinned=''; hide(); });
+  el.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(el.dataset.pinned==='1'){ el.dataset.pinned=''; hide(); }
+    else { document.querySelectorAll('.info-dot').forEach(o=>{o.dataset.pinned='';}); el.dataset.pinned='1'; show(); }
+  });
+});
+document.addEventListener('click',()=>{ document.querySelectorAll('.info-dot').forEach(el=>{ el.dataset.pinned=''; const p=el.querySelector('.tip-pop'); if(p) p.remove(); }); });
+
+/* ───────────────────────── audio (multi-oscillator sonification) ───────────────────────── */
+let audioCtx=null, masterGain=null, oscPool=[], gainPool=[];
+function ensureAudio(){
+  if(!audioCtx){
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    masterGain=audioCtx.createGain(); masterGain.gain.value=1; masterGain.connect(audioCtx.destination);
+    MODES.forEach(()=>{
+      const o=audioCtx.createOscillator(); o.type='sine';
+      const g=audioCtx.createGain(); g.gain.value=0;
+      o.connect(g); g.connect(masterGain); o.start();
+      oscPool.push(o); gainPool.push(g);
+    });
+  }
+}
+audioBtn.addEventListener('click',()=>{
+  ensureAudio();
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  state.audioOn=!state.audioOn;
+  audioBtn.textContent = state.audioOn? '🔊 Sonifying — tap to stop' : '🔈 Sonify: hear the oscillation(s)';
+  audioBtn.setAttribute('aria-pressed', state.audioOn?'true':'false');
+  volRow.style.display = state.audioOn? 'flex':'none';
+  if(!state.audioOn){ gainPool.forEach(g=>g.gain.setTargetAtTime(0,audioCtx.currentTime,0.08)); }
+});
+volSl.addEventListener('input',()=>{ state.volume=(+volSl.value)/100; });
+
+/* ───────────────────────── canvas setup ───────────────────────── */
+function fitCanvas(cv){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const w=cv.clientWidth, h=cv.clientHeight;
+  if(cv.width!==Math.round(w*dpr) || cv.height!==Math.round(h*dpr)){ cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr); }
+  const ctx=cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx,w,h};
+}
+const cvLight=document.getElementById('cvLight'), cvSphere=document.getElementById('cvSphere'),
+      cvCross=document.getElementById('cvCross'), cvSpec=document.getElementById('cvSpec');
+
+function lerp(a,b,t){return a+(b-a)*t;}
+function mixColor(c1,c2,t){ return [Math.round(lerp(c1[0],c2[0],t)),Math.round(lerp(c1[1],c2[1],t)),Math.round(lerp(c1[2],c2[2],t))]; }
+const COOL=[95,194,255], MIDC=[15,24,42], WARM=[255,140,102];
+function diverging(v){ v=Math.max(-1,Math.min(1,v)); return v<0 ? mixColor(MIDC,COOL,-v) : mixColor(MIDC,WARM,v); }
+
+/* ───────────────────────── shared flux model (sums active modes) ───────────────────────── */
+function gaussRand(){ const u1=Math.max(1e-9,Math.random()), u2=Math.random(); return Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2); }
+function stepGranulation(dt){
+  const T=STYPES[state.type];
+  const tau=T.timeWindow*1.5, targetStd=0.15, driving=targetStd*Math.sqrt(2/tau);
+  state.gran += (-state.gran/tau)*dt + driving*Math.sqrt(dt)*gaussRand();
+}
+function computeFlux(withNoise){
+  const T=STYPES[state.type];
+  let sum=0;
+  state.activeModes.forEach(i=>{
+    const md=MODES[i];
+    let v=VISIBILITY[md.l]*Math.sin(state.phases[i]);
+    if(md.m!==0){
+      const beatFreq=0.05+state.rot/(state.type==='ms'?40:8);
+      v*=0.72+0.28*Math.cos(2*Math.PI*beatFreq*state.tSim);
+    }
+    if(T.gModes) v*=0.55+0.45*Math.sin(2*Math.PI*state.tSim/(T.timeWindow*2.4)+1.1);
+    sum+=v;
+  });
+  let flux=sum/state.activeModes.size;
+  if(withNoise){
+    if(state.noiseMode==='white'||state.noiseMode==='both') flux += gaussRand()*0.11;
+    if(state.noiseMode==='gran'||state.noiseMode==='both') flux += state.gran;
+  }
+  return flux;
+}
+function pushLightSample(sampleDt){ stepGranulation(sampleDt); state.light.push(computeFlux(true)); if(state.light.length>420) state.light.shift(); }
+
+/* ───────────────────────── panel: light curve ───────────────────────── */
+const LM={left:46,right:12,top:10,bottom:28};
+function drawLight(){
+  const {ctx,w,h}=fitCanvas(cvLight);
+  ctx.clearRect(0,0,w,h);
+  const T=STYPES[state.type];
+  const pw=w-LM.left-LM.right, ph=h-LM.top-LM.bottom;
+  const accent=getComputedStyle(document.documentElement).getPropertyValue('--type-accent').trim();
+  ctx.strokeStyle='#1c2c4a'; ctx.lineWidth=1; ctx.beginPath();
+  [-1,0,1].forEach(v=>{ const y=LM.top+ph/2-(ph*0.42)*v; ctx.moveTo(LM.left,y); ctx.lineTo(w-LM.right,y); });
+  ctx.stroke();
+  ctx.fillStyle='#c3cee6'; ctx.font='12px JetBrains Mono, monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  [-1,0,1].forEach(v=>{ const y=LM.top+ph/2-(ph*0.42)*v; ctx.fillText((v>0?'+':'')+v, LM.left-8, y); });
+  const windowSeconds = T.timeWindow*3.2;
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  for(let k=0;k<=4;k++){ const frac=k/4; const x=LM.left+pw*frac;
+    ctx.fillText(k===4?'now':'-'+(windowSeconds*(1-frac)).toFixed(1)+'s', x, h-LM.bottom+7); }
+  ctx.save(); ctx.translate(12,LM.top+ph/2); ctx.rotate(-Math.PI/2); ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle='#c3cee6'; ctx.font='12px Inter, sans-serif'; ctx.fillText('Brightness (relative)', 0,0); ctx.restore();
+  ctx.textAlign='center'; ctx.fillStyle='#c3cee6'; ctx.font='12px Inter, sans-serif';
+  ctx.fillText('Time (seconds ago, animation sped up)', LM.left+pw/2, h-11);
+
+  const arr=state.light;
+  if(arr.length<2) return;
+  ctx.save(); ctx.beginPath(); ctx.rect(LM.left,LM.top,pw,ph); ctx.clip();
+  ctx.strokeStyle=accent; ctx.lineWidth=2; ctx.beginPath();
+  for(let i=0;i<arr.length;i++){ const x=LM.left+pw*i/419, y=LM.top+ph/2-(ph*0.42)*arr[i]; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+  ctx.stroke(); ctx.restore();
+  const lastX=LM.left+pw*(arr.length-1)/419, lastY=LM.top+ph/2-(ph*0.42)*arr[arr.length-1];
+  ctx.fillStyle=accent; ctx.beginPath(); ctx.arc(lastX,lastY,3.6,0,7); ctx.fill();
+}
+
+/* ───────────────────────── panel: sphere (sums active modes per grid point) ───────────────────────── */
+function computePointValues(){
+  const activeArr=[...state.activeModes];
+  const n=activeArr.length;
+  const vals=new Array(grid.length);
+  for(let p=0;p<grid.length;p++){
+    const g=grid[p];
+    let rTotal=0, colorTotal=0;
+    for(const i of activeArr){
+      const md=MODES[i];
+      const Yv=realY(md.l,md.m,g.theta,g.phi)/md.norm;
+      const osc=Math.sin(state.phases[i]);
+      rTotal+=md.amp*Yv*osc; colorTotal+=Yv*osc;
+    }
+    vals[p]={r:1+rTotal/n, c:colorTotal/n};
+  }
+  return vals;
+}
+function drawSphere(){
+  const {ctx,w,h}=fitCanvas(cvSphere);
+  ctx.clearRect(0,0,w,h);
+  const cx=w/2, cy=h/2*1.05, scale=Math.min(w,h)*0.34;
+  const az=state.azim, el=0.42;
+  const cosA=Math.cos(az), sinA=Math.sin(az), cosE=Math.cos(el), sinE=Math.sin(el);
+  const vals=computePointValues();
+
+  function project(theta,phi,r){
+    const x=r*Math.sin(theta)*Math.cos(phi), y=r*Math.sin(theta)*Math.sin(phi), z=r*Math.cos(theta);
+    const x1=x*cosA+z*sinA, z1=-x*sinA+z*cosA, y1=y;
+    const y2=y1*cosE - z1*sinE, z2=y1*sinE + z1*cosE;
+    return {sx:cx+scale*x1, sy:cy-scale*y2, depth:z2};
+  }
+  const quads=[]; const nodeDots=[];
+  for(let i=0;i<NTHETA-1;i++){
+    for(let j=0;j<NPHI;j++){
+      const jn=(j+1)%NPHI;
+      const idx=i*NPHI, idxN=(i+1)*NPHI;
+      const g00=grid[idx+j], g01=grid[idx+jn], g10=grid[idxN+j], g11=grid[idxN+jn];
+      const v00=vals[idx+j], v01=vals[idx+jn], v10=vals[idxN+j], v11=vals[idxN+jn];
+      const p00=project(g00.theta,g00.phi,v00.r), p01=project(g01.theta,g01.phi,v01.r),
+            p10=project(g10.theta,g10.phi,v10.r), p11=project(g11.theta,g11.phi,v11.r);
+      const depth=(p00.depth+p01.depth+p10.depth+p11.depth)/4;
+      const cAvg=(v00.c+v01.c+v10.c+v11.c)/4;
+      quads.push({p00,p01,p11,p10,depth,cAvg});
+      /* nodal line: mark quads whose corners straddle zero displacement (a sign change = a node) */
+      const eps=0.02;
+      const signs=[v00.c,v01.c,v10.c,v11.c].map(x=> x>eps?1:(x<-eps?-1:0));
+      if(signs.some(s=>s!==0) && new Set(signs.filter(s=>s!==0)).size>1 || signs.includes(0)){
+        nodeDots.push({x:(p00.sx+p01.sx+p10.sx+p11.sx)/4, y:(p00.sy+p01.sy+p10.sy+p11.sy)/4, depth});
+      }
+    }
+  }
+  quads.sort((a,b)=>a.depth-b.depth);
+  quads.forEach(q=>{
+    const bright=0.55+0.55*(q.depth+1)/2;
+    let [r,g,b]=diverging(q.cAvg);
+    r=Math.min(255,r*bright); g=Math.min(255,g*bright); b=Math.min(255,b*bright);
+    ctx.fillStyle='rgb('+(r|0)+','+(g|0)+','+(b|0)+')';
+    ctx.beginPath();
+    ctx.moveTo(q.p00.sx,q.p00.sy); ctx.lineTo(q.p01.sx,q.p01.sy);
+    ctx.lineTo(q.p11.sx,q.p11.sy); ctx.lineTo(q.p10.sx,q.p10.sy);
+    ctx.closePath(); ctx.fill();
+    /* faint wireframe so the mesh (and the sphere itself) stays visible even when the fill color goes dark near zero-crossing */
+    ctx.strokeStyle='rgba(6,10,20,0.35)'; ctx.lineWidth=0.6; ctx.stroke();
+  });
+  /* explicit nodal lines: bright dots traced along every zero-displacement boundary, front-facing only */
+  nodeDots.forEach(d=>{
+    if(d.depth<-0.15) return; // hide dots on the far side of the sphere
+    const alpha=0.35+0.5*(d.depth+1)/2;
+    ctx.beginPath(); ctx.arc(d.x,d.y,1.6,0,7);
+    ctx.fillStyle='rgba(235,242,255,'+alpha.toFixed(2)+')'; ctx.fill();
+  });
+}
+
+/* ───────────────────────── panel: cross-section (sums active modes per pixel) ───────────────────────── */
+let crossBuf=document.createElement('canvas'), crossImg=null, crossW=0, crossH=0;
+function drawCross(){
+  const {ctx,w,h}=fitCanvas(cvCross);
+  const iw=Math.max(1,Math.round(w)), ih=Math.max(1,Math.round(h));
+  if(crossBuf.width!==iw || crossBuf.height!==ih){ crossBuf.width=iw; crossBuf.height=ih; crossImg=null; }
+  const bctx=crossBuf.getContext('2d');
+  if(!crossImg || crossW!==iw || crossH!==ih){ crossImg=bctx.createImageData(iw,ih); crossW=iw; crossH=ih; }
+  const data=crossImg.data;
+  const cx=iw/2, cy=ih/2, R=Math.min(iw,ih)*0.46;
+  const kr=state.nRadial*Math.PI;
+  const T=STYPES[state.type];
+  const coreR = T.coreFrac, convR = 1-state.conv;
+  const activeArr=[...state.activeModes]; const nAct=activeArr.length;
+
+  for(let py=0;py<ih;py++){
+    for(let px=0;px<iw;px++){
+      const dx=(px-cx)/R, dy=(py-cy)/R;
+      const rr=Math.sqrt(dx*dx+dy*dy);
+      const idx=(py*iw+px)*4;
+      if(rr>1.0){ data[idx]=11;data[idx+1]=23;data[idx+2]=41;data[idx+3]=255; continue; }
+      const ang=Math.atan2(dy,dx);
+      const envel=Math.exp(-0.5*Math.pow((rr-0.6)/0.4,2));
+      let disp=0;
+      for(const mi of activeArr){
+        const md=MODES[mi];
+        const Yv=realY(md.l,md.m,ang,0)/md.norm;
+        disp += Yv*envel*Math.sin(kr*rr - state.phases[mi]*1.4);
+      }
+      disp/=nAct;
+      const [r,g,b]=diverging(disp*1.3);
+      data[idx]=r; data[idx+1]=g; data[idx+2]=b; data[idx+3]=255;
+    }
+  }
+  bctx.putImageData(crossImg,0,0);
+  ctx.clearRect(0,0,w,h);
+  ctx.drawImage(crossBuf,0,0,iw,ih,0,0,w,h);
+
+  ctx.save(); ctx.translate(w/2,h/2);
+  const Rd=Math.min(w,h)*0.46;
+  ctx.setLineDash([2,3]); ctx.strokeStyle='#ffe08a'; ctx.globalAlpha=0.9; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.arc(0,0,coreR*Rd,0,7); ctx.stroke();
+  ctx.setLineDash([6,4]); ctx.strokeStyle='#ff9d66';
+  ctx.beginPath(); ctx.arc(0,0,Math.max(coreR+0.02,convR)*Rd,0,7); ctx.stroke();
+  ctx.setLineDash([]); ctx.strokeStyle='#9fb3dd'; ctx.globalAlpha=0.55; ctx.lineWidth=1.6;
+  ctx.beginPath(); ctx.arc(0,0,Rd,0,7); ctx.stroke();
+  ctx.restore();
+}
+
+/* ───────────────────────── panel: power spectrum ───────────────────────── */
+const SM={left:52,right:12,top:10,bottom:30};
+function lor(x,x0,g){ const d=(x-x0)/g; return 1/(1+d*d); }
+function drawSpectrum(){
+  const {ctx,w,h}=fitCanvas(cvSpec);
+  ctx.clearRect(0,0,w,h);
+  const pw=w-SM.left-SM.right, ph=h-SM.top-SM.bottom;
+  const T=STYPES[state.type];
+  const [f0,f1]=T.freqAxis;
+  const nmax=nuMax(state.mass,state.radius,T.teff);
+  const dnu=deltaNu(state.mass,state.radius);
+  const N=460;
+  const xs=new Array(N), pwr=new Float64Array(N);
+  for(let i=0;i<N;i++) xs[i]=f0+(f1-f0)*i/(N-1);
+  function env(nu){ return Math.exp(-0.5*Math.pow((nu-nmax)/(dnu*2.4+1e-6),2)); }
+
+  const nOrders=Math.min(60,Math.max(6,Math.round((f1-f0)/Math.max(dnu,1))));
+  const nCenter=Math.round(nmax/Math.max(dnu,1e-6));
+  const Rm=state.radius*6.957e8, vms=state.rot*1e3;
+  const deltaRot=(vms/Rm)/(2*Math.PI)*1e6*1.5;
+
+  for(let n=nCenter-nOrders;n<=nCenter+nOrders;n++){
+    const nu0=n*dnu; if(nu0<=0||nu0<f0-3*dnu||nu0>f1+3*dnu) continue;
+    const e=env(nu0); if(e<0.002) continue;
+    for(let i=0;i<N;i++) pwr[i]+=e*lor(xs[i],nu0,Math.max(0.35,(f1-f0)*0.0015));
+    const nu1=nu0+dnu*0.506;
+    if(state.rot>0){
+      for(const dmf of [[-1,0.5],[0,0.85],[1,0.5]]){
+        const dm=dmf[0], frac=dmf[1];
+        for(let i=0;i<N;i++) pwr[i]+=e*frac*lor(xs[i],nu1+dm*deltaRot,Math.max(0.35,(f1-f0)*0.0015));
+      }
+    } else {
+      for(let i=0;i<N;i++) pwr[i]+=e*0.85*lor(xs[i],nu1,Math.max(0.35,(f1-f0)*0.0015));
+    }
+    const nu2=nu0+dnu*0.118;
+    for(let i=0;i<N;i++) pwr[i]+=e*0.55*lor(xs[i],nu2,Math.max(0.35,(f1-f0)*0.0015));
+  }
+  if(T.gModes){
+    const dPi_s=periodG(state.mass,state.radius,state.conv)*60;
+    for(let ng=1;ng<=40;ng++){
+      const nug=1e6/(ng*dPi_s);
+      if(nug<f0||nug>f1) continue;
+      for(let i=0;i<N;i++) pwr[i]+=0.30*lor(xs[i],nug,Math.max(0.2,(f1-f0)*0.0009));
+    }
+  }
+  let pmax=0.001; for(let i=0;i<N;i++) pmax=Math.max(pmax,pwr[i]);
+  const yMax=Math.max(pmax*1.15,0.35);
+
+  ctx.strokeStyle='#1c2c4a'; ctx.lineWidth=1; ctx.beginPath();
+  for(let k=0;k<=4;k++){ const y=SM.top+ph-ph*k/4; ctx.moveTo(SM.left,y); ctx.lineTo(w-SM.right,y); }
+  ctx.stroke();
+  ctx.fillStyle='#c3cee6'; ctx.font='12px JetBrains Mono, monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  [0,0.5,1].forEach(f=>{ const y=SM.top+ph-ph*f; ctx.fillText((f*yMax).toFixed(2), SM.left-8, y); });
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  for(let k=0;k<=4;k++){ const frac=k/4; const x=SM.left+pw*frac; const val=f0+(f1-f0)*frac;
+    ctx.fillText(val>=1000? (val/1000).toFixed(1)+'k' : val.toFixed(0), x, h-SM.bottom+7); }
+  ctx.save(); ctx.translate(14,SM.top+ph/2); ctx.rotate(-Math.PI/2); ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle='#c3cee6'; ctx.font='12px Inter, sans-serif'; ctx.fillText('Power (relative)', 0,0); ctx.restore();
+  ctx.textAlign='center'; ctx.fillStyle='#c3cee6'; ctx.font='12px Inter, sans-serif';
+  ctx.fillText('Frequency (μHz)', SM.left+pw/2, h-11);
+
+  const accent=getComputedStyle(document.documentElement).getPropertyValue('--type-accent').trim();
+  ctx.save(); ctx.beginPath(); ctx.rect(SM.left,SM.top,pw,ph); ctx.clip();
+  const grad=ctx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,accent+'55'); grad.addColorStop(1,accent+'05');
+  ctx.beginPath(); ctx.moveTo(SM.left,SM.top+ph);
+  for(let i=0;i<N;i++){ const x=SM.left+pw*i/(N-1), y=SM.top+ph-ph*(pwr[i]/yMax); ctx.lineTo(x,y); }
+  ctx.lineTo(SM.left+pw,SM.top+ph); ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+  ctx.strokeStyle=accent; ctx.lineWidth=1.8; ctx.beginPath();
+  for(let i=0;i<N;i++){ const x=SM.left+pw*i/(N-1), y=SM.top+ph-ph*(pwr[i]/yMax); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+  ctx.stroke(); ctx.restore();
+
+  /* fixed-position HUD box (top-left) — never collides with the curve, however dense it gets */
+  const hudLines=['νmax = '+nmax.toFixed(0)+' μHz'];
+  const OFFSET={0:0,1:0.506,2:0.118};
+  const activeLs=[...new Set([...state.activeModes].map(i=>MODES[i].l))].sort((a,b)=>a-b);
+  if(activeLs.some(l=>l>2)) hudLines.push('ℓ=3 selected: canceled by disk-averaging, not plotted');
+  ctx.save();
+  ctx.font='12px JetBrains Mono, monospace'; ctx.textAlign='left'; ctx.textBaseline='top';
+  const hudW=Math.max(...hudLines.map(t=>ctx.measureText(t).width))+16;
+  ctx.fillStyle='rgba(6,11,22,0.82)'; ctx.fillRect(SM.left+4,SM.top+4,hudW,hudLines.length*17+8);
+  hudLines.forEach((t,i)=>{ ctx.fillStyle = i===0?'#ffe08a':'#ff9d66'; ctx.fillText(t, SM.left+12, SM.top+10+i*17); });
+  ctx.restore();
+
+  if(nmax>=f0 && nmax<=f1){
+    const xnm=SM.left+pw*(nmax-f0)/(f1-f0);
+    ctx.strokeStyle='#ffe08a'; ctx.setLineDash([3,3]); ctx.lineWidth=1; ctx.globalAlpha=0.8;
+    ctx.beginPath(); ctx.moveTo(xnm,SM.top); ctx.lineTo(xnm,SM.top+ph); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha=1;
+  }
+
+  /* one thin colored guideline per active l (color matches the mode chips + the legend under this chart) — no on-chart text at all */
+  activeLs.forEach(l=>{
+    if(l>2) return;
+    const nuSel=nCenter*dnu + OFFSET[l]*dnu;
+    if(nuSel<f0||nuSel>f1) return;
+    const xs2=SM.left+pw*(nuSel-f0)/(f1-f0);
+    ctx.save();
+    ctx.strokeStyle=L_COLOR[l]; ctx.setLineDash([5,3]); ctx.lineWidth=1.6; ctx.globalAlpha=0.85;
+    ctx.beginPath(); ctx.moveTo(xs2,SM.top); ctx.lineTo(xs2,SM.top+ph); ctx.stroke();
+    ctx.restore();
+  });
+
+  /* order-range info now lives in the caption text below the chart, never drawn on the canvas */
+  const pxPerOrder = pw*dnu/(f1-f0);
+  const orderNote = pxPerOrder>=42
+    ? 'Consecutive peaks near νmax are radial orders n≈'+(nCenter-1)+'–'+(nCenter+1)+', each spaced by Δν.'
+    : 'Near νmax, radial orders are packed only '+pxPerOrder.toFixed(1)+'px apart here — too dense to label individually, but each spike is still one order, spaced by Δν.';
+  capSpec.textContent = T.specCaption+' '+orderNote;
+}
+
+/* ───────────────────────── readout footer ───────────────────────── */
+function updateFooter(){
+  const T=STYPES[state.type];
+  const nmax=nuMax(state.mass,state.radius,T.teff);
+  const dnu=deltaNu(state.mass,state.radius);
+  const parts=[
+    '<span title="Frequency of maximum oscillation power">ν<sub>max</sub> = <b>'+nmax.toFixed(1)+' μHz</b></span>',
+    '<span title="Large frequency separation — spacing between consecutive radial orders">Δν = <b>'+dnu.toFixed(2)+' μHz</b></span>',
+    '<span>Mass = <b>'+state.mass.toFixed(2)+' M☉</b></span>',
+    '<span>Radius = <b>'+state.radius.toFixed(2)+' R☉</b></span>',
+    '<span>T<sub>eff</sub> = <b>'+T.teff+' K</b></span>'
+  ];
+  if(T.gModes) parts.push('<span title="g-mode period spacing (simplified stand-in), see equations below">ΔΠ<sub>1</sub> = <b>'+periodG(state.mass,state.radius,state.conv).toFixed(1)+' min</b></span>');
+  readout.innerHTML=parts.join('');
+}
+
+/* ───────────────────────── equations (KaTeX) ───────────────────────── */
+function renderEQ(id,tex){
+  const el=document.getElementById(id); if(!el) return;
+  if(window.katex){ try{ katex.render(tex, el, {throwOnError:false, displayMode:true}); return; }catch(e){} }
+  el.textContent=tex;
+}
+renderEQ('eqNumax','\\nu_{\\max} = \\nu_{\\max,\\odot}\\,\\dfrac{M/M_\\odot}{(R/R_\\odot)^2\\sqrt{T_{\\rm eff}/T_{\\rm eff,\\odot}}}');
+renderEQ('eqDeltanu','\\Delta\\nu = \\Delta\\nu_\\odot\\sqrt{\\dfrac{M/M_\\odot}{(R/R_\\odot)^3}}\\;=\\;\\Delta\\nu_\\odot\\sqrt{\\bar\\rho/\\bar\\rho_\\odot}');
+renderEQ('eqAsymp','\\nu_{n,\\ell} \\approx \\Delta\\nu\\left(n+\\dfrac{\\ell}{2}+\\varepsilon\\right)-\\delta\\nu_{0\\ell}');
+renderEQ('eqYlm','\\xi_r(\\theta,\\phi,t) \\;\\propto\\; \\sum_k Y_{\\ell_k}^{\\,m_k}(\\theta,\\phi)\\,\\cos(2\\pi\\nu_k t)');
+renderEQ('eqRot','\\delta\\nu_{n,\\ell,m} \\approx m\\,\\dfrac{\\Omega}{2\\pi}\\,(1-C_{n\\ell})');
+renderEQ('eqGmode','\\Delta\\Pi_1 \\approx \\dfrac{2\\pi^2}{\\sqrt{2}}\\left(\\int_{\\rm core}\\dfrac{N}{r}\\,dr\\right)^{-1}');
+renderEQ('eqHarvey','P(\\nu) \\;\\propto\\; \\dfrac{4\\sigma^2\\tau}{1+(2\\pi\\nu\\tau)^4}');
+
+/* ───────────────────────── main loop ───────────────────────── */
+let lastT=performance.now(), frame=0, sampleAcc=0;
+function loop(now){
+  let dt=(now-lastT)/1000; lastT=now;
+  dt=Math.min(dt,0.05);
+  frame++;
+
+  const T=STYPES[state.type];
+  const nuNominal=nuMax(T.mass.def,T.radius.def,T.teff);
+  const nuCurrent=nuMax(state.mass,state.radius,T.teff);
+  let scale=Math.sqrt(nuCurrent/Math.max(nuNominal,1e-6));
+  scale=Math.max(0.5,Math.min(2.0,scale));
+
+  state.activeModes.forEach(i=>{
+    const displayFreq=T.baseDisplayFreq*scale*MODES[i].freq;
+    state.phases[i]+=2*Math.PI*displayFreq*dt;
+  });
+  state.tSim += dt;
+  state.azim += 0.16*dt;
+
+  sampleAcc += dt;
+  const sampleDt = (T.timeWindow*3.2)/419;
+  while(sampleAcc>sampleDt){ pushLightSample(sampleDt); sampleAcc-=sampleDt; }
+
+  if(state.audioOn && audioCtx){
+    const now2=audioCtx.currentTime;
+    const nAct=state.activeModes.size;
+    MODES.forEach((md,i)=>{
+      const active=state.activeModes.has(i);
+      const pitch=T.pitch*(1+0.05*md.l+0.015*Math.abs(md.m));
+      oscPool[i].frequency.setTargetAtTime(pitch,now2,0.06);
+      const lvl=active? Math.max(0,0.03+state.volume*0.16*(0.5+0.5*Math.sin(state.phases[i])))/Math.max(1,nAct) : 0;
+      gainPool[i].gain.setTargetAtTime(lvl,now2,0.04);
+    });
+  }
+
+  drawLight();
+  drawSpectrum();
+  if(frame%2===0){ drawSphere(); drawCross(); }
+  if(frame%12===0) updateFooter();
+
+  requestAnimationFrame(loop);
+}
+
+/* ───────────────────────── init ───────────────────────── */
+refreshChips();
+refreshModeTag();
+applyStarType('ms');
+updateFooter();
+window.addEventListener('resize',()=>{ drawLight(); drawSphere(); drawCross(); drawSpectrum(); });
+requestAnimationFrame(loop);
+
+})();
+</script>
+</body>
+</html>
