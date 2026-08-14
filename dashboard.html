@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics & Acoustics Simulation Dashboard</title>
+    <link rel="stylesheet" href="assets/stylesheets/main.css">
+    <link rel="shortcut icon" href="https://aadcdn.msftauthimages.net/dbd5a2dd-wvekwocugzccd2tl-4riyby1yx-qh1smjma1yhffkbk/logintenantbranding/0/favicon?ts=638628017970719969">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+      /* =========================================================
+         This is the Field Log design system, ported wholesale.
+         Same tokens, same component classes, same overlay pattern —
+         just re-applied to the acoustics dashboard's own content.
+         ========================================================= */
+      :root{
+        --bg:#060b16; --bg-panel:#0b1729; --bg-panel2:#0e1c33; --line:#2a3c60;
+        --fg:#f1f4fb; --mid:#a8b6d6; --dim:#93a1c4;
+        --accent:#5fc2ff;
+        --sci:#5fc2ff; --hum:#b98aff; --bod:#ff8c66; --art:#ff6fa8; --wr:#8f5fe8;
+      }
+      *{box-sizing:border-box;}
+      html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);
+        font-family:'Inter',system-ui,sans-serif;font-size:16px;}
+      body.dashboard-body{
+        background:
+          radial-gradient(ellipse 900px 500px at 20% -10%, #12203c 0%, transparent 60%),
+          radial-gradient(ellipse 700px 500px at 100% 0%, #1a1230 0%, transparent 55%),
+          var(--bg);
+        min-height:100vh; padding:28px 28px 60px;
+      }
+      .app{max-width:1100px;margin:0 auto;}
+
+      /* header / title, straight out of Field Log's <header> */
+      .dashboard-title{
+        font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:27px;
+        letter-spacing:0.3px;margin:0 0 20px;color:var(--fg);
+        border-bottom:1px solid var(--line);padding-bottom:16px;
+      }
+
+      /* bar-nav — used for the simulation header */
+      .bar-nav{display:flex;align-items:center;justify-content:space-between;
+        margin-bottom:18px;flex-wrap:wrap;gap:10px;
+        border-bottom:1px solid var(--line);padding-bottom:16px;}
+      .bar-nav .label{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:500;color:var(--fg);}
+
+      /* today-btn / nav-btns pattern reused for back / nav buttons */
+      .nav-btn, .back-btn{
+        font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg-panel);
+        border:1.5px solid var(--line);color:var(--mid);padding:9px 15px;
+        cursor:pointer;letter-spacing:0.4px;border-radius:8px;}
+      .nav-btn:hover, .back-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+      /* stat-add-btn pattern reused for the worksheets trigger */
+      .header-worksheets-btn{
+        font-family:'JetBrains Mono',monospace !important;font-size:12px !important;
+        background:var(--bg-panel2) !important;border:1.5px solid var(--accent) !important;
+        color:var(--accent) !important;padding:9px 16px !important;border-radius:8px !important;
+        cursor:pointer;letter-spacing:0.4px;font-weight:400 !important;
+      }
+      .header-worksheets-btn:hover{background:var(--bg-panel) !important;}
+
+      /* dash-grid / dash-card — copied directly, driven by data-domain like Field Log's categories */
+      .card-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+      .card{background:var(--bg-panel);border:1px solid var(--line);border-radius:12px;
+        padding:0;position:relative;transition:border-color .15s, transform .15s;
+        cursor:pointer;text-align:left;color:var(--fg);font-family:inherit;
+        overflow:hidden;display:flex;flex-direction:column;}
+      .card::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;
+        border-radius:2px;background:var(--accent2,var(--accent));z-index:1;}
+      .card[data-domain="science"]{--accent2:var(--sci);}
+      .card[data-domain="humanities"]{--accent2:var(--hum);}
+      .card[data-domain="body"]{--accent2:var(--bod);}
+      .card[data-domain="arts"]{--accent2:var(--art);}
+      .card[data-domain="write"]{--accent2:var(--wr);}
+      .card:hover{border-color:var(--accent2,var(--accent));transform:translateY(-2px);}
+      .card:focus-visible{outline:2px solid var(--accent2,var(--accent));outline-offset:2px;}
+
+      .card-image-box{aspect-ratio:16/10;background:var(--bg-panel2);
+        border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+        position:relative;overflow:hidden;}
+      .card-image-box img{width:100%;height:100%;object-fit:cover;display:block;}
+      .card-image-box::after{content:"";width:32px;height:32px;border-radius:50%;
+        border:1.5px solid var(--accent2,var(--accent));opacity:0.7;
+        box-shadow:0 0 0 7px color-mix(in srgb, var(--accent2, var(--accent)) 10%, transparent);}
+
+      .card-label{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15.5px;
+        padding:14px 16px 16px;line-height:1.35;color:var(--fg);}
+
+      /* panel — copied directly for the simulation containers */
+      .panel{background:var(--bg-panel);border:1px solid var(--line);border-radius:12px;padding:16px;}
+      #harmonics-app-container, #clarinet-app-container{background:var(--bg-panel);
+        border:1px solid var(--line);border-radius:12px;padding:16px;}
+      #astronomy-app-container{border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+
+      /* overlay / overlay-panel — copied directly, drives both modals */
+      .overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:flex-start;
+        justify-content:center;padding:36px 20px;overflow:auto;}
+      .overlay[hidden]{display:none !important;}
+      .overlay-backdrop{position:fixed;inset:0;background:rgba(2,6,14,0.72);}
+      .overlay-panel{position:relative;background:var(--bg-panel);border:1px solid var(--line);
+        border-radius:14px;max-width:420px;width:100%;padding:24px 26px 28px;
+        box-shadow:0 20px 60px -12px #000;}
+      .overlay-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;
+        border-bottom:1px solid var(--line);padding-bottom:14px;}
+      .overlay-head h2{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:20px;
+        margin:0;flex:1;color:var(--fg);}
+      .overlay-close{background:none;border:1.5px solid var(--line);color:var(--mid);
+        width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;flex-shrink:0;}
+      .overlay-close:hover{border-color:var(--accent);color:var(--accent);}
+      .overlay-panel .hint{font-size:12.5px;color:var(--dim);margin:0 0 16px;line-height:1.4;}
+
+      /* btn-solid — copied directly for the worksheet links */
+      .btn-solid{display:block;font-family:'JetBrains Mono',monospace;font-size:13px;
+        background:var(--bg-panel2);border:1.5px solid var(--m-accent, var(--accent));
+        color:var(--m-accent, var(--accent));padding:12px 14px;border-radius:8px;
+        cursor:pointer;text-align:center;text-decoration:none;letter-spacing:0.3px;}
+      .btn-solid:hover{background:var(--bg-panel);}
+      .ws-links{display:flex;flex-direction:column;gap:10px;}
+
+      /* dialog (native) styled like an overlay-panel */
+      .info-dialog{background:var(--bg-panel);color:var(--fg);border:1px solid var(--line);
+        border-radius:14px;padding:0;max-width:420px;width:90%;box-shadow:0 20px 60px -12px #000;}
+      .info-dialog::backdrop{background:rgba(2,6,14,0.72);}
+      .dialog-content{padding:22px 24px 20px;}
+      .dialog-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:19px;
+        margin:0 0 10px;color:var(--fg);}
+      .dialog-body{font-size:13.5px;line-height:1.65;color:var(--mid);margin:0 0 18px;}
+      .dialog-close-btn{font-family:'JetBrains Mono',monospace;font-size:12px;background:none;
+        border:1.5px solid var(--line);color:var(--mid);padding:9px 16px;border-radius:8px;cursor:pointer;}
+      .dialog-close-btn:hover{border-color:var(--accent);color:var(--fg);}
+
+      footer{margin-top:22px;display:flex;justify-content:flex-end;
+        font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);}
+    </style>
+</head>
+<body class="dashboard-body">
+
+    <div id="dashboard-main" class="dashboard-screen app" role="region" aria-label="Main Navigation">
+        <h1 class="dashboard-title">Acoustics Intro</h1>
+
+        <div class="card-container" role="group" aria-label="Acoustic Categories">
+            <button class="card" id="card-universe" type="button" data-domain="science" aria-label="Harmonics in the Universe: Explore cosmic scales, physical wavelengths, and astronomical harmonics across 8 discrete steps.">
+                <div class="card-image-box">
+                <img src="" alt="Symmetric cosmic rings illustrating geometric gravity and harmonic ratios in solar systems.">
+                </div>
+                <div class="card-label">Harmonics in the Universe</div>
+            </button>
+
+            <button class="card" id="card-music" type="button" data-domain="humanities" aria-label="Music Simulations: Explore instrument harmonics and real-time physical pipe acoustics.">
+                <div class="card-image-box">
+                    <img src="" alt="A set of piano keys blending into colorful vibrating string wave patterns.">
+                </div>
+                <div class="card-label">Music</div>
+            </button>
+
+            <button class="card" id="card-astronomy" type="button" data-domain="science" aria-label="Astronomy: Explore stellar oscillations, harmonics, and the physics of asteroseismology.">
+                <div class="card-image-box">
+                    <img src="" alt="A dynamic spectrogram displaying radio frequencies captured from distant deep-space pulsars.">
+                </div>
+                <div class="card-label">Astronomy</div>
+            </button>
+
+            <button class="card" id="card-astrophysics" type="button" data-domain="write" aria-label="Making Music with Astrophysics - Under Construction">
+                <div class="card-image-box">
+                    <img src="" alt="A stylized black hole radiating circular, expanding gravitational waves into space.">
+                </div>
+                <div class="card-label">Making Music w/ Astrophysics</div>
+            </button>
+        </div>
+    </div>
+
+    <div id="dashboard-music-screen" class="dashboard-screen app" style="display: none;" role="region" aria-label="Music Simulations Selection">
+        <h1 class="dashboard-title">Music Simulations</h1>
+
+        <div class="card-container" role="group" aria-label="Music Simulation Applications">
+            <button class="card" id="card-harmonics" type="button" data-domain="arts" aria-label="Instrument Harmonics: Mix overtones to synthesize different instrumental timbres.">
+                <div class="card-image-box">
+                    <img src="" alt="An overlay of multiple colored sine wave overtones combining to form a single complex wave.">
+                </div>
+                <div class="card-label">Instrument Harmonics</div>
+            </button>
+
+            <button class="card" id="card-clarinet" type="button" data-domain="arts" aria-label="Instrument Simulation: Watch 2D sound waves propagate and reflect in woodwind pipes.">
+                <div class="card-image-box">
+                    <img src="" alt="A detailed cross-section of an instrument pipe with wave compressions radiating outward.">
+                </div>
+                <div class="card-label">Instrument Simulation</div>
+            </button>
+        </div>
+
+        <button id="btn-back-to-main" class="nav-btn" style="margin-top:20px;">Back to Main</button>
+    </div>
+
+    <main id="sim-wrapper" class="sim-wrapper app" style="display: none;">
+        <div class="sim-header bar-nav" style="display: flex; align-items: center;">
+            <button id="btn-back-to-music" class="back-btn">← Back to Dashboard</button>
+
+            <button id="openModalBtn" class="header-worksheets-btn">Worksheets</button>
+
+            <h2 id="sim-title" class="label" tabindex="-1" style="margin-left: auto;">Simulation</h2>
+        </div>
+
+        <div id="harmonics-app-container" style="display: none;">
+            <div id="harmonics-app"></div>
+        </div>
+
+        <div id="clarinet-app-container" style="display: none;">
+            <div id="clarinet-app"></div>
+        </div>
+
+        <div id="astronomy-app-container" style="display: none; width:100%; height:calc(100vh - 64px);">
+            <iframe id="astronomy-frame" src="astronomy-console.html" title="Pulse — Asteroseismology Console"
+                style="width:100%; height:100%; border:0; display:block;"></iframe>
+        </div>
+    </main>
+
+    <dialog id="info-modal" class="info-dialog" aria-labelledby="modal-title" aria-describedby="modal-body">
+        <div class="dialog-content">
+            <h3 id="modal-title" class="dialog-title">Information</h3>
+            <p id="modal-body" class="dialog-body">Description goes here.</p>
+            <button id="modal-close-btn" class="dialog-close-btn" type="button">Close</button>
+        </div>
+    </dialog>
+
+    <div class="overlay" id="worksheetModal" hidden>
+      <div class="overlay-backdrop"></div>
+      <div class="overlay-panel">
+        <div class="overlay-head">
+          <h2>Select Your Worksheet</h2>
+          <button class="overlay-close" id="closeModalBtn" aria-label="Close">&times;</button>
+        </div>
+        <p class="hint">Choose a guided worksheet:</p>
+        <div class="ws-links">
+          <a href="https://drive.google.com/file/d/1Z2O3MJdsuFLxJEw3iG0BAUfPZ-MBwMJd/view?usp=drive_link" target="_blank" class="btn-solid" style="--m-accent:var(--sci);">
+            Physics Students
+          </a>
+          <a href="https://drive.google.com/file/d/1YP7piFvXmBzYb-T67c4bB87QMDfxibCi/view?usp=drive_link" target="_blank" class="btn-solid" style="--m-accent:var(--hum);">
+            Music Students
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+
+    <script type="module">
+        import {} from './Tone.js';
+    </script> 
+    
+    <script type="module" src="harmonics.js"></script>
+    <script type="module" src="clarinet.js"></script>
+    <script type="module" src="universe.js"></script>
+
+    <script>
+      const modalBox = document.getElementById('worksheetModal');
+      const openBoxBtn = document.getElementById('openModalBtn');
+      const closeBoxBtn = document.getElementById('closeModalBtn');
+
+      openBoxBtn.addEventListener('click', () => { modalBox.hidden = false; });
+      closeBoxBtn.addEventListener('click', () => { modalBox.hidden = true; });
+      window.addEventListener('click', (e) => { if (e.target === modalBox || e.target.classList.contains('overlay-backdrop')) { modalBox.hidden = true; } });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modalBox.hidden) modalBox.hidden = true; });
+    </script>
+        
+</body>
+</html>
