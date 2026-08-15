@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmonics in Music — Harmoniverse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060b16; --bg-panel:#0b1729; --bg-panel2:#0e1c33; --line:#2a3c60;
+    --fg:#f1f4fb; --mid:#a8b6d6; --dim:#93a1c4;
+    --accent:#5fc2ff;
+    --sci:#5fc2ff; --hum:#b98aff; --bod:#ff8c66; --art:#ff6fa8; --wr:#8f5fe8;
+    --page-accent:var(--art);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);
+    font-family:'Inter',system-ui,sans-serif;font-size:22px;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;
+      transition-duration:0.001ms !important;scroll-behavior:auto !important;}
+  }
+  a:focus-visible, button:focus-visible{
+    outline:3px solid var(--accent);outline-offset:3px;border-radius:8px;
+  }
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 20% -10%, #12203c 0%, transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, #1a1230 0%, transparent 55%),
+      radial-gradient(ellipse 800px 600px at 50% 110%, #14122c 0%, transparent 55%),
+      var(--bg);
+    min-height:100vh;
+  }
+  .app{max-width:1180px;margin:0 auto;padding:0 28px 60px;}
+
+  /* top bar */
+  .top-bar{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
+    padding:24px 0;border-bottom:1px solid var(--line);margin-bottom:44px;
+  }
+  .brand{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;
+    color:var(--fg);text-decoration:none;letter-spacing:0.3px;
+  }
+  .brand:hover{color:var(--accent);}
+  .back-btn{
+    font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:0.4px;
+    background:var(--bg-panel);border:1.5px solid var(--line);color:var(--mid);
+    padding:11px 20px;border-radius:24px;text-decoration:none;
+    display:inline-flex;align-items:center;gap:9px;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .back-btn:hover{border-color:var(--accent);color:var(--fg);
+    background:linear-gradient(180deg,var(--bg-panel2),var(--bg-panel));}
+  .back-btn .arrow-back{transition:transform .18s;}
+  .back-btn:hover .arrow-back{transform:translateX(-4px);}
+
+  /* page intro */
+  .page-intro{text-align:center;margin-bottom:48px;}
+  .page-intro h1{font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:clamp(44px, 7vw, 76px);letter-spacing:0.5px;margin:0 0 18px;color:var(--fg);
+    line-height:1.08;}
+  .page-intro .tagline{font-size:24px;color:var(--mid);max-width:760px;margin:0 auto;line-height:1.6;}
+
+  /* activity grid */
+  .activity-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  @media(max-width:960px){.activity-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.activity-grid{grid-template-columns:1fr;}}
+
+  .h-box{
+    position:relative;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    min-height:280px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:26px 24px 24px;
+    text-decoration:none;
+    overflow:hidden;
+    transition:border-color .18s, transform .18s, box-shadow .18s;
+  }
+  .h-box::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--page-accent) 22%, transparent) 0%, transparent 60%);
+    opacity:0.7;pointer-events:none;
+  }
+  .h-box::after{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--page-accent);
+  }
+  .h-box:hover{
+    border-color:var(--page-accent);
+    transform:translateY(-4px);
+    box-shadow:0 18px 40px -18px rgba(0,0,0,0.6);
+  }
+  .h-box h2{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:24px;
+    margin:0 0 10px;color:var(--fg);line-height:1.28;position:relative;z-index:1;
+    min-height:2.56em;display:flex;align-items:flex-end;}
+  .h-enter{font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:0.6px;
+    color:var(--page-accent);display:flex;align-items:center;gap:6px;position:relative;z-index:1;}
+  .h-enter .arrow{transition:transform .18s;}
+  .h-box:hover .h-enter .arrow{transform:translateX(4px);}
+
+  footer{margin-top:46px;text-align:center;
+    font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--dim);
+    letter-spacing:0.5px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top-bar">
+    <a class="brand" href="index.html">Harmoniverse</a>
+    <a class="back-btn" href="index.html"><span class="arrow-back" aria-hidden="true">&larr;</span>Back to Home</a>
+  </header>
+
+  <main>
+    <div class="page-intro">
+      <h1>Harmonics in Music</h1>
+      <p class="tagline">Explore four interactive activities that reveal how waves, instruments, and equations combine to create sound.</p>
+    </div>
+
+    <nav class="activity-grid" aria-label="Music harmonics activities">
+
+      <a class="h-box" href="standing-wave-harmonics.html">
+        <h2>Standing Wave Harmonics</h2>
+        <span class="h-enter">Explore <span class="arrow" aria-hidden="true">&rarr;</span></span>
+      </a>
+
+      <a class="h-box" href="inside-the-clarinet.html">
+        <h2>Inside the Clarinet</h2>
+        <span class="h-enter">Explore <span class="arrow" aria-hidden="true">&rarr;</span></span>
+      </a>
+
+      <a class="h-box" href="sound-spectrum-analyzer.html">
+        <h2>Sound Spectrum Analyzer</h2>
+        <span class="h-enter">Explore <span class="arrow" aria-hidden="true">&rarr;</span></span>
+      </a>
+
+      <a class="h-box" href="music-math.html">
+        <h2>Music Math</h2>
+        <span class="h-enter">Explore <span class="arrow" aria-hidden="true">&rarr;</span></span>
+      </a>
+
+    </nav>
+  </main>
+
+  <footer>Harmoniverse &mdash; an interdisciplinary project at The Ohio State University</footer>
+</div>
+</body>
+</html>
