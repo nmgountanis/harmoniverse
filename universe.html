@@ -64,6 +64,89 @@
     line-height:1.08;}
   .page-intro .tagline{font-size:24px;color:var(--mid);max-width:760px;margin:0 auto;line-height:1.6;}
 
+  /* scale line */
+  sup{font-size:0.68em;}
+  .scale-section{max-width:1200px;margin:0 auto 64px;padding:0 16px;}
+  .scale-section-label{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;
+    color:var(--fg);text-align:center;margin:0 0 24px;line-height:1.4;
+  }
+  .scale-direction{
+    display:flex;justify-content:flex-start;align-items:center;gap:8px;
+    max-width:1200px;margin:0 auto 12px;padding:0 16px;
+    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.8px;
+    text-transform:uppercase;color:var(--dim);
+  }
+  .scale-direction .arrow{color:var(--page-accent);}
+  .scale-track-wrap{position:relative;}
+
+  .scale-cards-row{
+    display:flex;justify-content:space-evenly;align-items:stretch;
+    gap:16px;position:relative;z-index:2;
+  }
+  .scale-cards-row.top{margin-bottom:64px;}
+  .scale-cards-row.bottom{margin-top:64px;}
+
+  .scale-card{
+    width:100%;max-width:210px;text-align:center;
+    background:var(--bg-panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px 14px 15px;cursor:pointer;font:inherit;color:inherit;
+    transition:border-color .15s,transform .15s;
+  }
+  .scale-card:hover, .scale-card:focus-visible{
+    border-color:var(--page-accent);transform:translateY(-3px);
+  }
+  .scale-card-name{
+    display:block;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;
+    color:var(--fg);line-height:1.32;
+  }
+
+  .scale-track-row{position:relative;height:2px;z-index:1;}
+  .scale-track{position:absolute;inset:0;background:var(--line);}
+  .scale-range{
+    position:absolute;top:50%;height:4px;transform:translateY(-50%);
+    background:var(--page-accent);opacity:0.5;border-radius:3px;
+  }
+  .scale-dot{
+    position:absolute;top:50%;width:13px;height:13px;border-radius:50%;
+    background:var(--bg-panel);border:3px solid var(--page-accent);
+    transform:translate(-50%,-50%);z-index:2;
+  }
+  .scale-dot-value{
+    position:absolute;left:50%;transform:translateX(-50%);
+    font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:0.3px;
+    color:var(--page-accent);white-space:nowrap;z-index:2;
+  }
+  .scale-dot-value.below{top:20px;}
+  .scale-dot-value.above{bottom:20px;}
+
+  .scale-connectors{position:absolute;top:0;left:0;pointer-events:none;z-index:0;}
+  .connector-path{fill:none;stroke:var(--page-accent);stroke-width:1.5;opacity:0.5;}
+
+  /* modal */
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(2,6,14,0.72);z-index:100;
+  }
+  .modal-backdrop[hidden]{display:none;}
+  .scale-modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:101;
+    background:var(--bg-panel);border:1px solid var(--line);border-radius:16px;
+    max-width:560px;width:calc(100% - 56px);padding:34px 32px 32px;
+    box-shadow:0 24px 60px -16px rgba(0,0,0,0.7);
+  }
+  .scale-modal[hidden]{display:none;}
+  .modal-close{
+    position:absolute;top:18px;right:18px;width:38px;height:38px;
+    background:var(--bg-panel2);border:1.5px solid var(--line);border-radius:9px;
+    color:var(--mid);font-size:20px;line-height:1;cursor:pointer;
+  }
+  .modal-close:hover{border-color:var(--accent);color:var(--fg);}
+  .scale-modal h2{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:28px;
+    color:var(--fg);margin:0 0 16px;padding-right:40px;line-height:1.25;
+  }
+  .modal-placeholder{font-size:18px;color:var(--dim);font-style:italic;margin:0;line-height:1.6;}
+
   /* article content */
   .content{max-width:840px;margin:0 auto;}
 
@@ -143,6 +226,67 @@
       <h1>Harmonics in the Universe</h1>
       <p class="tagline">Everything in Harmoniverse builds on one idea: confine a wave, and it produces harmonics. Start here to understand it before diving into the labs.</p>
     </div>
+
+    <section class="scale-section" aria-label="Scale of oscillating systems, from molecular to cosmic">
+      <p class="scale-section-label">Explore examples of harmonics across the universe. Click an example to learn more.</p>
+      <p class="scale-direction"><span>Increasing scale</span><span class="arrow" aria-hidden="true">&rarr;</span></p>
+      <div class="scale-track-wrap" id="scaleWrap">
+
+        <div class="scale-cards-row top">
+          <button class="scale-card" data-dot="dot-molecular" data-title="Molecular Bond Vibration">
+            <span class="scale-card-name">Molecular Bond Vibration</span>
+          </button>
+          <button class="scale-card" data-dot="dot-seiches" data-title="Harbor Seiches">
+            <span class="scale-card-name">Harbor Seiches</span>
+          </button>
+          <button class="scale-card" data-dot="dot-stars" data-title="Stars">
+            <span class="scale-card-name">Stars</span>
+          </button>
+        </div>
+
+        <svg class="scale-connectors" id="scaleConnectors"></svg>
+
+        <div class="scale-track-row">
+          <div class="scale-track"></div>
+
+          <div class="scale-range" style="left:25.71%;width:2.86%;"></div>
+          <div class="scale-range" style="left:37.14%;width:2.86%;"></div>
+          <div class="scale-range" style="left:51.43%;width:2.86%;"></div>
+          <div class="scale-range" style="left:97.14%;width:2.86%;"></div>
+
+          <span class="scale-dot" id="dot-molecular" style="left:0%;"></span>
+          <span class="scale-dot-value below" style="left:0%;">~10<sup>-10</sup> m</span>
+
+          <span class="scale-dot" id="dot-musical" style="left:27.14%;"></span>
+          <span class="scale-dot-value above" style="left:27.14%;">~10<sup>-1</sup> to 10<sup>0</sup> m</span>
+
+          <span class="scale-dot" id="dot-seiches" style="left:38.57%;"></span>
+          <span class="scale-dot-value below" style="left:38.57%;">~10<sup>3</sup> to 10<sup>4</sup> m</span>
+
+          <span class="scale-dot" id="dot-earth" style="left:48.57%;"></span>
+          <span class="scale-dot-value above" style="left:48.57%;">~10<sup>7</sup> m</span>
+
+          <span class="scale-dot" id="dot-stars" style="left:52.86%;"></span>
+          <span class="scale-dot-value below" style="left:52.86%;">~10<sup>8</sup>&#8211;10<sup>9</sup> m</span>
+
+          <span class="scale-dot" id="dot-bao" style="left:98.57%;"></span>
+          <span class="scale-dot-value above" style="left:98.57%;">~10<sup>24</sup>&#8211;10<sup>25</sup> m</span>
+        </div>
+
+        <div class="scale-cards-row bottom">
+          <button class="scale-card" data-dot="dot-musical" data-title="Musical Instruments">
+            <span class="scale-card-name">Musical Instruments</span>
+          </button>
+          <button class="scale-card" data-dot="dot-earth" data-title="Earth's Free Oscillations">
+            <span class="scale-card-name">Earth's Free Oscillations</span>
+          </button>
+          <button class="scale-card" data-dot="dot-bao" data-title="Baryon Acoustic Oscillations">
+            <span class="scale-card-name">Baryon Acoustic Oscillations</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
 
     <article class="content">
 
@@ -249,5 +393,100 @@
 
   <footer>Harmoniverse &mdash; an interdisciplinary project at The Ohio State University</footer>
 </div>
+
+<div class="modal-backdrop" id="scaleModalBackdrop" hidden></div>
+<div class="scale-modal" id="scaleModal" role="dialog" aria-modal="true" aria-labelledby="scaleModalTitle" hidden>
+  <button class="modal-close" id="scaleModalClose" aria-label="Close">&times;</button>
+  <h2 id="scaleModalTitle"></h2>
+  <div class="modal-body" id="scaleModalBody">
+    <p class="modal-placeholder">Content and photos coming soon.</p>
+  </div>
+</div>
+
+<script>
+  (function(){
+    var backdrop = document.getElementById('scaleModalBackdrop');
+    var modal = document.getElementById('scaleModal');
+    var closeBtn = document.getElementById('scaleModalClose');
+    var titleEl = document.getElementById('scaleModalTitle');
+    var cards = document.querySelectorAll('.scale-card');
+    var lastFocused = null;
+
+    function openModal(btn){
+      lastFocused = btn;
+      titleEl.textContent = btn.getAttribute('data-title');
+      backdrop.hidden = false;
+      modal.hidden = false;
+      closeBtn.focus();
+      document.addEventListener('keydown', onKeydown);
+    }
+    function closeModal(){
+      backdrop.hidden = true;
+      modal.hidden = true;
+      document.removeEventListener('keydown', onKeydown);
+      if(lastFocused){ lastFocused.focus(); }
+    }
+    function onKeydown(e){
+      if(e.key === 'Escape'){ closeModal(); return; }
+      if(e.key === 'Tab'){
+        // single focusable element in modal for now — keep focus trapped on it
+        e.preventDefault();
+        closeBtn.focus();
+      }
+    }
+
+    cards.forEach(function(btn){
+      btn.addEventListener('click', function(){ openModal(btn); });
+    });
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+
+    // draw bent elbow connectors from each card to its dot on the scale
+    var wrap = document.getElementById('scaleWrap');
+    var svg = document.getElementById('scaleConnectors');
+
+    function drawConnectors(){
+      var wrapRect = wrap.getBoundingClientRect();
+      svg.setAttribute('width', wrapRect.width);
+      svg.setAttribute('height', wrapRect.height);
+      svg.innerHTML = '';
+
+      cards.forEach(function(card){
+        var dot = document.getElementById(card.getAttribute('data-dot'));
+        if(!dot) return;
+        var isTop = card.closest('.scale-cards-row').classList.contains('top');
+        var cardRect = card.getBoundingClientRect();
+        var dotRect = dot.getBoundingClientRect();
+
+        var cardX = cardRect.left + cardRect.width / 2 - wrapRect.left;
+        var cardY = isTop ? (cardRect.bottom - wrapRect.top) : (cardRect.top - wrapRect.top);
+        var dotX = dotRect.left + dotRect.width / 2 - wrapRect.left;
+        var dotY = dotRect.top + dotRect.height / 2 - wrapRect.top;
+        var busY = isTop ? (dotY - 34) : (dotY + 34);
+
+        var d = 'M ' + cardX + ' ' + cardY +
+                ' L ' + cardX + ' ' + busY +
+                ' L ' + dotX + ' ' + busY +
+                ' L ' + dotX + ' ' + dotY;
+
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('class', 'connector-path');
+        svg.appendChild(path);
+      });
+    }
+
+    var resizeTimer;
+    window.addEventListener('resize', function(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(drawConnectors, 120);
+    });
+    window.addEventListener('load', drawConnectors);
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(drawConnectors);
+    }
+    drawConnectors();
+  })();
+</script>
 </body>
 </html>
