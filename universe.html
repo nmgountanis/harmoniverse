@@ -60,8 +60,9 @@
   /* page intro */
   .page-intro{text-align:center;margin-bottom:56px;}
   .page-intro h1{font-family:'Space Grotesk',sans-serif;font-weight:700;
-    font-size:clamp(44px, 7vw, 76px);letter-spacing:0.5px;margin:0;color:var(--fg);
+    font-size:clamp(44px, 7vw, 76px);letter-spacing:0.5px;margin:0 0 18px;color:var(--fg);
     line-height:1.08;}
+  .page-intro .tagline{font-size:24px;color:var(--mid);max-width:760px;margin:0 auto;line-height:1.6;}
 
   /* article content */
   .content{max-width:840px;margin:0 auto;}
@@ -91,13 +92,42 @@
   <main>
     <div class="page-intro">
       <h1>Harmonics in the Universe</h1>
+      <p class="tagline">Everything in Harmoniverse builds on one idea: confine a wave, and it produces harmonics. Start here to understand it before diving into the labs.</p>
     </div>
 
     <article class="content">
-      <h2>Everything Oscillates</h2>
-      <p>From the strings of a violin to the plasma of the early universe, from a beating heart to a pulsar a thousand light-years away — the universe is full of things that oscillate. Once you learn to recognize this one pattern, it shows up almost everywhere: in why a guitar sounds like a guitar, in how astronomers figure out what's inside a star they'll never touch, and in a surprising number of places in between.</p>
+      <h2>So Many Things Oscillate</h2>
+      <p>A molecule's bond stretches and compresses. A violin string vibrates. A heart beats. A star pulses. Two black holes spiral into each other and emit ripples through spacetime. These are very different systems, at very different scales, but they all exhibit the same basic behavior. They move back and forth in a repeating pattern.</p>
+      <p>Understanding this behavior unlocks a lot about how the universe works. It explains why a guitar sounds like a guitar, how astronomers can figure out what's inside a star without ever touching it, and quite a bit in between. This section will walk through what oscillation is, how it leads to waves, and how confining a wave produces a structured set of frequencies called harmonics.</p>
 
-      <h2>What Is an Oscillation?</h2>
+      <h2>From Oscillation to Wave</h2>
+      <p>In each of the examples above, something similar is happening. Whenever a system moves away from its resting position, a force pulls it back toward that position. But the system doesn't just stop once it gets there. Its momentum keeps it moving, so it swings past its resting position and ends up displaced on the other side. Now the same force pulls it back again, and the whole cycle repeats.</p>
+      <p>This push-pull is called a restoring force, and the repeating motion it creates is called oscillation. When an oscillation travels through space, carrying energy along with it, it becomes a wave.</p>
+      <p>Waves take a lot of different forms. Sound is air molecules pressing closer together, then springing back apart, as pressure keeps pulling them back toward their starting position. Light works a little differently. It isn't a physical medium snapping back into place. It's a changing electric field and magnetic field that regenerate each other as they travel through space. Ocean waves are water pulled flat by gravity, overshooting into a trough, and rising again. Seismic waves are solid rock pushed out of position and pulled back by the rock's own elasticity, as an earthquake passes through it. Gravitational waves are spacetime itself stretching and relaxing as massive objects accelerate.</p>
+      <p>These waves move through completely different materials, at very different speeds and sizes. And yet, every one of these waves is doing the same basic thing. They're moving back and forth in a repeating pattern.</p>
+
+      <h2>What Happens When a Wave Is Confined</h2>
+      <p>A wave's speed is set by whatever it's traveling through. Light moves fastest through empty space, and slows down when it enters matter, like water or glass. That's why a straw in a glass of water looks broken at the surface. Light from the underwater part of the straw bends as it crosses from water into air, since it's changing speed. Your eye traces that bent light back in a straight line, so the underwater part of the straw appears shifted from where it actually is.</p>
+      <p>Speed isn't the only property of a wave. A wave also has a frequency, how many times it repeats each second. A wavelength, the physical distance between one repetition and the next. And an amplitude, how large the oscillation is at its peak.</p>
+      <p>Unlike speed, which is set by whatever the wave is traveling through, these three properties are set by whatever created the wave in the first place. A hand waving slowly through water produces a low frequency, widely spaced ripples. A hand waving quickly produces a high frequency, tightly packed ripples. A gentle push produces a small amplitude, and a hard push produces a large one. In short, the source sets the wave's frequency, wavelength, and amplitude, while the medium sets its speed.</p>
+      <p>Once a wave leaves its source, its frequency stays fixed as long as it keeps traveling through the same medium, undisturbed. Drop a pebble into a large, still lake, and ripples spread outward in expanding circles, never running into anything that sends them back. A wave like this is unconfined. Nothing is forcing it to slow down, speed up, or change the rate at which it repeats.</p>
+      <p>Now drop that same pebble into a bathtub instead. The ripples spread outward just as before, but this time they hit the walls of the tub and bounce back. Those reflected ripples run into the ripples still spreading outward, and the two overlap. Where a crest meets a crest, the water rises even higher. Where a trough meets a trough, it dips even lower. Where a crest meets a trough, they cancel out and the water goes flat. Very quickly, the simple outward ripple turns into a shifting pattern of peaks, dips, and flat spots. That's the moment a wave becomes confined. Once it has edges it can't cross, it's no longer free to repeat at any rate. Only certain patterns can exist, the ones that fit the space between the walls.</p>
+
+      <h2>The Rule Behind Confinement</h2>
+      <p>The walls of the bathtub force the water at that edge to stay still. That's a physical requirement on how the wave must behave at a specific location, and it's called a boundary condition.</p>
+      <p>Boundary conditions can take many forms, but in each case, something is being fixed in place while the rest of the system is free to move. A guitar string is clamped at both ends, so those two points must stay still while the rest of the string moves freely. A drum head is clamped around its circular rim, so the edge must stay still while the center is free to move. A star has a boundary condition too. Its own gravity holds its outer layers together, marking the edge that its internal vibrations can't cross.</p>
+      <p>A boundary condition doesn't restrict how a wave behaves everywhere. It only specifies behavior at certain locations: the fixed ends, the clamped rim, the star's surface. But that limited requirement is enough to determine which patterns of vibration are possible.</p>
+
+      <h2>What's Left When a Wave Is Confined</h2>
+      <p>A guitar string clamped at both ends can't vibrate however it wants. As a wave travels down the string and reflects off one end, it runs into the wave still traveling the other way, the same overlap that happened with the ripples in the bathtub. Most of the time, this overlap doesn't line up, crest meets trough, and the pattern cancels itself out. But for a specific set of patterns, the overlap lines up perfectly. Crest meets crest, and the pattern reinforces itself instead of canceling out.</p>
+      <p>In the guitar string example, the simplest surviving pattern is a single arc, rising and falling between the two fixed ends with nothing in between. This is called the fundamental, the lowest frequency the string can produce. The next pattern fits two arcs into the same length, with one additional point in the middle that stays still along with the two ends. The pattern after that fits three arcs, then four, and so on. Each of these allowed patterns is called a harmonic, and together they make up the entire set of frequencies that string can produce.</p>
+      <p>Nothing in between these patterns is allowed. A string can't vibrate at a frequency 1.5 times its fundamental, or 2.3 times, that pattern cancels itself out the moment it reflects. The frequencies jump directly from one harmonic to the next, with everything in between canceling out.</p>
+
+      <h2>Confinement in One, Two, and Three Dimensions</h2>
+      <p>A guitar string only stretches in one direction, so its harmonics form the simplest possible pattern, a single ladder of frequencies, each one a whole number multiple of the fundamental. But confinement isn't limited to objects that only stretch in one direction. Trap a wave on a surface, or throughout a solid volume, and the same thing happens, only certain patterns survive. They just get more intricate as another dimension is added.</p>
+      <p>A drum head adds a second dimension. It's clamped around its circular rim, the same kind of boundary condition as the string's fixed ends, but now the wave can move both radially and around the circumference. That extra freedom produces more complex patterns, circles, spokes, or combinations of both, instead of a simple ladder. A star adds a third dimension. Sound waves move through its entire volume, held in by its own gravity, producing even more complex patterns that spread throughout the star in three dimensions rather than across a flat surface. Astronomers detect these patterns by watching a star's brightness flicker as its surface rises and falls, which lets them work out what's happening inside a star they'll never be able to see directly.</p>
+      <p>The exact harmonics that survive aren't determined by geometry alone. They also depend on what's physically happening inside the object. A taut string rings higher than a loose one of the same length, and a thin string rings higher than a thick one. A drum's harmonics depend not just on its size but on how tightly its skin is stretched. A star's harmonics depend not just on its size but on its mass, size, and other internal physical properties. Geometry sets the basic shape of what's possible. What the object is made of, and what's happening inside it, sets the specifics.</p>
+      <p>In every case, the underlying idea is the same. Confine a wave, and only a specific set of patterns survives. What changes from one dimension to the next isn't the principle; it's how intricate the surviving patterns become, and how much the details, not just the shape, of the confined system shape them.</p>
     </article>
   </main>
 
