@@ -447,6 +447,7 @@
     var PLACEHOLDER = '<p class="modal-placeholder">Content and photos coming soon.</p>';
 
     // keep glossary tooltips from being clipped by the modal's scroll area or the viewport edge
+    var activeReposition = null;
     function setupTermTooltips(root){
       var terms = root.querySelectorAll('.term');
       terms.forEach(function(term){
@@ -455,6 +456,9 @@
         var tip = term.querySelector('.term-tip');
         if(!tip){ return; }
         function reposition(){
+          // suspend the transition while we measure/move, so nothing renders mid-slide
+          tip.style.transitionProperty = 'none';
+
           var margin = 14;
           tip.classList.remove('below');
           tip.style.setProperty('--shift', '0px');
@@ -481,12 +485,21 @@
           if(spaceAbove < tipRect.height + 10){
             tip.classList.add('below');
           }
+
+          // force layout to apply the new position now, then restore the transition
+          // eslint-disable-next-line no-unused-expressions
+          tip.offsetHeight;
+          requestAnimationFrame(function(){ tip.style.transitionProperty = ''; });
         }
-        term.addEventListener('mouseenter', reposition);
-        term.addEventListener('focus', reposition);
+        term.addEventListener('mouseenter', function(){ reposition(); activeReposition = reposition; });
+        term.addEventListener('mouseleave', function(){ if(activeReposition === reposition){ activeReposition = null; } });
+        term.addEventListener('focus', function(){ reposition(); activeReposition = reposition; });
+        term.addEventListener('blur', function(){ if(activeReposition === reposition){ activeReposition = null; } });
       });
     }
     setupTermTooltips(document);
+    window.addEventListener('scroll', function(){ if(activeReposition){ activeReposition(); } }, true);
+    window.addEventListener('resize', function(){ if(activeReposition){ activeReposition(); } });
 
     var scaleContent = {
       'molecular-bond-vibration':
