@@ -213,19 +213,28 @@
     border-bottom:1.5px dotted var(--page-accent);cursor:help;
   }
   .term-tip{
-    position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%) translateY(4px);
-    width:280px;max-width:80vw;background:var(--bg-panel2);border:1px solid var(--page-accent);
+    position:absolute;left:50%;bottom:calc(100% + 10px);--shift:0px;
+    transform:translateX(calc(-50% + var(--shift))) translateY(4px);
+    width:280px;max-width:min(80vw,280px);background:var(--bg-panel2);border:1px solid var(--page-accent);
     border-radius:10px;padding:14px 16px;box-shadow:0 14px 34px -12px rgba(0,0,0,0.7);
     font-family:'Inter',sans-serif;font-weight:400;font-size:16px;line-height:1.5;color:var(--fg);
     text-align:left;opacity:0;visibility:hidden;pointer-events:none;
     transition:opacity .15s,transform .15s;z-index:10;
   }
   .term-tip::after{
-    content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    content:"";position:absolute;top:100%;left:calc(50% - var(--shift));transform:translateX(-50%);
     border:7px solid transparent;border-top-color:var(--page-accent);
   }
+  .term-tip.below{
+    bottom:auto;top:calc(100% + 10px);
+    transform:translateX(calc(-50% + var(--shift))) translateY(-4px);
+  }
+  .term-tip.below::after{
+    top:auto;bottom:100%;
+    border-top-color:transparent;border-bottom-color:var(--page-accent);
+  }
   .term:hover .term-tip, .term:focus .term-tip, .term:focus-visible .term-tip{
-    opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);
+    opacity:1;visibility:visible;transform:translateX(calc(-50% + var(--shift))) translateY(0);
   }
 
   footer{margin-top:64px;text-align:center;
@@ -437,6 +446,48 @@
     var lastFocused = null;
     var PLACEHOLDER = '<p class="modal-placeholder">Content and photos coming soon.</p>';
 
+    // keep glossary tooltips from being clipped by the modal's scroll area or the viewport edge
+    function setupTermTooltips(root){
+      var terms = root.querySelectorAll('.term');
+      terms.forEach(function(term){
+        if(term.dataset.tipBound === '1'){ return; }
+        term.dataset.tipBound = '1';
+        var tip = term.querySelector('.term-tip');
+        if(!tip){ return; }
+        function reposition(){
+          var margin = 14;
+          tip.classList.remove('below');
+          tip.style.setProperty('--shift', '0px');
+          var container = term.closest('.modal-scroll');
+          var boundsLeft, boundsRight, topBound;
+          if(container){
+            var cRect = container.getBoundingClientRect();
+            boundsLeft = cRect.left + margin;
+            boundsRight = cRect.right - margin;
+            topBound = cRect.top + margin;
+          } else {
+            boundsLeft = margin;
+            boundsRight = window.innerWidth - margin;
+            topBound = margin;
+          }
+          var tipRect = tip.getBoundingClientRect();
+          var shift = 0;
+          if(tipRect.left < boundsLeft){ shift = boundsLeft - tipRect.left; }
+          else if(tipRect.right > boundsRight){ shift = boundsRight - tipRect.right; }
+          if(shift !== 0){ tip.style.setProperty('--shift', shift + 'px'); }
+
+          var termRect = term.getBoundingClientRect();
+          var spaceAbove = termRect.top - topBound;
+          if(spaceAbove < tipRect.height + 10){
+            tip.classList.add('below');
+          }
+        }
+        term.addEventListener('mouseenter', reposition);
+        term.addEventListener('focus', reposition);
+      });
+    }
+    setupTermTooltips(document);
+
     var scaleContent = {
       'molecular-bond-vibration':
         '<p>A <span class="term" tabindex="0" aria-describedby="tip-mod-chemical-bond">chemical bond<span class="term-tip" role="tooltip" id="tip-mod-chemical-bond">An attraction between two atoms, created by the way their electrons interact.</span></span> is the force holding two atoms together. It isn\'t rigid, it behaves like a tiny spring, stretching and compressing as the atoms it connects move slightly closer together and farther apart.</p>' +
@@ -463,6 +514,7 @@
       var key = btn.getAttribute('data-key');
       bodyEl.innerHTML = (key && scaleContent[key]) ? scaleContent[key] : PLACEHOLDER;
       if(scrollEl){ scrollEl.scrollTop = 0; }
+      setupTermTooltips(bodyEl);
       backdrop.hidden = false;
       modal.hidden = false;
       closeBtn.focus();
