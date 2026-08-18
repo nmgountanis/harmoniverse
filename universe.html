@@ -167,6 +167,36 @@
   }
   .modal-body p:last-child{margin-bottom:0;}
 
+  .modal-figure{margin:28px 0;}
+  .modal-figure img{
+    display:block;width:100%;height:auto;border-radius:12px;
+    border:1px solid var(--line);background:#000;
+  }
+  .modal-figure figcaption{
+    margin-top:10px;font-size:14.5px;color:var(--dim);line-height:1.55;
+  }
+  .modal-figure .fig-title{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--fg);
+  }
+  .fig-details{margin-top:8px;}
+  .fig-details summary{
+    cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:5px;
+    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.3px;
+    color:var(--page-accent);
+  }
+  .fig-details summary::-webkit-details-marker{display:none;}
+  .fig-details summary::marker{content:"";}
+  .fig-details summary:focus-visible{
+    outline:2px solid var(--accent);outline-offset:4px;border-radius:6px;
+  }
+  .fig-label-less{display:none;}
+  .fig-details[open] .fig-label-more{display:none;}
+  .fig-details[open] .fig-label-less{display:inline;}
+  .fig-arrow{transition:transform .2s;}
+  .fig-details[open] .fig-arrow{transform:rotate(90deg);}
+  .fig-details p{margin:10px 0 0;font-size:14.5px;color:var(--mid);line-height:1.6;}
+  .modal-figure a{color:var(--page-accent);}
+
   /* article content */
   .content{max-width:840px;margin:0 auto;}
 
@@ -509,6 +539,16 @@
         '<h3>Where This Shows Up</h3>' +
         '<p>This vibration is how astronomers identify what distant objects are made of. Telescopes like The James Webb Space Telescope detect the specific infrared light that molecules absorb or emit as they vibrate. Water, carbon dioxide, methane, and other molecules each have a distinct vibrational fingerprint in that light. This is how astronomers determine the composition of interstellar clouds, comets, and exoplanet atmospheres, without ever collecting a physical sample.</p>' +
         '<p>This vibrational fingerprint isn\'t limited to astronomy. The same principle is used constantly here on Earth. Gas detectors used in labs, mines, and environmental monitoring identify specific gases by the exact infrared wavelengths they absorb as their bonds vibrate. Breathalyzers work the same way, detecting alcohol molecules by their distinctive vibrational signature. In every case, the same idea applies: a molecule\'s harmonics are as unique to it as a fingerprint.</p>' +
+        '<figure class="modal-figure">' +
+          '<img src="images/jwst-wasp96b-spectrum.jpg" alt="Spectrum graph showing dips in light at wavelengths matching water absorption, from JWST observations of exoplanet WASP-96 b." loading="lazy">' +
+          '<figcaption>' +
+            '<span class="fig-title">WASP-96 b Exoplanet Spectrum:</span> The James Webb Space Telescope detected water in a distant planet\'s atmosphere by spotting the exact wavelengths its molecules absorb as they vibrate. Credits: NASA, ESA, CSA, and STScI.' +
+            '<details class="fig-details">' +
+              '<summary><span class="fig-label-more">Learn more</span><span class="fig-label-less">Show less</span> <span class="fig-arrow" aria-hidden="true">&rarr;</span></summary>' +
+              '<p>As starlight passed through the planet\'s atmosphere, water molecules absorbed light at the specific wavelengths matching their vibrational modes, the same stretching and bending motions shown below. Less light reached Webb at those wavelengths, creating the dips labeled &ldquo;Water H<sub>2</sub>O&rdquo; in the spectrum. Matching those dips to water\'s known vibrational fingerprint is how astronomers confirmed its presence, without ever collecting a physical sample.</p>' +
+            '</details>' +
+          '</figcaption>' +
+        '</figure>' +
 
         '<h3>The Restoring Force</h3>' +
         '<p>A bond is really a balance between two forces. Atoms attract each other at longer distances, since sharing electrons lowers the system\'s energy, and repel each other at very short distances, as their electrons and nuclei push against one another. The resting length is where these two forces balance out.</p>' +
@@ -516,9 +556,29 @@
 
         '<h3>The Boundary Condition and the Harmonics</h3>' +
         '<p>A vibrating bond isn\'t confined by hard walls the way a guitar string is confined by its clamped ends. Instead, the bond itself acts as a continuous restoring force, always pulling the atoms back toward their natural resting distance. What turns that oscillation into a genuine set of harmonics is a rule from <span class="term" tabindex="0" aria-describedby="tip-mod-quantum-mechanics">quantum mechanics<span class="term-tip" role="tooltip" id="tip-mod-quantum-mechanics">The physics governing matter at the scale of atoms and molecules, where quantities like energy can only take on specific, discrete values.</span></span>: the bond\'s vibrational energy can\'t take on just any value. It\'s restricted to a specific ladder of allowed energy levels, evenly spaced for an idealized bond, in the same way a string\'s allowed frequencies form an evenly spaced ladder. The mechanism is different, quantum rules rather than wave interference, but the outcome is the same. Only a specific, discrete set of vibrational states is allowed to exist.</p>' +
+        '<figure class="modal-figure">' +
+          '<img src="images/quantum-harmonic-oscillator.gif" alt="Diagram of the quantum harmonic oscillator, showing evenly spaced energy levels within a parabolic potential well." loading="lazy">' +
+          '<figcaption>' +
+            '<span class="fig-title">The Quantum Harmonic Oscillator:</span> A vibrating bond can only hold specific, evenly spaced amounts of energy. Credit: <a href="http://hyperphysics.phy-astr.gsu.edu/hbase/quantum/hosc.html" target="_blank" rel="noopener">HyperPhysics</a>.' +
+            '<details class="fig-details">' +
+              '<summary><span class="fig-label-more">Learn more</span><span class="fig-label-less">Show less</span> <span class="fig-arrow" aria-hidden="true">&rarr;</span></summary>' +
+              '<p>The curved line shows the bond\'s potential energy at every possible stretch length, lowest at x&nbsp;=&nbsp;0, the bond\'s resting length (also called its equilibrium separation), and rising sharply as the bond stretches or compresses further. Quantum mechanics restricts the bond to only a specific set of energy levels within that curve, evenly spaced by a fixed amount, &#8463;&#969;. This ladder of allowed energies is the molecular version of the string\'s ladder of harmonics, a different mechanism, but the same underlying idea.</p>' +
+            '</details>' +
+          '</figcaption>' +
+        '</figure>' +
 
         '<h3>The Modes</h3>' +
-        '<p>Most real molecules have more than one bond. Each bond can stretch on its own, and the whole molecule can also bend, giving it several independent <span class="term" tabindex="0" aria-describedby="tip-mod-vibrational-mode">vibrational modes<span class="term-tip" role="tooltip" id="tip-mod-vibrational-mode">One specific, independent way a molecule can stretch or bend.</span></span> at once, not just one. Water, for instance, has three distinct vibrational modes: two different stretches and one bend. Each mode has its own fundamental and its own ladder of harmonics, and the exact combination present is what makes <span class="term" tabindex="0" aria-describedby="tip-mod-spectroscopy">spectroscopy<span class="term-tip" role="tooltip" id="tip-mod-spectroscopy">The practice of studying light emitted or absorbed by matter to identify what that matter is made of.</span></span>&mdash; studying light to identify what something is made of&mdash;so useful.</p>'
+        '<p>Most real molecules have more than one bond. Each bond can stretch on its own, and the whole molecule can also bend, giving it several independent <span class="term" tabindex="0" aria-describedby="tip-mod-vibrational-mode">vibrational modes<span class="term-tip" role="tooltip" id="tip-mod-vibrational-mode">One specific, independent way a molecule can stretch or bend.</span></span> at once, not just one. Water, for instance, has three distinct vibrational modes: two different stretches and one bend. Each mode has its own fundamental and its own ladder of harmonics, and the exact combination present is what makes <span class="term" tabindex="0" aria-describedby="tip-mod-spectroscopy">spectroscopy<span class="term-tip" role="tooltip" id="tip-mod-spectroscopy">The practice of studying light emitted or absorbed by matter to identify what that matter is made of.</span></span>&mdash; studying light to identify what something is made of&mdash;so useful.</p>' +
+        '<figure class="modal-figure">' +
+          '<img src="images/water-vibrational-modes.png" alt="Diagram of water\'s three vibrational modes: symmetric stretch, bend, and asymmetric stretch." loading="lazy">' +
+          '<figcaption>' +
+            '<span class="fig-title">Water\'s Vibrational Modes:</span> Water has three distinct vibrational modes: two stretches and one bend. Credit: Stomp et al., &ldquo;Colorful Niches of Phototrophic Microorganisms Shaped by Vibrations of the Water Molecule,&rdquo; <em>The ISME Journal</em>, 2007.' +
+            '<details class="fig-details">' +
+              '<summary><span class="fig-label-more">Learn more</span><span class="fig-label-less">Show less</span> <span class="fig-arrow" aria-hidden="true">&rarr;</span></summary>' +
+              '<p>Each mode vibrates at its own frequency, shown here in wavenumbers (cm<sup>-1</sup>), a unit spectroscopists use in place of frequency. The two stretching modes vibrate much faster than the bending mode. Together, these three frequencies, plus the overtones and combinations they can produce, make up water\'s unique vibrational fingerprint. <a href="https://www.youtube.com/shorts/Ksi95WjuSW4" target="_blank" rel="noopener">Watch water\'s three vibrational modes in motion (YouTube).</a></p>' +
+            '</details>' +
+          '</figcaption>' +
+        '</figure>'
     };
 
     function openModal(btn){
