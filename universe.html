@@ -115,6 +115,18 @@
     position:absolute;top:50%;height:4px;transform:translateY(-50%);
     background:var(--page-accent);opacity:0.5;border-radius:3px;
   }
+  .scale-break{
+    position:absolute;top:50%;width:20px;height:24px;transform:translate(-50%,-50%);z-index:3;
+  }
+  .scale-break::before{
+    content:"";position:absolute;inset:-2px -4px;background:var(--bg);
+  }
+  .scale-break .tick{
+    position:absolute;top:0;width:2px;height:100%;background:var(--page-accent);
+    transform:rotate(20deg);
+  }
+  .scale-break .tick:first-child{left:6px;}
+  .scale-break .tick:last-child{left:12px;}
   .scale-dot{
     position:absolute;top:50%;width:13px;height:13px;border-radius:50%;
     background:var(--bg-panel);border:3px solid var(--page-accent);
@@ -288,15 +300,15 @@
 
     <section class="scale-section" aria-label="Scale of oscillating systems, from molecular to cosmic">
       <p class="scale-section-label">Harmonics show up at every scale, from a vibrating molecule to the largest structures in the cosmos.<br>Click an example to learn more.</p>
-      <p class="scale-direction"><span>Increasing wavelength</span><span class="arrow" aria-hidden="true"><span class="arrow-line"></span><span class="arrow-head"></span></span></p>
+      <p class="scale-direction"><span>Increasing scale</span><span class="arrow" aria-hidden="true"><span class="arrow-line"></span><span class="arrow-head"></span></span></p>
       <div class="scale-track-wrap" id="scaleWrap">
 
         <div class="scale-cards-row top">
           <button class="scale-card" data-dot="dot-molecular" data-title="Molecular Bond Vibration" data-key="molecular-bond-vibration">
             <span class="scale-card-name">Molecular Bond Vibration</span>
           </button>
-          <button class="scale-card" data-dot="dot-seiches" data-title="Harbor Seiches" data-key="harbor-seiches">
-            <span class="scale-card-name">Harbor Seiches</span>
+          <button class="scale-card" data-dot="dot-seiches" data-title="Seiches" data-key="harbor-seiches">
+            <span class="scale-card-name">Seiches</span>
           </button>
           <button class="scale-card" data-dot="dot-stars" data-title="Stars" data-key="stars">
             <span class="scale-card-name">Stars</span>
@@ -308,28 +320,31 @@
         <div class="scale-track-row">
           <div class="scale-track"></div>
 
-          <div class="scale-range" style="left:25.71%;width:2.86%;"></div>
-          <div class="scale-range" style="left:37.14%;width:2.86%;"></div>
-          <div class="scale-range" style="left:51.43%;width:2.86%;"></div>
-          <div class="scale-range" style="left:97.14%;width:2.86%;"></div>
+          <div class="scale-range" style="left:36.00%;width:4.00%;"></div>
+          <div class="scale-range" style="left:52.00%;width:8.00%;"></div>
+          <div class="scale-range" style="left:72.00%;width:4.00%;"></div>
 
           <span class="scale-dot" id="dot-molecular" style="left:0%;"></span>
           <span class="scale-dot-value below" style="left:0%;">10<sup>-10</sup> m</span>
 
-          <span class="scale-dot" id="dot-musical" style="left:27.14%;"></span>
-          <span class="scale-dot-value above" style="left:27.14%;">10<sup>-1</sup> m</span>
+          <span class="scale-dot" id="dot-musical" style="left:38.00%;"></span>
+          <span class="scale-dot-value above" style="left:38.00%;">10<sup>-1</sup> m</span>
 
-          <span class="scale-dot" id="dot-seiches" style="left:38.57%;"></span>
-          <span class="scale-dot-value below" style="left:38.57%;">10<sup>3</sup> m</span>
+          <span class="scale-dot" id="dot-seiches" style="left:56.00%;"></span>
+          <span class="scale-dot-value below" style="left:56.00%;">10<sup>3</sup> m</span>
 
-          <span class="scale-dot" id="dot-earth" style="left:48.57%;"></span>
-          <span class="scale-dot-value above" style="left:48.57%;">10<sup>7</sup> m</span>
+          <span class="scale-dot" id="dot-earth" style="left:68.00%;"></span>
+          <span class="scale-dot-value above" style="left:68.00%;">10<sup>7</sup> m</span>
 
-          <span class="scale-dot" id="dot-stars" style="left:52.86%;"></span>
-          <span class="scale-dot-value below" style="left:52.86%;">10<sup>8</sup> m</span>
+          <span class="scale-dot" id="dot-stars" style="left:74.00%;"></span>
+          <span class="scale-dot-value below" style="left:74.00%;">10<sup>8</sup> m</span>
 
-          <span class="scale-dot" id="dot-bao" style="left:98.57%;"></span>
-          <span class="scale-dot-value above" style="left:98.57%;">10<sup>24</sup> m</span>
+          <span class="scale-break" style="left:83%;" aria-hidden="true">
+            <span class="tick"></span><span class="tick"></span>
+          </span>
+
+          <span class="scale-dot" id="dot-bao" style="left:94%;"></span>
+          <span class="scale-dot-value above" style="left:94%;">10<sup>24</sup> m</span>
         </div>
 
         <div class="scale-cards-row bottom">
@@ -583,7 +598,7 @@
 
       'musical-instruments':
         '<p>A musical instrument makes sound by confining a vibrating medium, a <span class="term" tabindex="0" aria-describedby="tip-music-string">string<span class="term-tip" role="tooltip" id="tip-music-string">A thin, flexible material stretched between two fixed points, able to vibrate when displaced.</span></span>, a column of air, or a stretched <span class="term" tabindex="0" aria-describedby="tip-music-membrane">membrane<span class="term-tip" role="tooltip" id="tip-music-membrane">A thin, flexible surface stretched across a frame, able to vibrate when struck.</span></span>, so that only specific frequencies survive. The exact set of frequencies an instrument can produce, and how loud each one is relative to the others, is what gives it its distinct sound.</p>' +
-        '<p>This vibration happens at frequencies you can hear directly, typically 20 to a few thousand times per second (roughly 20 Hz to 4,000 Hz for most instruments). The sound waves it produces travel through air at about 340 meters per second.</p>' +
+        '<p>This vibration happens at frequencies you can hear directly, typically 20 to a few thousand times per second (roughly 20 Hz to 4,000 Hz for most instruments). The sound waves it produces travel through air at about 340 meters per second, giving wavelengths from a few centimeters up to tens of meters.</p>' +
 
         '<h3>Where This Shows Up</h3>' +
         '<p>A guitar or violin confines a vibrating string, fixed at both ends. A clarinet, flute, or saxophone confines a column of air inside a <span class="term" tabindex="0" aria-describedby="tip-music-pipe">pipe<span class="term-tip" role="tooltip" id="tip-music-pipe">A hollow tube confining a column of air, open or closed at each end.</span></span>, open or closed at each end. A drum confines a vibrating membrane, clamped around its rim. Each of these three systems, strings, pipes, and drums, produces its own family of <span class="term" tabindex="0" aria-describedby="tip-music-harmonic">harmonics<span class="term-tip" role="tooltip" id="tip-music-harmonic">One of the specific, discrete frequencies a confined wave is allowed to vibrate at.</span></span>, which is a large part of why they sound so different from one another, even when playing the same <span class="term" tabindex="0" aria-describedby="tip-music-fundamental">fundamental<span class="term-tip" role="tooltip" id="tip-music-fundamental">The lowest frequency a confined system can vibrate at.</span></span> pitch.</p>' +
@@ -597,7 +612,23 @@
         '<p>A drum\'s boundary condition is its clamped circular rim. Unlike a string or pipe, a drum doesn\'t produce a simple ladder at all. Its surviving patterns include <span class="term" tabindex="0" aria-describedby="tip-music-nodal-lines">nodal lines<span class="term-tip" role="tooltip" id="tip-music-nodal-lines">Curves across a vibrating surface that stay completely still while everything around them moves.</span></span>, circles, spokes, or combinations of both, that stay still while the rest of the membrane moves. These patterns aren\'t evenly spaced whole-number multiples of the fundamental, which is part of why a drum sounds less clearly pitched than a string or pipe.</p>' +
 
         '<h3>The Dimension</h3>' +
-        '<p>A string and a pipe are both confined along a single line, so their harmonics form a simple, one-dimensional ladder. A drum is confined across a surface instead, vibrating in two dimensions, which produces the far more complex, non-evenly spaced patterns described above.</p>'
+        '<p>A string and a pipe are both confined along a single line, so their harmonics form a simple, one-dimensional ladder. A drum is confined across a surface instead, vibrating in two dimensions, which produces the far more complex, non-evenly spaced patterns described above.</p>',
+
+      'harbor-seiches':
+        '<p>A <span class="term" tabindex="0" aria-describedby="tip-seiche-seiche">seiche<span class="term-tip" role="tooltip" id="tip-seiche-seiche">A standing wave that forms in an enclosed or partially enclosed body of water, sloshing back and forth as a whole rather than traveling outward.</span></span> is a <span class="term" tabindex="0" aria-describedby="tip-seiche-standing-wave">standing wave<span class="term-tip" role="tooltip" id="tip-seiche-standing-wave">A wave confined between boundaries, where certain patterns persist in place rather than traveling.</span></span> that forms in an enclosed or partially enclosed body of water, such as a harbor, bay, or lake. Instead of a wave traveling outward and disappearing, the entire body of water sloshes back and forth as a whole, confined by the shape of the <span class="term" tabindex="0" aria-describedby="tip-seiche-basin">basin<span class="term-tip" role="tooltip" id="tip-seiche-basin">The bowl-shaped depression holding a lake or harbor\'s water.</span></span> holding it.</p>' +
+        '<p>This sloshing happens incredibly slowly compared to an ordinary wave, completing one full cycle roughly every four to seven hours (a frequency of order 10<sup>-5</sup> Hz), compared to the trillions of cycles per second of a molecular bond, or the tens to thousands of cycles per second of a musical instrument. The wave itself, however, moves quickly. In a lake or harbor tens of meters deep, it travels at roughly 10 to 25 meters per second (about 35 to 90 km/h), fast enough to cross a large lake in just a few hours. That combination of a very low frequency and a fast wave speed gives a seiche an enormous wavelength, often tens of kilometers long, roughly the length of the lake or harbor itself.</p>' +
+
+        '<h3>Where This Shows Up</h3>' +
+        '<p>Seiches occur on lakes and harbors worldwide, most often triggered by sustained wind or a sudden shift in atmospheric pressure during a storm. Long, narrow lakes and harbors are especially prone to them, since their shape aligns naturally with the direction strong winds tend to blow. In extreme cases, a seiche can shift water levels by several meters within just a few hours, temporarily flooding one shore while draining another.</p>' +
+
+        '<h3>The Restoring Force</h3>' +
+        '<p>Gravity is the restoring force. Wind piles water up at one end of the lake, and gravity pulls it back down. The water doesn\'t simply settle back to flat, it overshoots, rising at the opposite end of the lake, and gravity pulls it back again from there. This repeated overshoot and correction is what keeps the sloshing going, sometimes for hours after the wind has died down.</p>' +
+
+        '<h3>The Boundary Condition and the Harmonics</h3>' +
+        '<p>The shape of the lake or harbor is the boundary condition. At the shoreline, water can\'t move past the land, so its horizontal motion is forced to stay still there. If both ends of the basin are enclosed shoreline, the situation resembles a <span class="term" tabindex="0" aria-describedby="tip-seiche-string">string<span class="term-tip" role="tooltip" id="tip-seiche-string">A thin, flexible material stretched between two fixed points, able to vibrate when displaced.</span></span>, fixed at both ends. If one end opens into the sea, it resembles a <span class="term" tabindex="0" aria-describedby="tip-seiche-pipe">pipe<span class="term-tip" role="tooltip" id="tip-seiche-pipe">A hollow tube confining a column of air, open or closed at each end.</span></span>, closed at one end and open at the other, like a clarinet. In every case, only specific sloshing patterns fit the basin\'s shape and survive.</p>' +
+
+        '<h3>The Dimension</h3>' +
+        '<p>A long, narrow lake, like Lake Erie, confines water primarily along one direction, so its <span class="term" tabindex="0" aria-describedby="tip-seiche-harmonic">harmonics<span class="term-tip" role="tooltip" id="tip-seiche-harmonic">One of the specific, discrete frequencies a confined wave is allowed to vibrate at.</span></span> form a simple, one-dimensional ladder, closely mirroring a string or a pipe. A wider, more open lake or bay can slosh in two directions at once, producing more complex, two-dimensional patterns, like a drum.</p>'
     };
 
     function openModal(btn){
