@@ -139,21 +139,33 @@
   .scale-modal{
     position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:101;
     background:var(--bg-panel);border:1px solid var(--line);border-radius:16px;
-    max-width:560px;width:calc(100% - 56px);padding:34px 32px 32px;
+    max-width:700px;width:calc(100% - 56px);max-height:82vh;
     box-shadow:0 24px 60px -16px rgba(0,0,0,0.7);
+    display:flex;flex-direction:column;
   }
   .scale-modal[hidden]{display:none;}
   .modal-close{
-    position:absolute;top:18px;right:18px;width:38px;height:38px;
+    position:absolute;top:18px;right:18px;width:38px;height:38px;z-index:1;
     background:var(--bg-panel2);border:1.5px solid var(--line);border-radius:9px;
     color:var(--mid);font-size:20px;line-height:1;cursor:pointer;
   }
   .modal-close:hover{border-color:var(--accent);color:var(--fg);}
+  .modal-scroll{overflow-y:auto;padding:34px 36px 36px;}
   .scale-modal h2{
     font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:28px;
-    color:var(--fg);margin:0 0 16px;padding-right:40px;line-height:1.25;
+    color:var(--fg);margin:0 0 18px;padding-right:40px;line-height:1.25;
   }
   .modal-placeholder{font-size:18px;color:var(--dim);font-style:italic;margin:0;line-height:1.6;}
+  .modal-body h3{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:21px;
+    color:var(--fg);margin:32px 0 14px;line-height:1.3;
+    padding-left:14px;border-left:3px solid var(--page-accent);
+  }
+  .modal-body h3:first-child{margin-top:0;}
+  .modal-body p{
+    font-size:17px;color:var(--mid);line-height:1.7;margin:0 0 16px;
+  }
+  .modal-body p:last-child{margin-bottom:0;}
 
   /* article content */
   .content{max-width:840px;margin:0 auto;}
@@ -241,13 +253,13 @@
       <div class="scale-track-wrap" id="scaleWrap">
 
         <div class="scale-cards-row top">
-          <button class="scale-card" data-dot="dot-molecular" data-title="Molecular Bond Vibration">
+          <button class="scale-card" data-dot="dot-molecular" data-title="Molecular Bond Vibration" data-key="molecular-bond-vibration">
             <span class="scale-card-name">Molecular Bond Vibration</span>
           </button>
-          <button class="scale-card" data-dot="dot-seiches" data-title="Harbor Seiches">
+          <button class="scale-card" data-dot="dot-seiches" data-title="Harbor Seiches" data-key="harbor-seiches">
             <span class="scale-card-name">Harbor Seiches</span>
           </button>
-          <button class="scale-card" data-dot="dot-stars" data-title="Stars">
+          <button class="scale-card" data-dot="dot-stars" data-title="Stars" data-key="stars">
             <span class="scale-card-name">Stars</span>
           </button>
         </div>
@@ -282,13 +294,13 @@
         </div>
 
         <div class="scale-cards-row bottom">
-          <button class="scale-card" data-dot="dot-musical" data-title="Musical Instruments">
+          <button class="scale-card" data-dot="dot-musical" data-title="Musical Instruments" data-key="musical-instruments">
             <span class="scale-card-name">Musical Instruments</span>
           </button>
-          <button class="scale-card" data-dot="dot-earth" data-title="Earth's Free Oscillations">
+          <button class="scale-card" data-dot="dot-earth" data-title="Earth's Free Oscillations" data-key="earths-free-oscillations">
             <span class="scale-card-name">Earth's Free Oscillations</span>
           </button>
-          <button class="scale-card" data-dot="dot-bao" data-title="Baryon Acoustic Oscillations">
+          <button class="scale-card" data-dot="dot-bao" data-title="Baryon Acoustic Oscillations" data-key="baryon-acoustic-oscillations">
             <span class="scale-card-name">Baryon Acoustic Oscillations</span>
           </button>
         </div>
@@ -405,9 +417,11 @@
 <div class="modal-backdrop" id="scaleModalBackdrop" hidden></div>
 <div class="scale-modal" id="scaleModal" role="dialog" aria-modal="true" aria-labelledby="scaleModalTitle" hidden>
   <button class="modal-close" id="scaleModalClose" aria-label="Close">&times;</button>
-  <h2 id="scaleModalTitle"></h2>
-  <div class="modal-body" id="scaleModalBody">
-    <p class="modal-placeholder">Content and photos coming soon.</p>
+  <div class="modal-scroll">
+    <h2 id="scaleModalTitle"></h2>
+    <div class="modal-body" id="scaleModalBody">
+      <p class="modal-placeholder">Content and photos coming soon.</p>
+    </div>
   </div>
 </div>
 
@@ -417,12 +431,38 @@
     var modal = document.getElementById('scaleModal');
     var closeBtn = document.getElementById('scaleModalClose');
     var titleEl = document.getElementById('scaleModalTitle');
+    var bodyEl = document.getElementById('scaleModalBody');
+    var scrollEl = document.querySelector('.modal-scroll');
     var cards = document.querySelectorAll('.scale-card');
     var lastFocused = null;
+    var PLACEHOLDER = '<p class="modal-placeholder">Content and photos coming soon.</p>';
+
+    var scaleContent = {
+      'molecular-bond-vibration':
+        '<p>A <span class="term" tabindex="0" aria-describedby="tip-mod-chemical-bond">chemical bond<span class="term-tip" role="tooltip" id="tip-mod-chemical-bond">An attraction between two atoms, created by the way their electrons interact.</span></span> is the force holding two atoms together. It isn\'t rigid, it behaves like a tiny spring, stretching and compressing as the atoms it connects move slightly closer together and farther apart.</p>' +
+        '<p>This vibration happens unbelievably fast, typically tens of trillions of times per second (roughly 10<sup>13</sup> to 10<sup>14</sup> Hz). The light this vibration absorbs or emits is <span class="term" tabindex="0" aria-describedby="tip-mod-infrared-light">infrared light<span class="term-tip" role="tooltip" id="tip-mod-infrared-light">Light with a wavelength too long for human eyes to see, felt as heat.</span></span>, with a wavelength a few thousand times longer than visible light (roughly 2.5 to 25 micrometers, compared to about 0.4 to 0.7 micrometers for visible light), too long for human eyes to see, but easily detected by infrared telescopes and sensors.</p>' +
+
+        '<h3>Where This Shows Up</h3>' +
+        '<p>This vibration is how astronomers identify what distant objects are made of. Telescopes like The James Webb Space Telescope detect the specific infrared light that molecules absorb or emit as they vibrate. Water, carbon dioxide, methane, and other molecules each have a distinct vibrational fingerprint in that light. This is how astronomers determine the composition of interstellar clouds, comets, and exoplanet atmospheres, without ever collecting a physical sample.</p>' +
+        '<p>This vibrational fingerprint isn\'t limited to astronomy. The same principle is used constantly here on Earth. Gas detectors used in labs, mines, and environmental monitoring identify specific gases by the exact infrared wavelengths they absorb as their bonds vibrate. Breathalyzers work the same way, detecting alcohol molecules by their distinctive vibrational signature. In every case, the same idea applies: a molecule\'s harmonics are as unique to it as a fingerprint.</p>' +
+
+        '<h3>The Restoring Force</h3>' +
+        '<p>A bond is really a balance between two forces. Atoms attract each other at longer distances, since sharing electrons lowers the system\'s energy, and repel each other at very short distances, as their electrons and nuclei push against one another. The resting length is where these two forces balance out.</p>' +
+        '<p>A collision, a burst of light, or ordinary thermal jostling can nudge the atoms away from that resting length. Once displaced, these same two forces, attraction and repulsion, act as the restoring force, pulling the atoms back toward the resting length. They overshoot, get pulled back again, and the cycle repeats, keeping the oscillation going.</p>' +
+
+        '<h3>The Boundary Condition and the Harmonics</h3>' +
+        '<p>A vibrating bond isn\'t confined by hard walls the way a guitar string is confined by its clamped ends. Instead, the bond itself acts as a continuous restoring force, always pulling the atoms back toward their natural resting distance. What turns that oscillation into a genuine set of harmonics is a rule from <span class="term" tabindex="0" aria-describedby="tip-mod-quantum-mechanics">quantum mechanics<span class="term-tip" role="tooltip" id="tip-mod-quantum-mechanics">The physics governing matter at the scale of atoms and molecules, where quantities like energy can only take on specific, discrete values.</span></span>: the bond\'s vibrational energy can\'t take on just any value. It\'s restricted to a specific ladder of allowed energy levels, evenly spaced for an idealized bond, in the same way a string\'s allowed frequencies form an evenly spaced ladder. The mechanism is different, quantum rules rather than wave interference, but the outcome is the same. Only a specific, discrete set of vibrational states is allowed to exist.</p>' +
+
+        '<h3>The Modes</h3>' +
+        '<p>Most real molecules have more than one bond. Each bond can stretch on its own, and the whole molecule can also bend, giving it several independent <span class="term" tabindex="0" aria-describedby="tip-mod-vibrational-mode">vibrational modes<span class="term-tip" role="tooltip" id="tip-mod-vibrational-mode">One specific, independent way a molecule can stretch or bend.</span></span> at once, not just one. Water, for instance, has three distinct vibrational modes: two different stretches and one bend. Each mode has its own fundamental and its own ladder of harmonics, and the exact combination present is what makes <span class="term" tabindex="0" aria-describedby="tip-mod-spectroscopy">spectroscopy<span class="term-tip" role="tooltip" id="tip-mod-spectroscopy">The practice of studying light emitted or absorbed by matter to identify what that matter is made of.</span></span>&mdash; studying light to identify what something is made of&mdash;so useful.</p>'
+    };
 
     function openModal(btn){
       lastFocused = btn;
       titleEl.textContent = btn.getAttribute('data-title');
+      var key = btn.getAttribute('data-key');
+      bodyEl.innerHTML = (key && scaleContent[key]) ? scaleContent[key] : PLACEHOLDER;
+      if(scrollEl){ scrollEl.scrollTop = 0; }
       backdrop.hidden = false;
       modal.hidden = false;
       closeBtn.focus();
@@ -437,9 +477,15 @@
     function onKeydown(e){
       if(e.key === 'Escape'){ closeModal(); return; }
       if(e.key === 'Tab'){
-        // single focusable element in modal for now — keep focus trapped on it
-        e.preventDefault();
-        closeBtn.focus();
+        var focusable = modal.querySelectorAll('button, [tabindex]:not([tabindex="-1"]), a[href]');
+        if(focusable.length === 0){ e.preventDefault(); return; }
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if(e.shiftKey && document.activeElement === first){
+          e.preventDefault(); last.focus();
+        } else if(!e.shiftKey && document.activeElement === last){
+          e.preventDefault(); first.focus();
+        }
       }
     }
 
