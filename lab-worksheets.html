@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Worksheets — Harmoniverse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060b16; --bg-panel:#0b1729; --bg-panel2:#0e1c33; --line:#2a3c60;
+    --fg:#f1f4fb; --mid:#a8b6d6; --dim:#93a1c4;
+    --accent:#5fc2ff;
+    --sci:#5fc2ff; --hum:#b98aff; --bod:#ff8c66; --art:#ff6fa8; --wr:#8f5fe8;
+    --page-accent:var(--hum);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);
+    font-family:'Inter',system-ui,sans-serif;font-size:20px;}
+  a:focus-visible, button:focus-visible{
+    outline:3px solid var(--accent);outline-offset:2px;border-radius:6px;
+  }
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 20% -10%, #12203c 0%, transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, #1a1230 0%, transparent 55%),
+      radial-gradient(ellipse 800px 600px at 50% 110%, #14122c 0%, transparent 55%),
+      var(--bg);
+    min-height:100vh;
+  }
+  .app{max-width:1440px;margin:0 auto;padding:0 28px 60px;}
+
+  .top-bar{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
+    padding:24px 0;border-bottom:1px solid var(--line);margin-bottom:44px;
+  }
+  .brand{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;
+    color:var(--fg);text-decoration:none;letter-spacing:0.3px;
+  }
+  .brand:hover{color:var(--accent);}
+  .nav-btns{display:flex;gap:10px;flex-wrap:wrap;}
+  .back-btn{
+    font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:0.4px;
+    background:var(--bg-panel);border:1.5px solid var(--line);color:var(--mid);
+    padding:11px 20px;border-radius:24px;text-decoration:none;
+    display:inline-flex;align-items:center;gap:9px;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .back-btn:hover{border-color:var(--accent);color:var(--fg);
+    background:linear-gradient(180deg,var(--bg-panel2),var(--bg-panel));}
+  .back-btn .arrow-back{transition:transform .18s;}
+  .back-btn:hover .arrow-back{transform:translateX(-4px);}
+
+  .page-intro{text-align:center;margin-bottom:56px;}
+  .page-intro h1{font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:clamp(44px, 7vw, 76px);letter-spacing:0.5px;margin:0 0 18px;color:var(--fg);
+    line-height:1.08;}
+  .page-intro .tagline{font-size:24px;color:var(--mid);max-width:720px;margin:0 auto;line-height:1.6;}
+
+  .empty-state{
+    max-width:640px;margin:0 auto;text-align:center;
+    background:var(--bg-panel);border:1px dashed var(--line);border-radius:16px;
+    padding:56px 40px;
+  }
+  .empty-state .icon{
+    width:48px;height:48px;margin:0 auto 22px;color:var(--page-accent);opacity:0.85;
+  }
+  .empty-state .icon svg{width:100%;height:100%;}
+  .empty-state h2{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:24px;
+    color:var(--fg);margin:0 0 12px;
+  }
+  .empty-state p{
+    font-size:17px;color:var(--dim);line-height:1.6;margin:0;
+  }
+
+  footer{margin-top:56px;text-align:center;
+    font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--dim);
+    letter-spacing:0.5px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top-bar">
+    <a class="brand" href="index.html">Harmoniverse</a>
+    <div class="nav-btns">
+      <a class="back-btn" href="universe.html"><span class="arrow-back" aria-hidden="true">&larr;</span>Back to Harmonics in the Universe</a>
+      <a class="back-btn" href="index.html"><span class="arrow-back" aria-hidden="true">&larr;</span>Back to Home</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-intro">
+      <h1>Lab Worksheets</h1>
+      <p class="tagline">Worksheets to go with each lab activity, coming soon.</p>
+    </div>
+
+    <div class="empty-state">
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6"/>
+          <line x1="9" y1="13" x2="15" y2="13"/>
+          <line x1="9" y1="17" x2="15" y2="17"/>
+        </svg>
+      </span>
+      <h2>Worksheets are on the way</h2>
+      <p>This page will hold downloadable worksheets for each lab activity. Check back soon.</p>
+    </div>
+  </main>
+
+  <footer>Harmoniverse &mdash; an interdisciplinary project at The Ohio State University</footer>
+</div>
+</body>
+</html>
