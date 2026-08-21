@@ -40,6 +40,7 @@
     display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
     padding:24px 0;border-bottom:1px solid var(--line);margin-bottom:44px;
   }
+  .nav-btns{display:flex;gap:10px;flex-wrap:wrap;}
   .brand{
     font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;
     color:var(--fg);text-decoration:none;letter-spacing:0.3px;
@@ -66,7 +67,7 @@
 
   /* scale line */
   sup{font-size:0.68em;}
-  .scale-section{max-width:1200px;margin:0 auto 64px;padding:0 16px;}
+  .scale-section{max-width:1200px;margin:0 auto 64px;padding:0 16px;scroll-margin-top:28px;}
   .scale-section-label{
     font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:19px;
     color:var(--fg);text-align:center;margin:0 0 24px;line-height:1.4;
@@ -289,7 +290,11 @@
 
   <header class="top-bar">
     <a class="brand" href="index.html">Harmoniverse</a>
-    <a class="back-btn" href="index.html"><span class="arrow-back" aria-hidden="true">&larr;</span>Back to Home</a>
+    <div class="nav-btns">
+      <a class="back-btn" href="#labs">Labs</a>
+      <a class="back-btn" href="crossword-universe.html">Crossword</a>
+      <a class="back-btn" href="index.html"><span class="arrow-back" aria-hidden="true">&larr;</span>Back to Home</a>
+    </div>
   </header>
 
   <main>
@@ -298,7 +303,7 @@
       <p class="tagline">Everything in Harmoniverse comes back to one idea: confine a wave, and you get harmonics. Start here before exploring the labs.</p>
     </div>
 
-    <section class="scale-section" aria-label="Scale of oscillating systems, from molecular to cosmic">
+    <section class="scale-section" id="labs" aria-label="Scale of oscillating systems, from molecular to cosmic">
       <p class="scale-section-label">Harmonics show up at every scale, from a vibrating molecule to the largest structures in the cosmos.<br>Click an example to learn more.</p>
       <p class="scale-direction"><span>Increasing scale</span><span class="arrow" aria-hidden="true"><span class="arrow-line"></span><span class="arrow-head"></span></span></p>
       <div class="scale-track-wrap" id="scaleWrap">

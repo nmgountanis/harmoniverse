@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmonics Crossword — Harmoniverse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060b16; --bg-panel:#0b1729; --bg-panel2:#0e1c33; --line:#2a3c60;
+    --fg:#f1f4fb; --mid:#a8b6d6; --dim:#93a1c4;
+    --accent:#5fc2ff;
+    --sci:#5fc2ff; --hum:#b98aff; --bod:#ff8c66; --art:#ff6fa8; --wr:#8f5fe8;
+    --page-accent:var(--hum);
+    --good:#5fd98a; --bad:#ff6f6f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);
+    font-family:'Inter',system-ui,sans-serif;font-size:20px;}
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:3px solid var(--accent);outline-offset:2px;border-radius:6px;
+  }
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 20% -10%, #12203c 0%, transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, #1a1230 0%, transparent 55%),
+      radial-gradient(ellipse 800px 600px at 50% 110%, #14122c 0%, transparent 55%),
+      var(--bg);
+    min-height:100vh;
+  }
+  .app{max-width:1440px;margin:0 auto;padding:0 28px 60px;}
+
+  /* top bar */
+  .top-bar{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
+    padding:24px 0;border-bottom:1px solid var(--line);margin-bottom:44px;
+  }
+  .brand{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;
+    color:var(--fg);text-decoration:none;letter-spacing:0.3px;
+  }
+  .brand:hover{color:var(--accent);}
+  .nav-btns{display:flex;gap:10px;flex-wrap:wrap;}
+  .back-btn{
+    font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:0.4px;
+    background:var(--bg-panel);border:1.5px solid var(--line);color:var(--mid);
+    padding:11px 20px;border-radius:24px;text-decoration:none;
+    display:inline-flex;align-items:center;gap:9px;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .back-btn:hover{border-color:var(--accent);color:var(--fg);
+    background:linear-gradient(180deg,var(--bg-panel2),var(--bg-panel));}
+  .back-btn .arrow-back{transition:transform .18s;}
+  .back-btn:hover .arrow-back{transform:translateX(-4px);}
+
+  .page-intro{text-align:center;margin-bottom:40px;}
+  .page-intro h1{font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:clamp(38px, 6vw, 64px);letter-spacing:0.5px;margin:0 0 16px;color:var(--fg);
+    line-height:1.08;}
+  .page-intro .tagline{font-size:20px;color:var(--mid);max-width:700px;margin:0 auto;line-height:1.6;}
+
+  .cw-toolbar{
+    display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:32px;
+  }
+  .cw-btn{
+    font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:0.4px;
+    background:var(--bg-panel);border:1.5px solid var(--line);color:var(--mid);
+    padding:11px 20px;border-radius:24px;cursor:pointer;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .cw-btn:hover{border-color:var(--page-accent);color:var(--fg);
+    background:linear-gradient(180deg,var(--bg-panel2),var(--bg-panel));}
+  .cw-btn.primary{border-color:var(--page-accent);color:var(--fg);}
+  .cw-status{
+    text-align:center;font-family:'JetBrains Mono',monospace;font-size:15px;
+    color:var(--dim);margin-bottom:28px;min-height:1.4em;
+  }
+  .cw-status.win{color:var(--good);}
+
+  .cw-layout{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:start;}
+  @media(max-width:980px){.cw-layout{grid-template-columns:1fr;}}
+
+  .grid-scroll{overflow-x:auto;padding-bottom:8px;}
+  .cw-grid{
+    display:grid;gap:2px;background:transparent;width:max-content;
+  }
+  .cw-cell{
+    position:relative;width:32px;height:32px;
+  }
+  .cw-cell.blocked{visibility:hidden;}
+  .cw-cell input{
+    width:100%;height:100%;border:1.5px solid var(--line);border-radius:4px;
+    background:var(--bg-panel2);color:var(--fg);text-align:center;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;
+    text-transform:uppercase;padding:0;outline-offset:2px;
+  }
+  .cw-cell input:focus{border-color:var(--page-accent);background:var(--bg-panel);}
+  .cw-cell input.correct{border-color:var(--good);color:var(--good);}
+  .cw-cell input.incorrect{border-color:var(--bad);color:var(--bad);}
+  .cw-cell input.active-word{border-color:var(--page-accent);}
+  .cw-num{
+    position:absolute;top:1px;left:3px;font-family:'JetBrains Mono',monospace;
+    font-size:9px;color:var(--dim);pointer-events:none;line-height:1;z-index:1;
+  }
+
+  .cw-clues{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+  @media(max-width:600px){.cw-clues{grid-template-columns:1fr;}}
+  .cw-clue-group h2{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:20px;
+    color:var(--fg);margin:0 0 14px;padding-left:14px;border-left:3px solid var(--page-accent);
+  }
+  .cw-clue-list{list-style:none;margin:0;padding:0;}
+  .cw-clue-item{
+    font-size:15px;color:var(--mid);line-height:1.5;margin-bottom:10px;
+    cursor:pointer;padding:6px 8px;border-radius:8px;transition:background .15s,color .15s;
+  }
+  .cw-clue-item:hover{background:var(--bg-panel);color:var(--fg);}
+  .cw-clue-item.active{background:var(--bg-panel2);color:var(--fg);border:1px solid var(--page-accent);}
+  .cw-clue-item.solved{color:var(--good);text-decoration:line-through;text-decoration-color:var(--good);}
+  .cw-clue-item b{
+    font-family:'JetBrains Mono',monospace;color:var(--page-accent);margin-right:6px;
+  }
+  .cw-clue-item.solved b{color:var(--good);}
+
+  footer{margin-top:56px;text-align:center;
+    font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--dim);
+    letter-spacing:0.5px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top-bar">
+    <a class="brand" href="index.html">Harmoniverse</a>
+    <div class="nav-btns">
+      <a class="back-btn" href="universe.html#labs"><span class="arrow-back" aria-hidden="true">&larr;</span>Back to Labs</a>
+      <a class="back-btn" href="index.html"><span class="arrow-back" aria-hidden="true">&larr;</span>Back to Home</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-intro">
+      <h1>Harmonics Crossword</h1>
+      <p class="tagline">Every clue comes from a term you've met somewhere in Harmonics in the Universe. Click a clue or a cell to start.</p>
+    </div>
+
+    <div class="cw-toolbar">
+      <button class="cw-btn primary" id="checkBtn">Check answers</button>
+      <button class="cw-btn" id="revealBtn">Reveal puzzle</button>
+      <button class="cw-btn" id="clearBtn">Clear</button>
+    </div>
+    <p class="cw-status" id="cwStatus" aria-live="polite">&nbsp;</p>
+
+    <div class="cw-layout">
+      <div class="grid-scroll">
+        <div class="cw-grid" id="cwGrid"></div>
+      </div>
+
+      <div class="cw-clues">
+        <div class="cw-clue-group">
+          <h2>Across</h2>
+          <ul class="cw-clue-list" id="acrossList"></ul>
+        </div>
+        <div class="cw-clue-group">
+          <h2>Down</h2>
+          <ul class="cw-clue-list" id="downList"></ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>Harmoniverse &mdash; an interdisciplinary project at The Ohio State University</footer>
+</div>
+
+<script>
+  var DATA = {"height":19,"width":25,"placements":[{"word":"FUNDAMENTAL","clue":"The lowest frequency a confined system can vibrate at","row":10,"col":7,"direction":"A","number":12},{"word":"CYLINDRICAL","clue":"Having a constant width along its length, like a straight tube","row":6,"col":9,"direction":"D","number":8},{"word":"OSCILLATION","clue":"Repeating back-and-forth motion around a resting position","row":4,"col":11,"direction":"D","number":4},{"word":"WAVELENGTH","clue":"The physical distance between one repetition of a wave and the next","row":7,"col":13,"direction":"D","number":9},{"word":"FREQUENCY","clue":"How many times a wave repeats each second","row":10,"col":7,"direction":"D","number":12},{"word":"AMPLITUDE","clue":"How large a wave's oscillation is at its peak","row":5,"col":15,"direction":"D","number":6},{"word":"HARMONIC","clue":"One of the discrete frequencies a confined wave can vibrate at","row":6,"col":2,"direction":"A","number":7},{"word":"MEMBRANE","clue":"A thin, flexible surface stretched across a frame, like a drumhead","row":12,"col":0,"direction":"A","number":13},{"word":"CONICAL","clue":"Widening steadily along its length, like a cone","row":4,"col":17,"direction":"D","number":5},{"word":"BARYONS","clue":"Ordinary matter, made of protons and neutrons","row":4,"col":7,"direction":"A","number":3},{"word":"STRING","clue":"Thin material stretched between two fixed points, like a guitar's","row":15,"col":12,"direction":"A","number":16},{"word":"SEICHE","clue":"A standing wave that sloshes in an enclosed lake or harbor","row":15,"col":2,"direction":"A","number":15},{"word":"PLASMA","clue":"Matter so hot electrons can't stay bound to protons","row":4,"col":3,"direction":"D","number":2},{"word":"SIGNAL","clue":"The pattern of brightness change caused by a star's oscillations","row":8,"col":5,"direction":"D","number":10},{"word":"BASIN","clue":"The bowl-shaped depression holding a lake's water","row":0,"col":12,"direction":"D","number":1},{"word":"WAVE","clue":"An oscillation that travels through space, carrying energy with it","row":9,"col":1,"direction":"D","number":11},{"word":"PIPE","clue":"A hollow tube confining a column of air","row":14,"col":4,"direction":"D","number":14},{"word":"MODE","clue":"One allowed vibration pattern of a confined system","row":12,"col":0,"direction":"D","number":13},{"word":"CONFINED","clue":"Trapped by physical edges it can't cross","row":4,"col":17,"direction":"A","number":5}]};
+
+  (function(){
+    var H = DATA.height, W = DATA.width;
+    var placements = DATA.placements;
+
+    // build cell map: key "r,c" -> {letter, number, across:placementIndex|null, down:placementIndex|null}
+    var cellMap = {};
+    function key(r,c){ return r+','+c; }
+
+    placements.forEach(function(p, idx){
+      for(var i=0;i<p.word.length;i++){
+        var r = p.direction==='A' ? p.row : p.row+i;
+        var c = p.direction==='A' ? p.col+i : p.col;
+        var k = key(r,c);
+        if(!cellMap[k]){ cellMap[k] = {letter:p.word[i], across:null, down:null, number:null}; }
+        if(p.direction==='A'){ cellMap[k].across = idx; }
+        else { cellMap[k].down = idx; }
+      }
+    });
+    placements.forEach(function(p){
+      var k = key(p.row, p.col);
+      cellMap[k].number = p.number;
+    });
+
+    // render grid
+    var gridEl = document.getElementById('cwGrid');
+    gridEl.style.gridTemplateColumns = 'repeat(' + W + ', 32px)';
+    gridEl.style.gridTemplateRows = 'repeat(' + H + ', 32px)';
+
+    var inputs = {}; // key -> input element
+
+    for(var r=0;r<H;r++){
+      for(var c=0;c<W;c++){
+        var k = key(r,c);
+        var cellDiv = document.createElement('div');
+        if(cellMap[k]){
+          cellDiv.className = 'cw-cell';
+          var inp = document.createElement('input');
+          inp.setAttribute('maxlength','1');
+          inp.setAttribute('autocomplete','off');
+          inp.setAttribute('aria-label', 'Row ' + (r+1) + ' column ' + (c+1));
+          inp.dataset.r = r; inp.dataset.c = c;
+          cellDiv.appendChild(inp);
+          if(cellMap[k].number){
+            var num = document.createElement('span');
+            num.className = 'cw-num';
+            num.textContent = cellMap[k].number;
+            cellDiv.appendChild(num);
+          }
+          inputs[k] = inp;
+        } else {
+          cellDiv.className = 'cw-cell blocked';
+        }
+        gridEl.appendChild(cellDiv);
+      }
+    }
+
+    // current direction state per cell click (default across if available)
+    var currentDir = 'A';
+    var currentPlacementIdx = null;
+
+    function getPlacementsForCell(r,c){
+      var k = key(r,c);
+      var cell = cellMap[k];
+      if(!cell) return [];
+      var list = [];
+      if(cell.across !== null) list.push(cell.across);
+      if(cell.down !== null) list.push(cell.down);
+      return list;
+    }
+
+    function clearHighlight(){
+      Object.keys(inputs).forEach(function(k){ inputs[k].classList.remove('active-word'); });
+    }
+
+    function highlightWord(idx){
+      clearHighlight();
+      currentPlacementIdx = idx;
+      var p = placements[idx];
+      currentDir = p.direction;
+      for(var i=0;i<p.word.length;i++){
+        var r = p.direction==='A' ? p.row : p.row+i;
+        var c = p.direction==='A' ? p.col+i : p.col;
+        var el = inputs[key(r,c)];
+        if(el) el.classList.add('active-word');
+      }
+      updateClueActiveStates();
+    }
+
+    function chooseWordForCell(r,c, preferDir){
+      var opts = getPlacementsForCell(r,c);
+      if(opts.length === 0) return null;
+      if(preferDir){
+        for(var i=0;i<opts.length;i++){
+          if(placements[opts[i]].direction === preferDir) return opts[i];
+        }
+      }
+      return opts[0];
+    }
+
+    Object.keys(inputs).forEach(function(k){
+      var inp = inputs[k];
+      inp.addEventListener('focus', function(){
+        var r = parseInt(inp.dataset.r), c = parseInt(inp.dataset.c);
+        var opts = getPlacementsForCell(r,c);
+        var preferred = opts.indexOf(currentPlacementIdx) !== -1 ? currentDir : null;
+        var idx = chooseWordForCell(r,c, preferred || 'A');
+        if(idx !== null) highlightWord(idx);
+      });
+      inp.addEventListener('click', function(){
+        var r = parseInt(inp.dataset.r), c = parseInt(inp.dataset.c);
+        var opts = getPlacementsForCell(r,c);
+        if(opts.length > 1){
+          // toggle direction on repeated click of an intersection cell
+          if(currentPlacementIdx !== null && opts.indexOf(currentPlacementIdx) !== -1){
+            var other = opts.filter(function(o){ return o !== currentPlacementIdx; })[0];
+            if(other !== undefined) highlightWord(other);
+            return;
+          }
+        }
+        if(opts.length) highlightWord(opts[0]);
+      });
+      inp.addEventListener('input', function(e){
+        inp.value = inp.value.toUpperCase().replace(/[^A-Z]/g,'');
+        inp.classList.remove('correct','incorrect');
+        if(inp.value && currentPlacementIdx !== null){
+          moveToNextCell(inp);
+        }
+        updateSolvedStates();
+      });
+      inp.addEventListener('keydown', function(e){
+        var r = parseInt(inp.dataset.r), c = parseInt(inp.dataset.c);
+        if(e.key === 'ArrowRight'){ e.preventDefault(); focusCell(r, c+1); }
+        else if(e.key === 'ArrowLeft'){ e.preventDefault(); focusCell(r, c-1); }
+        else if(e.key === 'ArrowDown'){ e.preventDefault(); focusCell(r+1, c); }
+        else if(e.key === 'ArrowUp'){ e.preventDefault(); focusCell(r-1, c); }
+        else if(e.key === 'Backspace' && !inp.value){
+          moveToPrevCell(inp);
+        }
+      });
+    });
+
+    function focusCell(r,c){
+      var el = inputs[key(r,c)];
+      if(el) el.focus();
+    }
+
+    function moveToNextCell(inp){
+      var p = placements[currentPlacementIdx];
+      var r = parseInt(inp.dataset.r), c = parseInt(inp.dataset.c);
+      var idxInWord = p.direction==='A' ? (c - p.col) : (r - p.row);
+      var nextIdx = idxInWord + 1;
+      if(nextIdx < p.word.length){
+        var nr = p.direction==='A' ? p.row : p.row+nextIdx;
+        var nc = p.direction==='A' ? p.col+nextIdx : p.col;
+        focusCell(nr,nc);
+      }
+    }
+    function moveToPrevCell(inp){
+      var p = placements[currentPlacementIdx];
+      var r = parseInt(inp.dataset.r), c = parseInt(inp.dataset.c);
+      var idxInWord = p.direction==='A' ? (c - p.col) : (r - p.row);
+      var prevIdx = idxInWord - 1;
+      if(prevIdx >= 0){
+        var pr = p.direction==='A' ? p.row : p.row+prevIdx;
+        var pc = p.direction==='A' ? p.col+prevIdx : p.col;
+        focusCell(pr,pc);
+      }
+    }
+
+    // clue lists
+    var acrossList = document.getElementById('acrossList');
+    var downList = document.getElementById('downList');
+    var clueEls = {}; // placementIdx -> li element
+
+    var sortedByNumber = placements.map(function(p,i){ return i; }).sort(function(a,b){
+      return placements[a].number - placements[b].number;
+    });
+
+    sortedByNumber.forEach(function(idx){
+      var p = placements[idx];
+      var li = document.createElement('li');
+      li.className = 'cw-clue-item';
+      li.innerHTML = '<b>' + p.number + '</b>' + p.clue + ' (' + p.word.length + ')';
+      li.addEventListener('click', function(){
+        highlightWord(idx);
+        var r = p.row, c = p.col;
+        focusCell(r,c);
+      });
+      clueEls[idx] = li;
+      if(p.direction === 'A'){ acrossList.appendChild(li); }
+      else { downList.appendChild(li); }
+    });
+
+    function updateClueActiveStates(){
+      Object.keys(clueEls).forEach(function(idx){
+        clueEls[idx].classList.toggle('active', parseInt(idx) === currentPlacementIdx);
+      });
+    }
+
+    function wordComplete(p){
+      for(var i=0;i<p.word.length;i++){
+        var r = p.direction==='A' ? p.row : p.row+i;
+        var c = p.direction==='A' ? p.col+i : p.col;
+        var el = inputs[key(r,c)];
+        if(!el || el.value.toUpperCase() !== p.word[i]) return false;
+      }
+      return true;
+    }
+
+    function updateSolvedStates(){
+      var allDone = true;
+      placements.forEach(function(p, idx){
+        var done = wordComplete(p);
+        clueEls[idx].classList.toggle('solved', done);
+        if(!done) allDone = false;
+      });
+      var status = document.getElementById('cwStatus');
+      if(allDone){
+        status.textContent = 'Solved it! Every word is correct.';
+        status.classList.add('win');
+      } else {
+        status.classList.remove('win');
+        if(status.textContent.indexOf('Solved') !== -1){ status.textContent = '\u00a0'; }
+      }
+    }
+
+    // Check answers button
+    document.getElementById('checkBtn').addEventListener('click', function(){
+      var correctCount = 0, filledCount = 0;
+      Object.keys(inputs).forEach(function(k){
+        var inp = inputs[k];
+        var r = parseInt(inp.dataset.r), c = parseInt(inp.dataset.c);
+        var expected = cellMap[key(r,c)].letter;
+        if(inp.value){
+          filledCount++;
+          if(inp.value.toUpperCase() === expected){
+            inp.classList.add('correct'); inp.classList.remove('incorrect');
+            correctCount++;
+          } else {
+            inp.classList.add('incorrect'); inp.classList.remove('correct');
+          }
+        }
+      });
+      var status = document.getElementById('cwStatus');
+      if(filledCount === 0){
+        status.textContent = 'Fill in a few letters first.';
+      } else {
+        status.textContent = correctCount + ' of ' + filledCount + ' filled letters are correct.';
+      }
+      status.classList.remove('win');
+      updateSolvedStates();
+    });
+
+    // Reveal button
+    document.getElementById('revealBtn').addEventListener('click', function(){
+      Object.keys(inputs).forEach(function(k){
+        var inp = inputs[k];
+        var r = parseInt(inp.dataset.r), c = parseInt(inp.dataset.c);
+        inp.value = cellMap[key(r,c)].letter;
+        inp.classList.remove('incorrect');
+        inp.classList.add('correct');
+      });
+      updateSolvedStates();
+      document.getElementById('cwStatus').textContent = 'Puzzle revealed.';
+    });
+
+    // Clear button
+    document.getElementById('clearBtn').addEventListener('click', function(){
+      Object.keys(inputs).forEach(function(k){
+        var inp = inputs[k];
+        inp.value = '';
+        inp.classList.remove('correct','incorrect');
+      });
+      Object.keys(clueEls).forEach(function(idx){ clueEls[idx].classList.remove('solved'); });
+      var status = document.getElementById('cwStatus');
+      status.textContent = '\u00a0';
+      status.classList.remove('win');
+    });
+
+  })();
+</script>
+</body>
+</html>
