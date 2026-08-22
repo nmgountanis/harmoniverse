@@ -60,7 +60,6 @@
     line-height:1.08;}
   .page-intro .tagline{font-size:19px;color:var(--mid);max-width:760px;margin:0 auto;line-height:1.6;}
 
-  /* controls */
   .controls{
     display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;
     margin-bottom:14px;
@@ -81,10 +80,11 @@
     font-family:'JetBrains Mono',monospace;font-size:13.5px;letter-spacing:0.3px;
     background:var(--bg-panel);border:1.5px solid var(--line);color:var(--mid);
     padding:10px 16px;border-radius:20px;cursor:pointer;
-    transition:border-color .15s,color .15s;
+    transition:border-color .15s,color .15s,opacity .15s;
   }
   .ctrl-btn:hover{border-color:var(--page-accent);color:var(--fg);}
-  .ctrl-btn.active{border-color:var(--page-accent);color:var(--fg);background:var(--bg-panel2);}
+  .ctrl-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .ctrl-btn:disabled:hover{border-color:var(--line);color:var(--mid);}
   .ctrl-select{
     font-family:'JetBrains Mono',monospace;font-size:13.5px;
     background:var(--bg-panel);border:1.5px solid var(--line);color:var(--mid);
@@ -92,11 +92,26 @@
   }
   .status-line{
     text-align:center;font-family:'JetBrains Mono',monospace;font-size:14px;
-    color:var(--dim);margin-bottom:28px;min-height:1.4em;
+    color:var(--dim);margin-bottom:10px;min-height:1.4em;
   }
   .status-line.err{color:var(--bad);}
 
-  /* layout */
+  .freeze-chips{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:24px;min-height:32px;}
+  .freeze-chip{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--mid);
+    background:var(--bg-panel);border:1.5px solid var(--line);border-radius:16px;
+    padding:5px 10px 5px 12px;cursor:pointer;transition:opacity .15s,border-color .15s;
+  }
+  .freeze-chip:hover{border-color:var(--fg);}
+  .freeze-chip.hidden-layer{opacity:0.4;}
+  .freeze-chip .swatch{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .freeze-chip .remove-x{
+    background:none;border:none;color:var(--dim);cursor:pointer;font-size:13px;
+    padding:0 2px;line-height:1;
+  }
+  .freeze-chip .remove-x:hover{color:var(--bad);}
+
   .analyzer-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;margin-bottom:20px;}
   @media(max-width:980px){.analyzer-grid{grid-template-columns:1fr;}}
 
@@ -111,22 +126,42 @@
   }
   .panel-hint{font-size:13px;color:var(--dim);margin:-8px 0 14px;line-height:1.5;}
 
+  .canvas-row{display:flex;gap:8px;position:relative;}
+  .y-axis-labels{
+    display:flex;flex-direction:column;justify-content:space-between;
+    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);
+    padding:4px 0;flex-shrink:0;width:44px;text-align:right;
+  }
+  .y-axis-title{
+    writing-mode:vertical-rl;transform:rotate(180deg);
+    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);
+    text-align:center;flex-shrink:0;width:14px;
+  }
+  .canvas-wrap{position:relative;flex:1;min-width:0;}
   canvas{display:block;width:100%;border-radius:10px;background:var(--bg-panel2);}
-  #spectrumCanvas{height:300px;}
-  #waveCanvas{height:90px;}
+  #spectrumCanvas{height:280px;cursor:crosshair;}
+  #spectrogramCanvas{height:180px;}
+  #waveCanvas{height:100px;}
+
+  .cw-tooltip{
+    position:absolute;pointer-events:none;
+    background:var(--bg-panel);border:1px solid var(--page-accent);border-radius:8px;
+    padding:6px 10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--fg);
+    transform:translate(-50%,-115%);white-space:nowrap;z-index:5;display:none;
+    box-shadow:0 8px 20px -8px rgba(0,0,0,0.6);
+  }
 
   .axis-row{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;
-    font-size:11px;color:var(--dim);margin-top:6px;}
+    font-size:11px;color:var(--dim);margin-top:6px;margin-left:58px;}
 
-  /* harmonic bars */
   .harmonic-bars{display:flex;align-items:flex-end;gap:8px;height:150px;margin-top:6px;}
   .h-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px;min-width:0;}
   .h-bar-track{width:100%;flex:1;display:flex;align-items:flex-end;background:var(--bg-panel2);border-radius:6px 6px 0 0;overflow:hidden;}
   .h-bar-fill{width:100%;background:var(--page-accent);border-radius:4px 4px 0 0;transition:height .12s;min-height:2px;}
   .h-bar-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
   .h-bar-pct{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mid);}
+  .h-bar-hz{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);}
 
-  /* pitch readout */
   .pitch-readout{text-align:center;padding:6px 0 18px;}
   .pitch-note{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:56px;color:var(--fg);line-height:1;}
   .pitch-freq{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--mid);margin-top:8px;}
@@ -140,7 +175,6 @@
   .cents-value{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--mid);margin-top:10px;}
   .cents-value.in-tune{color:var(--good);}
 
-  /* staff */
   .staff-wrap{display:flex;justify-content:center;padding:8px 0 4px;}
   svg#staffSvg{max-width:100%;height:auto;}
 
@@ -162,7 +196,7 @@
   .privacy-note{
     display:flex;align-items:center;justify-content:center;gap:7px;
     font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);
-    margin-top:10px;
+    margin-bottom:20px;
   }
 </style>
 </head>
@@ -185,8 +219,8 @@
 
     <div class="controls">
       <button class="listen-btn" id="listenBtn"><span class="dot" aria-hidden="true"></span><span id="listenLabel">Start Listening</span></button>
-      <button class="ctrl-btn" id="holdBtn">Hold Peaks</button>
-      <button class="ctrl-btn" id="clearHoldBtn">Clear Hold</button>
+      <button class="ctrl-btn" id="freezeBtn" disabled>Freeze Spectrum</button>
+      <button class="ctrl-btn" id="clearBtn">Clear Spectrum</button>
       <select class="ctrl-select" id="fftSelect" aria-label="FFT resolution">
         <option value="4096">Resolution: Standard</option>
         <option value="8192" selected>Resolution: High</option>
@@ -199,19 +233,43 @@
     </div>
     <p class="status-line" id="statusLine">Not listening. Click "Start Listening" and allow microphone access.</p>
     <p class="privacy-note"><span aria-hidden="true">&#128274;</span> Audio is processed entirely in your browser. Nothing is recorded, saved, or sent anywhere.</p>
+    <div class="freeze-chips" id="freezeChips"></div>
 
     <div class="analyzer-grid">
       <div class="panel">
         <h2>Frequency Spectrum</h2>
-        <p class="panel-hint">Power at every frequency your microphone picks up right now. Colored markers show detected harmonics.</p>
-        <canvas id="spectrumCanvas" width="900" height="300" role="img" aria-label="Live frequency spectrum graph"></canvas>
-        <div class="axis-row"><span id="axisMinLabel">20 Hz</span><span id="axisMidLabel"></span><span id="axisMaxLabel">8000 Hz</span></div>
+        <p class="panel-hint">Power at every frequency your microphone picks up right now. Hover the graph to read off a frequency. Click "Freeze Spectrum" to snapshot the current curve, in a new color, on top &mdash; up to 4 at once.</p>
+        <div class="canvas-row">
+          <div class="y-axis-labels" id="specYLabels"><span>-10 dB</span><span>-55 dB</span><span>-100 dB</span></div>
+          <div class="canvas-wrap">
+            <canvas id="spectrumCanvas" width="900" height="280" role="img" aria-label="Live frequency spectrum graph"></canvas>
+            <div class="cw-tooltip" id="specTooltip"></div>
+          </div>
+        </div>
+        <div class="axis-row"><span id="axisMinLabel">20 Hz</span><span id="axisMaxLabel">8000 Hz</span></div>
+
+        <h2 style="margin-top:26px;">Spectrogram &mdash; How the Spectrum Evolves Over Time</h2>
+        <p class="panel-hint">A scrolling history of the spectrum, brighter means louder. Great for hands-free playing: just watch how the pattern changes as you play, no clicking needed.</p>
+        <div class="canvas-row">
+          <div class="y-axis-labels"><span>8000 Hz</span><span></span><span>20 Hz</span></div>
+          <div class="canvas-wrap">
+            <canvas id="spectrogramCanvas" width="900" height="180"></canvas>
+          </div>
+        </div>
+        <div class="axis-row"><span>&larr; earlier</span><span>now &rarr;</span></div>
 
         <h2 style="margin-top:26px;">Waveform</h2>
-        <canvas id="waveCanvas" width="900" height="90" role="img" aria-label="Live waveform"></canvas>
+        <p class="panel-hint">The actual air-pressure wave over a few cycles, auto-scaled and zoomed to your detected pitch so its shape is actually visible.</p>
+        <div class="canvas-row">
+          <div class="y-axis-labels"><span>+</span><span>0</span><span>&minus;</span></div>
+          <div class="canvas-wrap">
+            <canvas id="waveCanvas" width="900" height="100"></canvas>
+          </div>
+        </div>
+        <div class="axis-row" id="waveAxisRow"><span>amplitude (normalized)</span><span id="waveWindowLabel">&mdash;</span></div>
 
         <h2 style="margin-top:26px;">Harmonic Series</h2>
-        <p class="panel-hint">Relative strength of each harmonic compared to the fundamental (H1 = 100%).</p>
+        <p class="panel-hint">Relative strength of each harmonic compared to the fundamental (H1 = 100%), with each one's actual frequency.</p>
         <div class="harmonic-bars" id="harmonicBars"></div>
       </div>
 
@@ -240,7 +298,8 @@
 
     <section class="explainer">
       <h3>What Am I Looking At?</h3>
-      <p>The <strong>spectrum</strong> shows how much acoustic power is present at every frequency in the sound right now, from a rumbling low note to a bright, high overtone. Peaks correspond to strong, resonant frequencies; a clean musical tone produces a tall peak at its fundamental frequency, plus a series of smaller peaks at whole-number multiples of it, its harmonics.</p>
+      <p>The <strong>spectrum</strong> shows how much acoustic power is present at every frequency in the sound right now, from a rumbling low note to a bright, high overtone. The y-axis is in decibels (dB), a logarithmic loudness scale, so a curve that looks only slightly taller actually represents meaningfully more energy. Peaks correspond to strong, resonant frequencies; a clean musical tone produces a tall peak at its fundamental frequency, plus a series of smaller peaks at whole-number multiples of it, its harmonics.</p>
+      <p>The <strong>spectrogram</strong> stacks that same information over time instead of freezing a single instant, so you can watch a melody, chord change, or vibrato unfold without touching a button, ideal for whenever your hands are busy playing.</p>
       <p>The analyzer estimates the <strong>fundamental frequency</strong> using autocorrelation, a technique that compares the waveform against time-shifted copies of itself to find its true repeating period, which tends to be far more accurate for musical pitch than simply picking the tallest spectrum peak. From that fundamental, it predicts where each harmonic should sit and measures how strong each one actually is, which is what the harmonic bars show.</p>
       <p><strong>Cents</strong> measure pitch distance on a scale where 100 cents equal one semitone. The needle shows how far your note sits from the nearest note in standard 12-tone equal temperament (A4 = 440 Hz), which is useful for tuning an instrument or checking intonation precisely.</p>
     </section>
@@ -253,13 +312,16 @@
 (function(){
   var listenBtn = document.getElementById('listenBtn');
   var listenLabel = document.getElementById('listenLabel');
-  var holdBtn = document.getElementById('holdBtn');
-  var clearHoldBtn = document.getElementById('clearHoldBtn');
+  var freezeBtn = document.getElementById('freezeBtn');
+  var clearBtn = document.getElementById('clearBtn');
+  var freezeChipsEl = document.getElementById('freezeChips');
   var fftSelect = document.getElementById('fftSelect');
   var axisSelect = document.getElementById('axisSelect');
   var statusLine = document.getElementById('statusLine');
   var spectrumCanvas = document.getElementById('spectrumCanvas');
+  var spectrogramCanvas = document.getElementById('spectrogramCanvas');
   var waveCanvas = document.getElementById('waveCanvas');
+  var specTooltip = document.getElementById('specTooltip');
   var harmonicBarsEl = document.getElementById('harmonicBars');
   var noteNameEl = document.getElementById('noteName');
   var freqReadoutEl = document.getElementById('freqReadout');
@@ -269,14 +331,17 @@
   var staffNote = document.getElementById('staffNote');
   var axisMinLabel = document.getElementById('axisMinLabel');
   var axisMaxLabel = document.getElementById('axisMaxLabel');
+  var waveWindowLabel = document.getElementById('waveWindowLabel');
 
   var audioCtx = null, analyser = null, sourceNode = null, mediaStream = null;
   var isListening = false;
-  var holdMode = false;
-  var holdPeaks = null;
   var rafId = null;
   var axisMode = 'log';
   var FREQ_MIN = 20, FREQ_MAX = 8000;
+  var DB_MIN = -100, DB_MAX = -10;
+
+  var FREEZE_COLORS = ['#ffcf5f','#5fc2ff','#5fd98a','#ff8c66'];
+  var frozenSpectra = []; // {data, sampleRate, color, visible}
 
   var NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
   var LETTER_VAL = {C:0,D:1,E:2,F:3,G:4,A:5,B:6};
@@ -286,6 +351,7 @@
     statusLine.classList.toggle('err', !!isErr);
   }
 
+  // ---------- Web Audio setup ----------
   function startListening(){
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
       setStatus('Your browser does not support microphone access.', true);
@@ -299,15 +365,16 @@
         analyser = audioCtx.createAnalyser();
         analyser.fftSize = parseInt(fftSelect.value, 10);
         analyser.smoothingTimeConstant = 0.5;
-        analyser.minDecibels = -100;
-        analyser.maxDecibels = -10;
+        analyser.minDecibels = DB_MIN;
+        analyser.maxDecibels = DB_MAX;
         sourceNode.connect(analyser);
 
         isListening = true;
         listenBtn.classList.add('live');
         listenLabel.textContent = 'Stop Listening';
+        freezeBtn.disabled = false;
         setStatus('Listening\u2026 play a note, sing, or hum.');
-        holdPeaks = null;
+        clearSpectrogram();
         loop();
       })
       .catch(function(err){
@@ -319,46 +386,95 @@
     isListening = false;
     listenBtn.classList.remove('live');
     listenLabel.textContent = 'Start Listening';
-    setStatus('Not listening. Click "Start Listening" and allow microphone access.');
+    freezeBtn.disabled = true;
+    setStatus('Not listening. Frozen spectra stay put until you clear them.');
     if(rafId) cancelAnimationFrame(rafId);
     if(mediaStream){ mediaStream.getTracks().forEach(function(t){ t.stop(); }); mediaStream = null; }
     if(audioCtx){ audioCtx.close(); audioCtx = null; }
     analyser = null; sourceNode = null;
-    clearVisuals();
+    resetLiveReadouts();
+    redrawStaticSpectrum();
   }
 
   listenBtn.addEventListener('click', function(){
     if(isListening) stopListening(); else startListening();
   });
 
-  holdBtn.addEventListener('click', function(){
-    holdMode = !holdMode;
-    holdBtn.classList.toggle('active', holdMode);
-    if(!holdMode) holdPeaks = null;
+  freezeBtn.addEventListener('click', function(){
+    if(!isListening || !analyser) return;
+    if(frozenSpectra.length >= 4){
+      setStatus('Maximum of 4 frozen spectra. Remove one to add another.', true);
+      return;
+    }
+    var snap = new Float32Array(analyser.frequencyBinCount);
+    analyser.getFloatFrequencyData(snap);
+    var color = FREEZE_COLORS[frozenSpectra.length];
+    frozenSpectra.push({ data: snap, sampleRate: audioCtx.sampleRate, color: color, visible: true });
+    renderFreezeChips();
   });
-  clearHoldBtn.addEventListener('click', function(){ holdPeaks = null; });
+
+  clearBtn.addEventListener('click', function(){
+    frozenSpectra = [];
+    renderFreezeChips();
+    if(!isListening) redrawStaticSpectrum();
+  });
+
+  function renderFreezeChips(){
+    freezeChipsEl.innerHTML = '';
+    frozenSpectra.forEach(function(fz, i){
+      var chip = document.createElement('button');
+      chip.className = 'freeze-chip' + (fz.visible ? '' : ' hidden-layer');
+      chip.type = 'button';
+      chip.innerHTML = '<span class="swatch" style="background:' + fz.color + ';"></span>Freeze ' + (i+1);
+      chip.addEventListener('click', function(e){
+        if(e.target.classList.contains('remove-x')) return;
+        fz.visible = !fz.visible;
+        renderFreezeChips();
+        if(!isListening) redrawStaticSpectrum();
+      });
+      var xBtn = document.createElement('span');
+      xBtn.className = 'remove-x';
+      xBtn.setAttribute('role','button');
+      xBtn.setAttribute('tabindex','0');
+      xBtn.setAttribute('aria-label','Remove Freeze ' + (i+1));
+      xBtn.textContent = '\u00d7';
+      xBtn.addEventListener('click', function(ev){
+        ev.stopPropagation();
+        frozenSpectra.splice(i,1);
+        renderFreezeChips();
+        if(!isListening) redrawStaticSpectrum();
+      });
+      chip.appendChild(xBtn);
+      freezeChipsEl.appendChild(chip);
+    });
+  }
 
   fftSelect.addEventListener('change', function(){
     if(analyser){
       analyser.fftSize = parseInt(fftSelect.value, 10);
-      holdPeaks = null;
     }
   });
   axisSelect.addEventListener('change', function(){
     axisMode = axisSelect.value;
     axisMinLabel.textContent = FREQ_MIN + ' Hz';
     axisMaxLabel.textContent = FREQ_MAX + ' Hz';
+    if(!isListening) redrawStaticSpectrum();
   });
 
+  // ---------- canvas helpers ----------
   var specCtx = spectrumCanvas.getContext('2d');
   var waveCtx = waveCanvas.getContext('2d');
+  var spectrogramCtx = spectrogramCanvas.getContext('2d');
 
   function resizeCanvas(canvas, ctx){
     var rect = canvas.getBoundingClientRect();
     var dpr = window.devicePixelRatio || 1;
     var cssHeight = parseInt(getComputedStyle(canvas).height, 10) || canvas.height;
-    canvas.width = Math.max(300, Math.round(rect.width * dpr));
-    canvas.height = Math.round(cssHeight * dpr);
+    var newW = Math.max(300, Math.round(rect.width * dpr));
+    var newH = Math.round(cssHeight * dpr);
+    if(canvas.width !== newW || canvas.height !== newH){
+      canvas.width = newW; canvas.height = newH;
+    }
     ctx.setTransform(dpr,0,0,dpr,0,0);
     return { w: rect.width, h: cssHeight };
   }
@@ -371,12 +487,15 @@
     }
     return (freq / FREQ_MAX) * w;
   }
+  function xToFreq(x, w){
+    if(axisMode === 'log'){
+      var minL = Math.log(FREQ_MIN), maxL = Math.log(FREQ_MAX);
+      return Math.exp(minL + (x/w)*(maxL-minL));
+    }
+    return (x/w)*FREQ_MAX;
+  }
 
-  function clearVisuals(){
-    var dims = resizeCanvas(spectrumCanvas, specCtx);
-    specCtx.clearRect(0,0,dims.w,dims.h);
-    var wdims = resizeCanvas(waveCanvas, waveCtx);
-    waveCtx.clearRect(0,0,wdims.w,wdims.h);
+  function resetLiveReadouts(){
     noteNameEl.textContent = '\u2014';
     freqReadoutEl.textContent = '\u2014 Hz';
     centsValueEl.textContent = '\u2014';
@@ -385,110 +504,186 @@
     harmonicBarsEl.innerHTML = '';
     drawStaff(null);
     staffNote.textContent = 'The fundamental note appears here once a clear pitch is detected.';
+    var wdims = resizeCanvas(waveCanvas, waveCtx);
+    waveCtx.clearRect(0,0,wdims.w,wdims.h);
+    waveWindowLabel.textContent = '\u2014';
   }
 
-  function drawSpectrum(dataArray, sampleRate, harmonics){
-    var dims = resizeCanvas(spectrumCanvas, specCtx);
-    var w = dims.w, h = dims.h;
-    specCtx.clearRect(0,0,w,h);
-
-    var binCount = dataArray.length;
-    var nyquist = sampleRate/2;
-    var minDb = analyser.minDecibels, maxDb = analyser.maxDecibels;
-
-    specCtx.strokeStyle = 'rgba(255,255,255,0.06)';
-    specCtx.lineWidth = 1;
-    var gridFreqs = axisMode==='log' ? [50,100,200,500,1000,2000,4000,8000] : [1000,2000,3000,4000,5000,6000,7000,8000];
+  function drawGridAndAxis(ctx, w, h){
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+    ctx.lineWidth = 1;
+    ctx.font = '9.5px JetBrains Mono, monospace';
+    ctx.fillStyle = 'rgba(168,182,214,0.8)';
+    ctx.textAlign = 'center';
+    var gridFreqs = axisMode==='log'
+      ? [20,30,50,70,100,150,200,300,500,700,1000,1500,2000,3000,5000,7000,8000]
+      : [500,1000,1500,2000,2500,3000,3500,4000,4500,5000,5500,6000,6500,7000,7500,8000];
+    var labelFreqs = axisMode==='log'
+      ? [20,50,100,200,500,1000,2000,5000,8000]
+      : [1000,2000,3000,4000,5000,6000,7000,8000];
     gridFreqs.forEach(function(f){
       if(f>FREQ_MAX) return;
       var x = freqToX(f, w);
-      specCtx.beginPath(); specCtx.moveTo(x,0); specCtx.lineTo(x,h); specCtx.stroke();
+      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
+    });
+    labelFreqs.forEach(function(f){
+      if(f>FREQ_MAX) return;
+      var x = freqToX(f, w);
+      var label = f>=1000 ? (f/1000)+'k' : String(f);
+      ctx.fillText(label, Math.min(w-12, Math.max(12,x)), h-4);
+    });
+  }
+
+  function drawOneCurve(ctx, dataArray, sampleRate, w, h, color, fill){
+    var binCount = dataArray.length;
+    var nyquist = sampleRate/2;
+    ctx.beginPath();
+    var started = false;
+    for(var x=0; x<w; x++){
+      var freq = xToFreq(x, w);
+      var bin = Math.max(0, Math.min(binCount-1, Math.round((freq/nyquist)*binCount)));
+      var db = dataArray[bin];
+      var norm = Math.max(0, Math.min(1, (db - DB_MIN) / (DB_MAX - DB_MIN)));
+      var y = h - norm*h;
+      if(!started){ ctx.moveTo(x,y); started = true; } else { ctx.lineTo(x,y); }
+    }
+    if(fill){
+      ctx.lineTo(w,h); ctx.lineTo(0,h); ctx.closePath();
+      var grad = ctx.createLinearGradient(0,0,0,h);
+      grad.addColorStop(0, color + '8c');
+      grad.addColorStop(1, color + '0d');
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = fill ? 1.5 : 1.2;
+    ctx.stroke();
+  }
+
+  function redrawStaticSpectrum(){
+    var dims = resizeCanvas(spectrumCanvas, specCtx);
+    var w = dims.w, h = dims.h;
+    specCtx.clearRect(0,0,w,h);
+    drawGridAndAxis(specCtx, w, h);
+    frozenSpectra.forEach(function(fz){
+      if(!fz.visible) return;
+      drawOneCurve(specCtx, fz.data, fz.sampleRate, w, h, fz.color, false);
+    });
+  }
+
+  function drawSpectrum(dataArray, sampleRate){
+    var dims = resizeCanvas(spectrumCanvas, specCtx);
+    var w = dims.w, h = dims.h;
+    specCtx.clearRect(0,0,w,h);
+    drawGridAndAxis(specCtx, w, h);
+
+    frozenSpectra.forEach(function(fz){
+      if(!fz.visible) return;
+      drawOneCurve(specCtx, fz.data, fz.sampleRate, w, h, fz.color, false);
     });
 
-    specCtx.beginPath();
-    specCtx.moveTo(0,h);
-    for(var x=0; x<w; x++){
-      var freq;
-      if(axisMode==='log'){
-        var minL = Math.log(FREQ_MIN), maxL = Math.log(FREQ_MAX);
-        freq = Math.exp(minL + (x/w)*(maxL-minL));
-      } else {
-        freq = (x/w)*FREQ_MAX;
-      }
-      var bin = Math.round((freq/nyquist)*binCount);
-      bin = Math.max(0, Math.min(binCount-1, bin));
-      var db = dataArray[bin];
-      var norm = Math.max(0, Math.min(1, (db - minDb) / (maxDb - minDb)));
-      var y = h - norm*h;
-      specCtx.lineTo(x,y);
-    }
-    specCtx.lineTo(w,h);
-    specCtx.closePath();
-    var grad = specCtx.createLinearGradient(0,0,0,h);
-    grad.addColorStop(0, 'rgba(255,111,168,0.55)');
-    grad.addColorStop(1, 'rgba(255,111,168,0.05)');
-    specCtx.fillStyle = grad;
-    specCtx.fill();
-    specCtx.strokeStyle = '#ff6fa8';
-    specCtx.lineWidth = 1.5;
-    specCtx.stroke();
+    drawOneCurve(specCtx, dataArray, sampleRate, w, h, '#ff6fa8', true);
+  }
 
-    if(holdMode && holdPeaks){
-      specCtx.beginPath();
-      for(var xx=0; xx<w; xx++){
-        var freq2;
-        if(axisMode==='log'){
-          var minL2 = Math.log(FREQ_MIN), maxL2 = Math.log(FREQ_MAX);
-          freq2 = Math.exp(minL2 + (xx/w)*(maxL2-minL2));
-        } else {
-          freq2 = (xx/w)*FREQ_MAX;
-        }
-        var bin2 = Math.max(0, Math.min(binCount-1, Math.round((freq2/nyquist)*binCount)));
-        var db2 = holdPeaks[bin2];
-        var norm2 = Math.max(0, Math.min(1, (db2 - minDb) / (maxDb - minDb)));
-        var y2 = h - norm2*h;
-        if(xx===0) specCtx.moveTo(xx,y2); else specCtx.lineTo(xx,y2);
-      }
-      specCtx.strokeStyle = 'rgba(255,207,95,0.8)';
-      specCtx.lineWidth = 1.2;
-      specCtx.stroke();
+  // ---------- hover tooltip ----------
+  var lastLiveData = null, lastSampleRate = null;
+  spectrumCanvas.addEventListener('mousemove', function(e){
+    var rect = spectrumCanvas.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var freq = xToFreq(x, rect.width);
+    var text = Math.round(freq) + ' Hz';
+    if(lastLiveData && lastSampleRate){
+      var binCount = lastLiveData.length, nyquist = lastSampleRate/2;
+      var bin = Math.max(0, Math.min(binCount-1, Math.round((freq/nyquist)*binCount)));
+      text += '  \u2022  ' + Math.round(lastLiveData[bin]) + ' dB';
     }
+    specTooltip.textContent = text;
+    specTooltip.style.display = 'block';
+    specTooltip.style.left = x + 'px';
+    specTooltip.style.top = '0px';
+  });
+  spectrumCanvas.addEventListener('mouseleave', function(){
+    specTooltip.style.display = 'none';
+  });
 
-    if(harmonics && harmonics.length){
-      harmonics.forEach(function(hm, i){
-        if(hm.freq > FREQ_MAX) return;
-        var hx = freqToX(hm.freq, w);
-        specCtx.beginPath();
-        specCtx.moveTo(hx, h);
-        specCtx.lineTo(hx, h - hm.norm*h - 6);
-        specCtx.strokeStyle = i===0 ? '#ffffff' : 'rgba(255,255,255,0.55)';
-        specCtx.lineWidth = i===0 ? 2 : 1;
-        specCtx.stroke();
-        specCtx.fillStyle = i===0 ? '#ffffff' : 'rgba(255,255,255,0.75)';
-        specCtx.font = '10px JetBrains Mono, monospace';
-        specCtx.textAlign = 'center';
-        specCtx.fillText('H'+(i+1), hx, Math.max(10, h - hm.norm*h - 12));
-      });
+  // ---------- spectrogram ----------
+  function clearSpectrogram(){
+    var dims = resizeCanvas(spectrogramCanvas, spectrogramCtx);
+    spectrogramCtx.fillStyle = '#0e1c33';
+    spectrogramCtx.fillRect(0,0,dims.w,dims.h);
+  }
+  function dbToColor(db){
+    var t = Math.max(0, Math.min(1, (db - DB_MIN)/(DB_MAX - DB_MIN)));
+    var stops = [
+      {t:0.0, c:[14,28,51]},
+      {t:0.35, c:[58,32,96]},
+      {t:0.62, c:[185,138,255]},
+      {t:0.82, c:[255,111,168]},
+      {t:1.0, c:[255,229,150]}
+    ];
+    var a = stops[0], b = stops[stops.length-1];
+    for(var i=0;i<stops.length-1;i++){
+      if(t >= stops[i].t && t <= stops[i+1].t){ a = stops[i]; b = stops[i+1]; break; }
+    }
+    var span = (b.t - a.t) || 1;
+    var lt = (t - a.t) / span;
+    var r = Math.round(a.c[0] + (b.c[0]-a.c[0])*lt);
+    var g = Math.round(a.c[1] + (b.c[1]-a.c[1])*lt);
+    var bl = Math.round(a.c[2] + (b.c[2]-a.c[2])*lt);
+    return 'rgb('+r+','+g+','+bl+')';
+  }
+  function drawSpectrogramColumn(dataArray, sampleRate){
+    var dims = resizeCanvas(spectrogramCanvas, spectrogramCtx);
+    var w = dims.w, h = dims.h;
+    spectrogramCtx.drawImage(spectrogramCanvas, 1, 0, w-1, h, 0, 0, w-1, h);
+    var binCount = dataArray.length, nyquist = sampleRate/2;
+    for(var y=0; y<h; y++){
+      var freq = axisMode==='log'
+        ? Math.exp(Math.log(FREQ_MIN) + ((h-y)/h)*(Math.log(FREQ_MAX)-Math.log(FREQ_MIN)))
+        : ((h-y)/h)*FREQ_MAX;
+      var bin = Math.max(0, Math.min(binCount-1, Math.round((freq/nyquist)*binCount)));
+      spectrogramCtx.fillStyle = dbToColor(dataArray[bin]);
+      spectrogramCtx.fillRect(w-1, y, 1, 1);
     }
   }
 
-  function drawWave(timeData){
+  // ---------- waveform (auto-scaled, zoomed to pitch) ----------
+  function drawWave(timeData, sampleRate, fundamental){
     var dims = resizeCanvas(waveCanvas, waveCtx);
     var w = dims.w, h = dims.h;
     waveCtx.clearRect(0,0,w,h);
+
+    var windowSize;
+    if(fundamental){
+      var period = sampleRate / fundamental;
+      windowSize = Math.min(timeData.length, Math.round(period * 3.5));
+      waveWindowLabel.textContent = '\u2248' + (1000*windowSize/sampleRate).toFixed(1) + ' ms (~3.5 cycles)';
+    } else {
+      windowSize = Math.min(timeData.length, Math.round(sampleRate * 0.02));
+      waveWindowLabel.textContent = '\u2248' + (1000*windowSize/sampleRate).toFixed(1) + ' ms';
+    }
+
+    var maxAbs = 0;
+    for(var i=0;i<windowSize;i++){ maxAbs = Math.max(maxAbs, Math.abs(timeData[i])); }
+    var scale = maxAbs > 0.001 ? (0.92/maxAbs) : 1;
+
+    waveCtx.strokeStyle = 'rgba(255,255,255,0.08)';
+    waveCtx.lineWidth = 1;
+    waveCtx.beginPath(); waveCtx.moveTo(0,h/2); waveCtx.lineTo(w,h/2); waveCtx.stroke();
+
     waveCtx.beginPath();
-    var step = timeData.length / w;
     for(var x=0; x<w; x++){
-      var idx = Math.floor(x*step);
-      var v = timeData[idx];
-      var y = h/2 - v*(h/2)*0.9;
+      var idx = Math.min(windowSize-1, Math.floor((x/w)*windowSize));
+      var v = timeData[idx]*scale;
+      var y = h/2 - v*(h/2);
       if(x===0) waveCtx.moveTo(x,y); else waveCtx.lineTo(x,y);
     }
     waveCtx.strokeStyle = '#b98aff';
-    waveCtx.lineWidth = 1.5;
+    waveCtx.lineWidth = 1.7;
     waveCtx.stroke();
   }
 
+  // ---------- pitch detection (autocorrelation) ----------
   function detectPitch(buf, sampleRate){
     var SIZE = buf.length;
     var rms = 0;
@@ -570,9 +765,8 @@
     } else {
       results.forEach(function(r){ r.relPct = 0; });
     }
-    var minDb = analyser.minDecibels, maxDbRange = analyser.maxDecibels;
     results.forEach(function(r){
-      r.norm = Math.max(0, Math.min(1, (r.db - minDb)/(maxDbRange - minDb)));
+      r.norm = Math.max(0, Math.min(1, (r.db - DB_MIN)/(DB_MAX - DB_MIN)));
     });
     return results;
   }
@@ -603,13 +797,18 @@
       var label = document.createElement('div');
       label.className = 'h-bar-label';
       label.textContent = 'H' + h.n + (h.n===1 ? ' (fund.)' : '');
+      var hzLabel = document.createElement('div');
+      hzLabel.className = 'h-bar-hz';
+      hzLabel.textContent = Math.round(h.freq) + ' Hz';
       col.appendChild(pctLabel);
       col.appendChild(track);
       col.appendChild(label);
+      col.appendChild(hzLabel);
       harmonicBarsEl.appendChild(col);
     });
   }
 
+  // ---------- staff (SVG) ----------
   var NS = 'http://www.w3.org/2000/svg';
   function el(tag, attrs){
     var e = document.createElementNS(NS, tag);
@@ -665,6 +864,7 @@
     staffNote.innerHTML = 'Showing <strong>' + noteInfo.name + noteInfo.octave + '</strong> on the ' + (useTreble?'treble':'bass') + ' clef.';
   }
 
+  // ---------- main loop ----------
   function loop(){
     if(!isListening || !analyser) return;
     var freqData = new Float32Array(analyser.frequencyBinCount);
@@ -672,17 +872,9 @@
     var timeData = new Float32Array(analyser.fftSize);
     analyser.getFloatTimeDomainData(timeData);
 
-    if(holdMode){
-      if(!holdPeaks || holdPeaks.length !== freqData.length){
-        holdPeaks = new Float32Array(freqData);
-      } else {
-        for(var i=0;i<freqData.length;i++){
-          if(freqData[i] > holdPeaks[i]) holdPeaks[i] = freqData[i];
-        }
-      }
-    }
-
     var sampleRate = audioCtx.sampleRate;
+    lastLiveData = freqData; lastSampleRate = sampleRate;
+
     var fundamental = detectPitch(timeData, sampleRate);
     var harmonics = null;
     var noteInfo = null;
@@ -710,16 +902,21 @@
     }
 
     renderHarmonicBars(harmonics);
-    drawSpectrum(freqData, sampleRate, harmonics);
-    drawWave(timeData);
+    drawSpectrum(freqData, sampleRate);
+    drawSpectrogramColumn(freqData, sampleRate);
+    drawWave(timeData, sampleRate, fundamental);
 
     rafId = requestAnimationFrame(loop);
   }
 
-  clearVisuals();
+  resetLiveReadouts();
+  redrawStaticSpectrum();
+  clearSpectrogram();
   axisMinLabel.textContent = FREQ_MIN + ' Hz';
   axisMaxLabel.textContent = FREQ_MAX + ' Hz';
-  window.addEventListener('resize', function(){ if(!isListening) clearVisuals(); });
+  window.addEventListener('resize', function(){
+    if(!isListening){ redrawStaticSpectrum(); clearSpectrogram(); }
+  });
 })();
 </script>
 </body>
