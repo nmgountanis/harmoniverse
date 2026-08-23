@@ -151,10 +151,20 @@
   }
   .cw-tooltip-fixed{position:fixed;z-index:50;}
 
-  .axis-row{position:relative;height:16px;margin-top:6px;margin-left:52px;}
+  .axis-row{position:relative;height:16px;margin-top:6px;margin-left:76px;}
   .axis-row span{
     position:absolute;transform:translateX(-50%);
     font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);white-space:nowrap;
+  }
+  .axis-title-x{
+    text-align:center;font-family:'JetBrains Mono',monospace;font-size:11.5px;
+    color:var(--mid);margin:4px 0 0;letter-spacing:0.4px;margin-left:76px;
+  }
+  .axis-title-y{
+    writing-mode:vertical-rl;transform:rotate(180deg);
+    font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mid);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;width:16px;
+    letter-spacing:0.4px;
   }
 
   .spectrogram-outer{display:flex;gap:8px;min-width:0;max-width:100%;}
@@ -203,7 +213,7 @@
   .staff-wrap{display:flex;justify-content:center;padding:8px 0 4px;}
   svg#staffSvg{max-width:100%;height:auto;}
 
-  .info-note{font-size:13.5px;color:var(--dim);line-height:1.6;margin-top:10px;}
+  .info-note{font-size:13.5px;color:var(--dim);line-height:1.6;margin:10px 0 4px;}
   .info-note strong{color:var(--mid);}
 
   .explainer{max-width:840px;margin:44px auto 0;}
@@ -239,7 +249,7 @@
   <main>
     <div class="page-intro">
       <h1>Sound Spectrum Analyzer</h1>
-      <p class="tagline">Play a note, sing, or hum into your microphone. See its full frequency spectrum, its harmonics, and exactly how in-tune it is, all in real time.</p>
+      <p class="tagline">Analyze a note, sung pitch, or instrument tone from your microphone. View its complete frequency spectrum, harmonic content, and tuning accuracy in real time.</p>
     </div>
 
     <div class="controls">
@@ -252,21 +262,23 @@
         <option value="linear">Axis: Linear</option>
       </select>
     </div>
-    <p class="status-line" id="statusLine">Not listening. Click "Start Listening" and allow microphone access.</p>
+    <p class="status-line" id="statusLine" aria-live="polite">Not listening. Click "Start Listening" and allow microphone access.</p>
     <div class="freeze-chips" id="freezeChips"></div>
 
     <div class="analyzer-grid">
       <div class="panel">
         <h2>Power Spectrum <span class="h2-btns"><button class="ctrl-btn small" id="downloadSpecBtn">Download PNG</button><button class="ctrl-btn small" id="downloadSpecTxtBtn">Download TXT</button></span></h2>
-        <p class="panel-hint">Power at every frequency your microphone picks up right now. Hover the graph to read off a frequency. Click "Freeze Spectrum" to snapshot everything &mdash; spectrum, waveform, and harmonics &mdash; in a new color, up to 4 at once.</p>
+        <p class="panel-hint">Displays acoustic power across the full frequency range captured by your microphone. Hover over the graph to inspect a specific frequency. Use &ldquo;Freeze Spectrum&rdquo; to capture the current spectrum, waveform, and harmonic content as a snapshot &mdash; up to four at once, each in a distinct color.</p>
         <div class="canvas-row">
+          <div class="axis-title-y">Power (dB)</div>
           <div class="y-axis-labels simple"><span>-10 dB</span><span>-32.5 dB</span><span>-55 dB</span><span>-77.5 dB</span><span>-100 dB</span></div>
           <div class="canvas-wrap">
-            <canvas id="spectrumCanvas" width="900" height="280" role="img" aria-label="Live power spectrum graph"></canvas>
-            <div class="cw-tooltip" id="specTooltip"></div>
+            <canvas id="spectrumCanvas" width="900" height="280" role="img" aria-label="Live power spectrum graph showing power in decibels across frequency in hertz"></canvas>
+            <div class="cw-tooltip" id="specTooltip" aria-hidden="true"></div>
           </div>
         </div>
         <div class="axis-row" id="specAxisRow"></div>
+        <div class="axis-title-x">Frequency (Hz)</div>
 
         <h2 style="margin-top:26px;">Spectrogram &mdash; How the Spectrum Evolves Over Time
           <span class="h2-btns">
@@ -274,26 +286,28 @@
             <button class="ctrl-btn small" id="downloadSpectrogramTxtBtn">Download TXT</button>
           </span>
         </h2>
-        <p class="panel-hint">A scrolling history of the spectrum, brighter means louder. Keeps recording through Stop/Start, so you can scroll back and look. Hover for time, frequency, and dB. Only "Clear Spectrogram" resets it.</p>
+        <p class="panel-hint">A continuous, scrolling record of the spectrum over time, with brightness indicating loudness. Recording persists across Stop and Start, so you can scroll back through prior activity. Hover to inspect time, frequency, and power at any point. Only &ldquo;Clear Spectrogram&rdquo; resets the recording.</p>
         <div class="spectrogram-outer">
+          <div class="axis-title-y">Frequency (Hz)</div>
           <div class="y-axis-labels" id="specgramYLabels"></div>
           <div class="spectrogram-scroll" id="spectrogramScroll">
             <div class="spectrogram-inner" id="spectrogramInner">
-              <canvas id="spectrogramCanvas"></canvas>
+              <canvas id="spectrogramCanvas" role="img" aria-label="Spectrogram showing frequency over time, with brightness indicating power in decibels"></canvas>
               <div class="spec-time-labels" id="spectrogramTimeLabels"></div>
             </div>
           </div>
         </div>
-        <div class="cw-tooltip cw-tooltip-fixed" id="spectrogramTooltip"></div>
-        <p class="spectrogram-note" id="spectrogramStatus">No history yet &mdash; click "Start Listening" to begin recording.</p>
+        <div class="axis-title-x" style="margin-left:76px;">Time (s)</div>
+        <div class="cw-tooltip cw-tooltip-fixed" id="spectrogramTooltip" aria-hidden="true"></div>
+        <p class="spectrogram-note" id="spectrogramStatus" aria-live="polite">No history yet &mdash; click "Start Listening" to begin recording.</p>
 
         <h2 style="margin-top:26px;">Harmonic Series</h2>
-        <p class="panel-hint">Relative strength of each harmonic compared to its own fundamental (H1 = 100%). One row per source: live, plus each frozen snapshot that had a clear pitch.</p>
+        <p class="panel-hint">Displays the relative strength of each harmonic against its own fundamental (H1 = 100%). Each row corresponds to one source: the live signal, followed by any frozen snapshot with a clearly identified pitch.</p>
         <div id="harmonicGroups"></div>
       </div>
 
       <div class="panel">
-        <h2>Pitch</h2>
+        <h2>Pitch Tuner</h2>
         <div class="pitch-readout">
           <div class="pitch-note" id="noteName">&mdash;</div>
           <div class="pitch-freq" id="freqReadout">&mdash; Hz</div>
@@ -308,22 +322,23 @@
         </div>
 
         <h2>Staff</h2>
+        <p class="info-note" id="staffNote">The fundamental note appears here once a clear pitch is detected.</p>
         <div class="staff-wrap">
           <svg id="staffSvg" viewBox="0 0 220 170" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
-        <p class="info-note" id="staffNote">The fundamental note appears here once a clear pitch is detected.</p>
 
         <h2 style="margin-top:26px;">Waveform</h2>
-        <p class="panel-hint">The actual air-pressure wave over a few cycles, auto-scaled and zoomed to the detected pitch. Frozen waveforms overlay in matching colors.</p>
+        <p class="panel-hint">The captured air-pressure waveform over several cycles, automatically scaled and centered on the detected pitch. Frozen waveforms are overlaid in their corresponding colors for comparison.</p>
         <div class="canvas-row">
-          <div class="y-axis-labels simple"><span>+</span><span>0</span><span>&minus;</span></div>
+          <div class="axis-title-y" style="width:14px;">Amplitude</div>
+          <div class="y-axis-labels simple" style="width:30px;"><span>+</span><span>0</span><span>&minus;</span></div>
           <div class="canvas-wrap">
-            <canvas id="waveCanvas" width="500" height="130"></canvas>
+            <canvas id="waveCanvas" width="500" height="130" role="img" aria-label="Waveform showing normalized amplitude over time"></canvas>
           </div>
         </div>
-        <div class="axis-row" style="margin-left:0;position:static;display:flex;justify-content:space-between;">
-          <span style="position:static;transform:none;">amplitude (normalized)</span>
-          <span style="position:static;transform:none;" id="waveWindowLabel">&mdash;</span>
+        <div class="axis-title-x" style="margin-left:44px;display:flex;justify-content:space-between;text-align:left;">
+          <span>Time</span>
+          <span id="waveWindowLabel" style="color:var(--dim);">&mdash;</span>
         </div>
       </div>
     </div>
@@ -400,8 +415,118 @@
     link.click();
     setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
   }
-  downloadSpecBtn.addEventListener('click', function(){ downloadCanvas(spectrumCanvas, 'power-spectrum.png'); });
-  downloadSpectrogramBtn.addEventListener('click', function(){ downloadCanvas(spectrogramCanvas, 'spectrogram.png'); });
+  downloadSpecBtn.addEventListener('click', exportSpectrumPNG);
+  downloadSpectrogramBtn.addEventListener('click', exportSpectrogramPNG);
+
+  function exportSpectrumPNG(){
+    var plotW = spectrumCanvas.getBoundingClientRect().width;
+    var plotH = 280;
+    var leftMargin = 76, bottomMargin = 46, topMargin = 16, rightMargin = 16;
+    var totalW = plotW + leftMargin + rightMargin;
+    var totalH = plotH + topMargin + bottomMargin;
+    var dpr = window.devicePixelRatio || 1;
+    var exp = document.createElement('canvas');
+    exp.width = Math.round(totalW*dpr); exp.height = Math.round(totalH*dpr);
+    var ex = exp.getContext('2d');
+    ex.setTransform(dpr,0,0,dpr,0,0);
+    ex.fillStyle = '#0b1729';
+    ex.fillRect(0,0,totalW,totalH);
+
+    ex.save();
+    ex.translate(leftMargin, topMargin);
+    drawGrid(ex, plotW, plotH);
+    frozenSpectra.forEach(function(fz){ if(fz.visible) drawOneCurve(ex, fz.freqData, fz.sampleRate, plotW, plotH, fz.color, false); });
+    if(isListening && lastLiveData && lastSampleRate){ drawOneCurve(ex, lastLiveData, lastSampleRate, plotW, plotH, '#ff6fa8', true); }
+    ex.restore();
+
+    ex.fillStyle = '#a8b6d6';
+    ex.font = '11px "JetBrains Mono", monospace';
+    ex.textAlign = 'right'; ex.textBaseline = 'middle';
+    [-10,-32.5,-55,-77.5,-100].forEach(function(db){
+      var frac = (db - DB_MIN)/(DB_MAX - DB_MIN);
+      var y = topMargin + plotH - frac*plotH;
+      ex.fillText(db + ' dB', leftMargin - 10, y);
+    });
+    ex.save();
+    ex.translate(14, topMargin + plotH/2);
+    ex.rotate(-Math.PI/2);
+    ex.textAlign = 'center'; ex.fillStyle = '#f1f4fb';
+    ex.font = '12px "JetBrains Mono", monospace';
+    ex.fillText('Power (dB)', 0, 0);
+    ex.restore();
+
+    ex.fillStyle = '#a8b6d6';
+    ex.font = '11px "JetBrains Mono", monospace';
+    ex.textAlign = 'center'; ex.textBaseline = 'alphabetic';
+    currentLabelFreqs().forEach(function(f){
+      if(f > FREQ_MAX) return;
+      var x = leftMargin + freqToX(f, plotW);
+      ex.fillText(fmtFreqLabel(f), x, topMargin + plotH + 18);
+    });
+    ex.fillStyle = '#f1f4fb'; ex.font = '12px "JetBrains Mono", monospace';
+    ex.fillText('Frequency (Hz)', leftMargin + plotW/2, topMargin + plotH + 38);
+
+    downloadCanvas(exp, 'power-spectrum.png');
+  }
+
+  function exportSpectrogramPNG(){
+    if(spectrogramHistory.length === 0){ setStatus('No spectrogram history to export yet.', true); return; }
+    var usedWidthPx = spectrogramHistory.length * COLUMN_PX;
+    var leftMargin = 76, bottomMargin = 44, topMargin = 16, rightMargin = 16;
+    var totalW = usedWidthPx + leftMargin + rightMargin;
+    var totalH = SPEC_HEIGHT + topMargin + bottomMargin;
+    var dpr = window.devicePixelRatio || 1;
+    var exp = document.createElement('canvas');
+    exp.width = Math.round(totalW*dpr); exp.height = Math.round(totalH*dpr);
+    var ex = exp.getContext('2d');
+    ex.setTransform(dpr,0,0,dpr,0,0);
+    ex.fillStyle = '#0b1729';
+    ex.fillRect(0,0,totalW,totalH);
+
+    ex.drawImage(offscreenCanvas, 0,0, usedWidthPx*dpr, SPEC_HEIGHT*dpr, leftMargin, topMargin, usedWidthPx, SPEC_HEIGHT);
+
+    ex.strokeStyle = 'rgba(255,255,255,0.18)';
+    ex.lineWidth = 1;
+    currentLabelFreqs().forEach(function(f){
+      if(f > FREQ_MAX) return;
+      var y = topMargin + SPEC_HEIGHT - freqToYFrac(f)*SPEC_HEIGHT;
+      ex.beginPath(); ex.moveTo(leftMargin, y); ex.lineTo(leftMargin+usedWidthPx, y); ex.stroke();
+    });
+
+    ex.fillStyle = '#a8b6d6';
+    ex.font = '11px "JetBrains Mono", monospace';
+    ex.textAlign = 'right'; ex.textBaseline = 'middle';
+    currentLabelFreqs().forEach(function(f){
+      if(f > FREQ_MAX) return;
+      var y = topMargin + SPEC_HEIGHT - freqToYFrac(f)*SPEC_HEIGHT;
+      ex.fillText(fmtFreqLabel(f), leftMargin - 10, y);
+    });
+    ex.save();
+    ex.translate(14, topMargin + SPEC_HEIGHT/2);
+    ex.rotate(-Math.PI/2);
+    ex.textAlign = 'center'; ex.fillStyle = '#f1f4fb';
+    ex.font = '12px "JetBrains Mono", monospace';
+    ex.fillText('Frequency (Hz)', 0, 0);
+    ex.restore();
+
+    ex.fillStyle = '#a8b6d6';
+    ex.font = '11px "JetBrains Mono", monospace';
+    ex.textAlign = 'center'; ex.textBaseline = 'alphabetic';
+    var lastSec = -1;
+    spectrogramHistory.forEach(function(entry, idx){
+      var sec = Math.floor(entry.t/1000);
+      if(sec >= lastSec + 5){
+        lastSec = sec;
+        var x = leftMargin + idx*COLUMN_PX;
+        var m = Math.floor(sec/60), s = sec%60;
+        ex.fillText(m + ':' + (s<10?'0':'') + s, x, topMargin + SPEC_HEIGHT + 18);
+      }
+    });
+    ex.fillStyle = '#f1f4fb'; ex.font = '12px "JetBrains Mono", monospace';
+    ex.fillText('Time (s)', leftMargin + usedWidthPx/2, topMargin + SPEC_HEIGHT + 38);
+
+    downloadCanvas(exp, 'spectrogram.png');
+  }
 
   function buildFreqSampleList(){
     var n = 120, list = [];
@@ -816,17 +941,15 @@
 
   function dbToColor(db){
     var t = Math.max(0, Math.min(1, (db - DB_MIN)/(DB_MAX - DB_MIN)));
-    t = Math.pow(t, 0.42); // strong gamma boost for high contrast across the full range
-    // inferno-style ramp: near-black -> deep purple -> magenta -> orange -> bright yellow-white
+    t = Math.pow(t, 0.7); // mild gamma to keep mid-range content clearly visible
+    // viridis: colorblind-safe, perceptually uniform (validated for deuteranopia, protanopia, tritanopia)
     var stops = [
-      {t:0.00, c:[0,0,4]},
-      {t:0.13, c:[40,11,84]},
-      {t:0.29, c:[101,21,110]},
-      {t:0.45, c:[159,42,99]},
-      {t:0.60, c:[212,72,66]},
-      {t:0.75, c:[245,125,21]},
-      {t:0.89, c:[250,193,39]},
-      {t:1.00, c:[252,255,164]}
+      {t:0.00, c:[68,1,84]},
+      {t:0.20, c:[65,68,135]},
+      {t:0.40, c:[42,120,142]},
+      {t:0.60, c:[34,168,132]},
+      {t:0.80, c:[122,209,81]},
+      {t:1.00, c:[253,231,37]}
     ];
     var a = stops[0], b = stops[stops.length-1];
     for(var i=0;i<stops.length-1;i++){
