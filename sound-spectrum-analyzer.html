@@ -85,6 +85,7 @@
   .ctrl-btn:hover{border-color:var(--page-accent);color:var(--fg);}
   .ctrl-btn:disabled{opacity:0.4;cursor:not-allowed;}
   .ctrl-btn:disabled:hover{border-color:var(--line);color:var(--mid);}
+  .ctrl-btn.small{font-size:12px;padding:7px 12px;}
   .ctrl-select{
     font-family:'JetBrains Mono',monospace;font-size:13.5px;
     background:var(--bg-panel);border:1.5px solid var(--line);color:var(--mid);
@@ -123,20 +124,22 @@
     font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;
     color:var(--fg);margin:0 0 14px;text-transform:uppercase;letter-spacing:0.6px;
     padding-left:12px;border-left:3px solid var(--page-accent);
+    display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
   }
+  .panel h2 .h2-btns{display:flex;gap:6px;flex-wrap:wrap;text-transform:none;letter-spacing:normal;}
   .panel-hint{font-size:13px;color:var(--dim);margin:-8px 0 14px;line-height:1.5;}
 
   .canvas-row{display:flex;gap:8px;position:relative;}
   .y-axis-labels{
-    display:flex;flex-direction:column;justify-content:space-between;
     font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);
-    padding:4px 0;flex-shrink:0;width:44px;text-align:right;
+    flex-shrink:0;width:44px;text-align:right;position:relative;
   }
+  .y-axis-labels.simple{display:flex;flex-direction:column;justify-content:space-between;padding:4px 0;}
+  .y-axis-labels span{white-space:nowrap;}
   .canvas-wrap{position:relative;flex:1;min-width:0;}
-  canvas{display:block;width:100%;border-radius:10px;background:var(--bg-panel2);}
-  #spectrumCanvas{height:280px;cursor:crosshair;}
-  #spectrogramCanvas{height:180px;}
-  #waveCanvas{height:100px;}
+  canvas{display:block;border-radius:10px;background:var(--bg-panel2);}
+  #spectrumCanvas{width:100%;height:280px;cursor:crosshair;}
+  #waveCanvas{width:100%;height:130px;}
 
   .cw-tooltip{
     position:absolute;pointer-events:none;
@@ -146,8 +149,25 @@
     box-shadow:0 8px 20px -8px rgba(0,0,0,0.6);
   }
 
-  .axis-row{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;
-    font-size:11px;color:var(--dim);margin-top:6px;margin-left:58px;}
+  .axis-row{position:relative;height:16px;margin-top:6px;margin-left:52px;}
+  .axis-row span{
+    position:absolute;transform:translateX(-50%);
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);white-space:nowrap;
+  }
+
+  .spectrogram-outer{display:flex;gap:8px;}
+  .spectrogram-scroll{
+    overflow-x:auto;overflow-y:hidden;border-radius:10px;background:var(--bg-panel2);
+    flex:1;min-width:0;
+  }
+  .spectrogram-inner{position:relative;}
+  #spectrogramCanvas{display:block;}
+  .spec-time-labels{position:relative;height:16px;}
+  .spec-time-tick{
+    position:absolute;top:0;transform:translateX(-50%);
+    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);white-space:nowrap;
+  }
+  .spectrogram-note{font-size:12px;color:var(--dim);margin-top:6px;font-family:'JetBrains Mono',monospace;}
 
   .h-group{margin-bottom:20px;}
   .h-group:last-child{margin-bottom:0;}
@@ -240,36 +260,35 @@
 
     <div class="analyzer-grid">
       <div class="panel">
-        <h2>Frequency Spectrum</h2>
+        <h2>Frequency Spectrum <span class="h2-btns"><button class="ctrl-btn small" id="downloadSpecBtn">Download PNG</button></span></h2>
         <p class="panel-hint">Power at every frequency your microphone picks up right now. Hover the graph to read off a frequency. Click "Freeze Spectrum" to snapshot everything &mdash; spectrum, waveform, and harmonics &mdash; in a new color, up to 4 at once.</p>
         <div class="canvas-row">
-          <div class="y-axis-labels"><span>-10 dB</span><span>-55 dB</span><span>-100 dB</span></div>
+          <div class="y-axis-labels simple"><span>-10 dB</span><span>-32.5 dB</span><span>-55 dB</span><span>-77.5 dB</span><span>-100 dB</span></div>
           <div class="canvas-wrap">
             <canvas id="spectrumCanvas" width="900" height="280" role="img" aria-label="Live frequency spectrum graph"></canvas>
             <div class="cw-tooltip" id="specTooltip"></div>
           </div>
         </div>
-        <div class="axis-row"><span id="axisMinLabel">20 Hz</span><span id="axisMaxLabel">8000 Hz</span></div>
+        <div class="axis-row" id="specAxisRow"></div>
 
-        <h2 style="margin-top:26px;">Spectrogram &mdash; How the Spectrum Evolves Over Time</h2>
-        <p class="panel-hint">A scrolling history of the spectrum, brighter means louder. Great for hands-free playing: just watch how the pattern changes as you play, no clicking needed.</p>
-        <div class="canvas-row">
-          <div class="y-axis-labels"><span>8000 Hz</span><span></span><span>20 Hz</span></div>
-          <div class="canvas-wrap">
-            <canvas id="spectrogramCanvas" width="900" height="180"></canvas>
+        <h2 style="margin-top:26px;">Spectrogram &mdash; How the Spectrum Evolves Over Time
+          <span class="h2-btns">
+            <button class="ctrl-btn small" id="clearSpectrogramBtn">Clear Spectrogram</button>
+            <button class="ctrl-btn small" id="downloadSpectrogramBtn">Download PNG</button>
+          </span>
+        </h2>
+        <p class="panel-hint">A scrolling history of the spectrum, brighter means louder. Keeps recording through Stop/Start, so you can scroll back and look. Hover for time, frequency, and dB. Only "Clear Spectrogram" resets it.</p>
+        <div class="spectrogram-outer">
+          <div class="y-axis-labels" id="specgramYLabels"></div>
+          <div class="spectrogram-scroll" id="spectrogramScroll">
+            <div class="spectrogram-inner" id="spectrogramInner">
+              <canvas id="spectrogramCanvas"></canvas>
+              <div class="spec-time-labels" id="spectrogramTimeLabels"></div>
+              <div class="cw-tooltip" id="spectrogramTooltip"></div>
+            </div>
           </div>
         </div>
-        <div class="axis-row"><span>&larr; earlier</span><span>now &rarr;</span></div>
-
-        <h2 style="margin-top:26px;">Waveform</h2>
-        <p class="panel-hint">The actual air-pressure wave over a few cycles, auto-scaled and zoomed to the detected pitch so its shape is actually visible. Frozen waveforms overlay in matching colors.</p>
-        <div class="canvas-row">
-          <div class="y-axis-labels"><span>+</span><span>0</span><span>&minus;</span></div>
-          <div class="canvas-wrap">
-            <canvas id="waveCanvas" width="900" height="100"></canvas>
-          </div>
-        </div>
-        <div class="axis-row" id="waveAxisRow"><span>amplitude (normalized)</span><span id="waveWindowLabel">&mdash;</span></div>
+        <p class="spectrogram-note" id="spectrogramStatus">No history yet &mdash; click "Start Listening" to begin recording.</p>
 
         <h2 style="margin-top:26px;">Harmonic Series</h2>
         <p class="panel-hint">Relative strength of each harmonic compared to its own fundamental (H1 = 100%). One row per source: live, plus each frozen snapshot that had a clear pitch.</p>
@@ -296,13 +315,26 @@
           <svg id="staffSvg" viewBox="0 0 220 170" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
         <p class="info-note" id="staffNote">The fundamental note appears here once a clear pitch is detected.</p>
+
+        <h2 style="margin-top:26px;">Waveform</h2>
+        <p class="panel-hint">The actual air-pressure wave over a few cycles, auto-scaled and zoomed to the detected pitch. Frozen waveforms overlay in matching colors.</p>
+        <div class="canvas-row">
+          <div class="y-axis-labels simple"><span>+</span><span>0</span><span>&minus;</span></div>
+          <div class="canvas-wrap">
+            <canvas id="waveCanvas" width="500" height="130"></canvas>
+          </div>
+        </div>
+        <div class="axis-row" style="margin-left:0;position:static;display:flex;justify-content:space-between;">
+          <span style="position:static;transform:none;">amplitude (normalized)</span>
+          <span style="position:static;transform:none;" id="waveWindowLabel">&mdash;</span>
+        </div>
       </div>
     </div>
 
     <section class="explainer">
       <h3>What Am I Looking At?</h3>
       <p>The <strong>spectrum</strong> shows how much acoustic power is present at every frequency in the sound right now, from a rumbling low note to a bright, high overtone. The y-axis is in decibels (dB), a logarithmic loudness scale, so a curve that looks only slightly taller actually represents meaningfully more energy. Peaks correspond to strong, resonant frequencies; a clean musical tone produces a tall peak at its fundamental frequency, plus a series of smaller peaks at whole-number multiples of it, its harmonics.</p>
-      <p>The <strong>spectrogram</strong> stacks that same information over time instead of freezing a single instant, so you can watch a melody, chord change, or vibrato unfold without touching a button, ideal for whenever your hands are busy playing.</p>
+      <p>The <strong>spectrogram</strong> stacks that same information over time instead of freezing a single instant, so you can watch a melody, chord change, or vibrato unfold without touching a button, ideal for whenever your hands are busy playing. It keeps recording across Stop/Start so you can scroll back through what already happened.</p>
       <p>The analyzer estimates the <strong>fundamental frequency</strong> using autocorrelation, a technique that compares the waveform against time-shifted copies of itself to find its true repeating period, which tends to be far more accurate for musical pitch than simply picking the tallest spectrum peak. From that fundamental, it predicts where each harmonic should sit and measures how strong each one actually is, which is what the harmonic bars show.</p>
       <p><strong>Cents</strong> measure pitch distance on a scale where 100 cents equal one semitone. The needle shows how far your note sits from the nearest note in standard 12-tone equal temperament (A4 = 440 Hz), which is useful for tuning an instrument or checking intonation precisely.</p>
     </section>
@@ -322,9 +354,9 @@
   var axisSelect = document.getElementById('axisSelect');
   var statusLine = document.getElementById('statusLine');
   var spectrumCanvas = document.getElementById('spectrumCanvas');
-  var spectrogramCanvas = document.getElementById('spectrogramCanvas');
   var waveCanvas = document.getElementById('waveCanvas');
   var specTooltip = document.getElementById('specTooltip');
+  var specAxisRow = document.getElementById('specAxisRow');
   var harmonicGroupsEl = document.getElementById('harmonicGroups');
   var noteNameEl = document.getElementById('noteName');
   var freqReadoutEl = document.getElementById('freqReadout');
@@ -332,9 +364,12 @@
   var centsValueEl = document.getElementById('centsValue');
   var staffSvg = document.getElementById('staffSvg');
   var staffNote = document.getElementById('staffNote');
-  var axisMinLabel = document.getElementById('axisMinLabel');
-  var axisMaxLabel = document.getElementById('axisMaxLabel');
   var waveWindowLabel = document.getElementById('waveWindowLabel');
+  var downloadSpecBtn = document.getElementById('downloadSpecBtn');
+  var downloadSpectrogramBtn = document.getElementById('downloadSpectrogramBtn');
+  var clearSpectrogramBtn = document.getElementById('clearSpectrogramBtn');
+  var spectrogramStatus = document.getElementById('spectrogramStatus');
+  var specgramYLabelsEl = document.getElementById('specgramYLabels');
 
   var audioCtx = null, analyser = null, sourceNode = null, mediaStream = null;
   var isListening = false;
@@ -351,10 +386,22 @@
   var NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
   var LETTER_VAL = {C:0,D:1,E:2,F:3,G:4,A:5,B:6};
 
+  var LABEL_FREQS_LOG = [20,50,100,200,500,1000,2000,5000,8000];
+  var LABEL_FREQS_LINEAR = [1000,2000,3000,4000,5000,6000,7000,8000];
+
   function setStatus(msg, isErr){
     statusLine.textContent = msg;
     statusLine.classList.toggle('err', !!isErr);
   }
+
+  function downloadCanvas(canvas, filename){
+    var link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+  downloadSpecBtn.addEventListener('click', function(){ downloadCanvas(spectrumCanvas, 'spectrum.png'); });
+  downloadSpectrogramBtn.addEventListener('click', function(){ downloadCanvas(spectrogramCanvas, 'spectrogram.png'); });
 
   // ---------- Web Audio setup ----------
   function startListening(){
@@ -379,7 +426,7 @@
         listenLabel.textContent = 'Stop Listening';
         freezeBtn.disabled = false;
         setStatus('Listening\u2026 play a note, sing, or hum.');
-        resetSpectrogram();
+        segmentStartPerf = performance.now();
         loop();
       })
       .catch(function(err){
@@ -392,8 +439,9 @@
     listenBtn.classList.remove('live');
     listenLabel.textContent = 'Start Listening';
     freezeBtn.disabled = true;
-    setStatus('Not listening. Frozen spectra stay put until you clear them.');
+    setStatus('Not listening. Frozen spectra and the spectrogram stay put until you clear them.');
     if(rafId) cancelAnimationFrame(rafId);
+    if(segmentStartPerf !== null){ accumulatedMs += performance.now() - segmentStartPerf; segmentStartPerf = null; }
     if(mediaStream){ mediaStream.getTracks().forEach(function(t){ t.stop(); }); mediaStream = null; }
     if(audioCtx){ audioCtx.close(); audioCtx = null; }
     analyser = null; sourceNode = null;
@@ -479,29 +527,13 @@
   });
   axisSelect.addEventListener('change', function(){
     axisMode = axisSelect.value;
-    axisMinLabel.textContent = FREQ_MIN + ' Hz';
-    axisMaxLabel.textContent = FREQ_MAX + ' Hz';
+    renderSpecAxisLabels();
+    renderSpecgramYLabels();
     if(!isListening) redrawStaticSpectrum();
   });
 
-  // ---------- canvas helpers ----------
-  var specCtx = spectrumCanvas.getContext('2d');
-  var waveCtx = waveCanvas.getContext('2d');
-  var spectrogramCtx = spectrogramCanvas.getContext('2d');
-
-  function resizeCanvas(canvas, ctx){
-    var rect = canvas.getBoundingClientRect();
-    var dpr = window.devicePixelRatio || 1;
-    var cssHeight = parseInt(getComputedStyle(canvas).height, 10) || canvas.height;
-    var newW = Math.max(300, Math.round(rect.width * dpr));
-    var newH = Math.round(cssHeight * dpr);
-    var changed = (canvas.width !== newW || canvas.height !== newH);
-    if(changed){
-      canvas.width = newW; canvas.height = newH;
-    }
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    return { w: rect.width, h: cssHeight, changed: changed, dpr: dpr };
-  }
+  // ---------- shared axis helpers ----------
+  function currentLabelFreqs(){ return axisMode==='log' ? LABEL_FREQS_LOG : LABEL_FREQS_LINEAR; }
 
   function freqToX(freq, w){
     if(axisMode === 'log'){
@@ -518,6 +550,40 @@
     }
     return (x/w)*FREQ_MAX;
   }
+  function freqToYFrac(freq){
+    return axisMode==='log'
+      ? (Math.log(freq)-Math.log(FREQ_MIN))/(Math.log(FREQ_MAX)-Math.log(FREQ_MIN))
+      : freq/FREQ_MAX;
+  }
+  function fmtFreqLabel(f){ return f>=1000 ? (f/1000)+'k' : String(f); }
+
+  function renderSpecAxisLabels(){
+    var w = spectrumCanvas.getBoundingClientRect().width;
+    specAxisRow.innerHTML = '';
+    currentLabelFreqs().forEach(function(f){
+      if(f>FREQ_MAX) return;
+      var span = document.createElement('span');
+      span.style.left = Math.min(w-4, Math.max(4, freqToX(f,w))) + 'px';
+      span.textContent = fmtFreqLabel(f);
+      specAxisRow.appendChild(span);
+    });
+  }
+
+  function renderSpecgramYLabels(){
+    specgramYLabelsEl.innerHTML = '';
+    specgramYLabelsEl.style.height = SPEC_HEIGHT + 'px';
+    currentLabelFreqs().forEach(function(f){
+      if(f>FREQ_MAX) return;
+      var frac = freqToYFrac(f);
+      var span = document.createElement('span');
+      span.style.position = 'absolute';
+      span.style.right = '4px';
+      span.style.top = (SPEC_HEIGHT - frac*SPEC_HEIGHT) + 'px';
+      span.style.transform = 'translateY(-50%)';
+      span.textContent = fmtFreqLabel(f);
+      specgramYLabelsEl.appendChild(span);
+    });
+  }
 
   function resetLiveReadouts(){
     noteNameEl.textContent = '\u2014';
@@ -530,28 +596,32 @@
     waveWindowLabel.textContent = '\u2014';
   }
 
-  function drawGridAndAxis(ctx, w, h){
+  // ---------- frequency spectrum canvas ----------
+  var specCtx = spectrumCanvas.getContext('2d');
+  var waveCtx = waveCanvas.getContext('2d');
+
+  function resizeCanvas(canvas, ctx){
+    var rect = canvas.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    var cssHeight = parseInt(getComputedStyle(canvas).height, 10) || canvas.height;
+    var newW = Math.max(300, Math.round(rect.width * dpr));
+    var newH = Math.round(cssHeight * dpr);
+    var changed = (canvas.width !== newW || canvas.height !== newH);
+    if(changed){ canvas.width = newW; canvas.height = newH; }
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    return { w: rect.width, h: cssHeight, changed: changed, dpr: dpr };
+  }
+
+  function drawGrid(ctx, w, h){
     ctx.strokeStyle = 'rgba(255,255,255,0.07)';
     ctx.lineWidth = 1;
-    ctx.font = '9.5px JetBrains Mono, monospace';
-    ctx.fillStyle = 'rgba(168,182,214,0.8)';
-    ctx.textAlign = 'center';
     var gridFreqs = axisMode==='log'
       ? [20,30,50,70,100,150,200,300,500,700,1000,1500,2000,3000,5000,7000,8000]
       : [500,1000,1500,2000,2500,3000,3500,4000,4500,5000,5500,6000,6500,7000,7500,8000];
-    var labelFreqs = axisMode==='log'
-      ? [20,50,100,200,500,1000,2000,5000,8000]
-      : [1000,2000,3000,4000,5000,6000,7000,8000];
     gridFreqs.forEach(function(f){
       if(f>FREQ_MAX) return;
       var x = freqToX(f, w);
       ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
-    });
-    labelFreqs.forEach(function(f){
-      if(f>FREQ_MAX) return;
-      var x = freqToX(f, w);
-      var label = f>=1000 ? (f/1000)+'k' : String(f);
-      ctx.fillText(label, Math.min(w-12, Math.max(12,x)), h-4);
     });
   }
 
@@ -585,28 +655,27 @@
     var dims = resizeCanvas(spectrumCanvas, specCtx);
     var w = dims.w, h = dims.h;
     specCtx.clearRect(0,0,w,h);
-    drawGridAndAxis(specCtx, w, h);
+    drawGrid(specCtx, w, h);
     frozenSpectra.forEach(function(fz){
       if(!fz.visible) return;
       drawOneCurve(specCtx, fz.freqData, fz.sampleRate, w, h, fz.color, false);
     });
+    renderSpecAxisLabels();
   }
 
   function drawSpectrum(dataArray, sampleRate){
     var dims = resizeCanvas(spectrumCanvas, specCtx);
     var w = dims.w, h = dims.h;
     specCtx.clearRect(0,0,w,h);
-    drawGridAndAxis(specCtx, w, h);
-
+    drawGrid(specCtx, w, h);
     frozenSpectra.forEach(function(fz){
       if(!fz.visible) return;
       drawOneCurve(specCtx, fz.freqData, fz.sampleRate, w, h, fz.color, false);
     });
-
     drawOneCurve(specCtx, dataArray, sampleRate, w, h, '#ff6fa8', true);
+    if(dims.changed) renderSpecAxisLabels();
   }
 
-  // ---------- hover tooltip ----------
   var lastLiveData = null, lastSampleRate = null;
   spectrumCanvas.addEventListener('mousemove', function(e){
     var rect = spectrumCanvas.getBoundingClientRect();
@@ -623,85 +692,21 @@
     specTooltip.style.left = x + 'px';
     specTooltip.style.top = '0px';
   });
-  spectrumCanvas.addEventListener('mouseleave', function(){
-    specTooltip.style.display = 'none';
-  });
+  spectrumCanvas.addEventListener('mouseleave', function(){ specTooltip.style.display = 'none'; });
 
-  // ---------- spectrogram (fixed: raw-pixel shift, independent of DPR transform) ----------
-  function resetSpectrogram(){
-    var dims = resizeCanvas(spectrogramCanvas, spectrogramCtx);
-    spectrogramCtx.fillStyle = '#0e1c33';
-    spectrogramCtx.fillRect(0,0,dims.w,dims.h);
-  }
-  function dbToColor(db){
-    var t = Math.max(0, Math.min(1, (db - DB_MIN)/(DB_MAX - DB_MIN)));
-    var stops = [
-      {t:0.0, c:[14,28,51]},
-      {t:0.35, c:[58,32,96]},
-      {t:0.62, c:[185,138,255]},
-      {t:0.82, c:[255,111,168]},
-      {t:1.0, c:[255,229,150]}
-    ];
-    var a = stops[0], b = stops[stops.length-1];
-    for(var i=0;i<stops.length-1;i++){
-      if(t >= stops[i].t && t <= stops[i+1].t){ a = stops[i]; b = stops[i+1]; break; }
-    }
-    var span = (b.t - a.t) || 1;
-    var lt = (t - a.t) / span;
-    var r = Math.round(a.c[0] + (b.c[0]-a.c[0])*lt);
-    var g = Math.round(a.c[1] + (b.c[1]-a.c[1])*lt);
-    var bl = Math.round(a.c[2] + (b.c[2]-a.c[2])*lt);
-    return 'rgb('+r+','+g+','+bl+')';
-  }
-  function drawSpectrogramColumn(dataArray, sampleRate){
-    var dims = resizeCanvas(spectrogramCanvas, spectrogramCtx);
-    if(dims.changed){
-      spectrogramCtx.fillStyle = '#0e1c33';
-      spectrogramCtx.fillRect(0,0,dims.w,dims.h);
-    }
-    var w = dims.w, h = dims.h;
-
-    // shift existing pixels left by 1 CSS pixel, working in raw device-pixel space
-    // (drawImage's source rect always refers to actual backing-store pixels,
-    // so we must use an identity transform for this copy, not the DPR-scaled one)
-    spectrogramCtx.setTransform(1,0,0,1,0,0);
-    var pxShift = Math.max(1, Math.round(dims.dpr));
-    spectrogramCtx.drawImage(
-      spectrogramCanvas,
-      pxShift, 0, spectrogramCanvas.width - pxShift, spectrogramCanvas.height,
-      0, 0, spectrogramCanvas.width - pxShift, spectrogramCanvas.height
-    );
-    spectrogramCtx.setTransform(dims.dpr,0,0,dims.dpr,0,0);
-
-    var binCount = dataArray.length, nyquist = sampleRate/2;
-    for(var y=0; y<h; y++){
-      var freq = axisMode==='log'
-        ? Math.exp(Math.log(FREQ_MIN) + ((h-y)/h)*(Math.log(FREQ_MAX)-Math.log(FREQ_MIN)))
-        : ((h-y)/h)*FREQ_MAX;
-      var bin = Math.max(0, Math.min(binCount-1, Math.round((freq/nyquist)*binCount)));
-      spectrogramCtx.fillStyle = dbToColor(dataArray[bin]);
-      spectrogramCtx.fillRect(w-1, y, 1.5, 1.5);
-    }
-  }
-
-  // ---------- waveform (auto-scaled, zoomed to pitch; live + frozen overlays) ----------
+  // ---------- waveform ----------
   function computeWaveWindow(timeData, sampleRate, fundamental){
-    var windowSize;
     if(fundamental){
       var period = sampleRate / fundamental;
-      windowSize = Math.min(timeData.length, Math.round(period * 3.5));
-    } else {
-      windowSize = Math.min(timeData.length, Math.round(sampleRate * 0.02));
+      return Math.min(timeData.length, Math.round(period * 3.5));
     }
-    return windowSize;
+    return Math.min(timeData.length, Math.round(sampleRate * 0.02));
   }
-
   function drawOneWave(ctx, timeData, sampleRate, fundamental, w, h, color, lineWidth){
     var windowSize = computeWaveWindow(timeData, sampleRate, fundamental);
     var maxAbs = 0;
     for(var i=0;i<windowSize;i++){ maxAbs = Math.max(maxAbs, Math.abs(timeData[i])); }
     var scale = maxAbs > 0.001 ? (0.92/maxAbs) : 1;
-
     ctx.beginPath();
     for(var x=0; x<w; x++){
       var idx = Math.min(windowSize-1, Math.floor((x/w)*windowSize));
@@ -709,51 +714,201 @@
       var y = h/2 - v*(h/2);
       if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
     }
-    ctx.strokeStyle = color;
-    ctx.lineWidth = lineWidth;
-    ctx.stroke();
+    ctx.strokeStyle = color; ctx.lineWidth = lineWidth; ctx.stroke();
     return windowSize;
   }
-
   function drawWaveGridline(ctx, w, h){
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(w,h/2); ctx.stroke();
   }
-
   function redrawStaticWave(){
     var dims = resizeCanvas(waveCanvas, waveCtx);
     var w = dims.w, h = dims.h;
     waveCtx.clearRect(0,0,w,h);
     drawWaveGridline(waveCtx, w, h);
-    var anyWindow = null;
+    var any = null;
     frozenSpectra.forEach(function(fz){
       if(!fz.visible) return;
       var ws = drawOneWave(waveCtx, fz.timeData, fz.sampleRate, fz.fundamental, w, h, fz.color, 1.3);
-      if(anyWindow===null) anyWindow = { ws: ws, sr: fz.sampleRate };
+      if(any===null) any = { ws: ws, sr: fz.sampleRate };
     });
-    if(anyWindow){
-      waveWindowLabel.textContent = '\u2248' + (1000*anyWindow.ws/anyWindow.sr).toFixed(1) + ' ms (frozen)';
-    } else {
-      waveWindowLabel.textContent = '\u2014';
-    }
+    waveWindowLabel.textContent = any ? ('\u2248' + (1000*any.ws/any.sr).toFixed(1) + ' ms (frozen)') : '\u2014';
   }
-
   function drawWave(timeData, sampleRate, fundamental){
     var dims = resizeCanvas(waveCanvas, waveCtx);
     var w = dims.w, h = dims.h;
     waveCtx.clearRect(0,0,w,h);
     drawWaveGridline(waveCtx, w, h);
-
     frozenSpectra.forEach(function(fz){
       if(!fz.visible) return;
       drawOneWave(waveCtx, fz.timeData, fz.sampleRate, fz.fundamental, w, h, fz.color, 1.2);
     });
-
     var ws = drawOneWave(waveCtx, timeData, sampleRate, fundamental, w, h, '#b98aff', 1.7);
-    var label = '\u2248' + (1000*ws/sampleRate).toFixed(1) + ' ms' + (fundamental ? ' (~3.5 cycles)' : '');
-    waveWindowLabel.textContent = label;
+    waveWindowLabel.textContent = '\u2248' + (1000*ws/sampleRate).toFixed(1) + ' ms' + (fundamental ? ' (~3.5 cycles)' : '');
   }
+
+  // ---------- spectrogram: scrollable, persistent history ----------
+  var COLUMN_PX = 2;
+  var MAX_HISTORY = 4000;
+  var SPEC_HEIGHT = 260;
+  var spectrogramHistory = [];
+  var spectrogramFull = false;
+  var accumulatedMs = 0, segmentStartPerf = null;
+  var lastLabeledSecond = -1;
+
+  var spectrogramCanvas = document.getElementById('spectrogramCanvas');
+  var spectrogramCtx = spectrogramCanvas.getContext('2d');
+  var spectrogramScrollEl = document.getElementById('spectrogramScroll');
+  var spectrogramInnerEl = document.getElementById('spectrogramInner');
+  var spectrogramTimeLabelsEl = document.getElementById('spectrogramTimeLabels');
+  var spectrogramTooltip = document.getElementById('spectrogramTooltip');
+
+  var offscreenCanvas = document.createElement('canvas');
+  var offscreenCtx = offscreenCanvas.getContext('2d');
+
+  function dbToColor(db){
+    var t = Math.max(0, Math.min(1, (db - DB_MIN)/(DB_MAX - DB_MIN)));
+    var stops = [
+      {t:0.0, c:[14,28,51]}, {t:0.35, c:[58,32,96]}, {t:0.62, c:[185,138,255]},
+      {t:0.82, c:[255,111,168]}, {t:1.0, c:[255,229,150]}
+    ];
+    var a = stops[0], b = stops[stops.length-1];
+    for(var i=0;i<stops.length-1;i++){
+      if(t >= stops[i].t && t <= stops[i+1].t){ a = stops[i]; b = stops[i+1]; break; }
+    }
+    var span = (b.t - a.t) || 1, lt = (t - a.t) / span;
+    var r = Math.round(a.c[0] + (b.c[0]-a.c[0])*lt);
+    var g = Math.round(a.c[1] + (b.c[1]-a.c[1])*lt);
+    var bl = Math.round(a.c[2] + (b.c[2]-a.c[2])*lt);
+    return 'rgb('+r+','+g+','+bl+')';
+  }
+
+  function initOffscreen(){
+    var dpr = window.devicePixelRatio || 1;
+    offscreenCanvas.width = Math.round(MAX_HISTORY*COLUMN_PX*dpr);
+    offscreenCanvas.height = Math.round(SPEC_HEIGHT*dpr);
+    offscreenCtx.setTransform(dpr,0,0,dpr,0,0);
+    offscreenCtx.fillStyle = '#0e1c33';
+    offscreenCtx.fillRect(0,0,MAX_HISTORY*COLUMN_PX,SPEC_HEIGHT);
+  }
+
+  function clearSpectrogram(){
+    spectrogramHistory = [];
+    spectrogramFull = false;
+    accumulatedMs = 0;
+    segmentStartPerf = isListening ? performance.now() : null;
+    lastLabeledSecond = -1;
+    spectrogramTimeLabelsEl.innerHTML = '';
+    initOffscreen();
+    updateVisibleSpectrogram();
+    spectrogramStatus.textContent = isListening ? 'Recording\u2026' : 'No history yet \u2014 click "Start Listening" to begin recording.';
+  }
+  clearSpectrogramBtn.addEventListener('click', clearSpectrogram);
+
+  function getElapsedMs(){
+    if(segmentStartPerf === null) return accumulatedMs;
+    return accumulatedMs + (performance.now() - segmentStartPerf);
+  }
+  function fmtTime(ms){
+    var totalSec = ms/1000;
+    var m = Math.floor(totalSec/60);
+    var s = totalSec - m*60;
+    return m + ':' + (s<10?'0':'') + s.toFixed(1);
+  }
+
+  function pushSpectrogramColumn(freqData, sampleRate){
+    if(spectrogramFull) return;
+    var n = freqData.length;
+    var bytes = new Uint8Array(n);
+    for(var i=0;i<n;i++){
+      var norm = Math.max(0, Math.min(1, (freqData[i]-DB_MIN)/(DB_MAX-DB_MIN)));
+      bytes[i] = Math.round(norm*255);
+    }
+    var t = getElapsedMs();
+    var idx = spectrogramHistory.length;
+    spectrogramHistory.push({ t:t, bytes:bytes, binCount:n, sampleRate:sampleRate });
+
+    var x = idx*COLUMN_PX;
+    var nyquist = sampleRate/2;
+    for(var y=0;y<SPEC_HEIGHT;y++){
+      var freq = axisMode==='log'
+        ? Math.exp(Math.log(FREQ_MIN) + ((SPEC_HEIGHT-y)/SPEC_HEIGHT)*(Math.log(FREQ_MAX)-Math.log(FREQ_MIN)))
+        : ((SPEC_HEIGHT-y)/SPEC_HEIGHT)*FREQ_MAX;
+      var bin = Math.max(0, Math.min(n-1, Math.round((freq/nyquist)*n)));
+      var db = DB_MIN + (bytes[bin]/255)*(DB_MAX-DB_MIN);
+      offscreenCtx.fillStyle = dbToColor(db);
+      offscreenCtx.fillRect(x, y, COLUMN_PX+0.5, 1.5);
+    }
+
+    var sec = Math.floor(t/1000);
+    if(sec >= lastLabeledSecond + 5){
+      lastLabeledSecond = sec;
+      var lab = document.createElement('span');
+      lab.className = 'spec-time-tick';
+      lab.style.left = x + 'px';
+      var m = Math.floor(sec/60), s = sec%60;
+      lab.textContent = m + ':' + (s<10?'0':'') + s;
+      spectrogramTimeLabelsEl.appendChild(lab);
+    }
+
+    if(spectrogramHistory.length >= MAX_HISTORY){
+      spectrogramFull = true;
+      spectrogramStatus.textContent = 'Spectrogram history limit reached (\u2248' + fmtTime(t) + '). Clear to keep recording.';
+    } else {
+      spectrogramStatus.textContent = 'Recording\u2026 ' + fmtTime(t) + ' so far.';
+    }
+
+    updateVisibleSpectrogram();
+  }
+
+  function updateVisibleSpectrogram(){
+    var dpr = window.devicePixelRatio || 1;
+    var wasNearEnd = (spectrogramScrollEl.scrollWidth - spectrogramScrollEl.clientWidth - spectrogramScrollEl.scrollLeft) < 60;
+
+    var usedWidthPx = Math.max(COLUMN_PX, spectrogramHistory.length*COLUMN_PX);
+    var newW = Math.round(usedWidthPx*dpr), newH = Math.round(SPEC_HEIGHT*dpr);
+    if(spectrogramCanvas.width !== newW || spectrogramCanvas.height !== newH){
+      spectrogramCanvas.width = newW; spectrogramCanvas.height = newH;
+    }
+    spectrogramCanvas.style.width = usedWidthPx+'px';
+    spectrogramCanvas.style.height = SPEC_HEIGHT+'px';
+    spectrogramInnerEl.style.width = usedWidthPx+'px';
+
+    spectrogramCtx.setTransform(1,0,0,1,0,0);
+    spectrogramCtx.clearRect(0,0,newW,newH);
+    spectrogramCtx.drawImage(offscreenCanvas, 0,0,newW,newH, 0,0,newW,newH);
+
+    spectrogramCtx.setTransform(dpr,0,0,dpr,0,0);
+    spectrogramCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+    spectrogramCtx.lineWidth = 1;
+    currentLabelFreqs().forEach(function(f){
+      if(f>FREQ_MAX) return;
+      var y = SPEC_HEIGHT - freqToYFrac(f)*SPEC_HEIGHT;
+      spectrogramCtx.beginPath(); spectrogramCtx.moveTo(0,y); spectrogramCtx.lineTo(usedWidthPx,y); spectrogramCtx.stroke();
+    });
+
+    if(wasNearEnd){ spectrogramScrollEl.scrollLeft = spectrogramScrollEl.scrollWidth; }
+  }
+
+  spectrogramCanvas.addEventListener('mousemove', function(e){
+    var rect = spectrogramCanvas.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var y = e.clientY - rect.top;
+    var colIdx = Math.floor(x / COLUMN_PX);
+    if(colIdx < 0 || colIdx >= spectrogramHistory.length){ spectrogramTooltip.style.display = 'none'; return; }
+    var entry = spectrogramHistory[colIdx];
+    var freq = axisMode==='log'
+      ? Math.exp(Math.log(FREQ_MIN) + ((SPEC_HEIGHT-y)/SPEC_HEIGHT)*(Math.log(FREQ_MAX)-Math.log(FREQ_MIN)))
+      : ((SPEC_HEIGHT-y)/SPEC_HEIGHT)*FREQ_MAX;
+    var nyquist = entry.sampleRate/2;
+    var bin = Math.max(0, Math.min(entry.binCount-1, Math.round((freq/nyquist)*entry.binCount)));
+    var db = Math.round(DB_MIN + (entry.bytes[bin]/255)*(DB_MAX-DB_MIN));
+    spectrogramTooltip.textContent = fmtTime(entry.t) + '  \u2022  ' + Math.round(freq) + ' Hz  \u2022  ' + db + ' dB';
+    spectrogramTooltip.style.display = 'block';
+    spectrogramTooltip.style.left = x + 'px';
+    spectrogramTooltip.style.top = '0px';
+  });
+  spectrogramCanvas.addEventListener('mouseleave', function(){ spectrogramTooltip.style.display = 'none'; });
 
   // ---------- pitch detection (autocorrelation) ----------
   function detectPitch(buf, sampleRate){
@@ -769,12 +924,9 @@
 
     var bestLag = -1, bestCorr = 0;
     var corrs = new Float32Array(maxLag+1);
-
     for(var lag=minLag; lag<=maxLag; lag++){
       var sum = 0;
-      for(var j=0; j<SIZE-lag; j++){
-        sum += buf[j]*buf[j+lag];
-      }
+      for(var j=0; j<SIZE-lag; j++){ sum += buf[j]*buf[j+lag]; }
       corrs[lag] = sum;
       if(sum > bestCorr){ bestCorr = sum; bestLag = lag; }
     }
@@ -808,16 +960,13 @@
     return { midi: roundedMidi, name: name, octave: octave, cents: cents, letter: letter, sharp: sharp, freq: freq };
   }
 
-  function diatonicIndex(letter, octave){
-    return octave*7 + LETTER_VAL[letter];
-  }
+  function diatonicIndex(letter, octave){ return octave*7 + LETTER_VAL[letter]; }
 
   function findHarmonics(dataArray, sampleRate, fundamental, count){
     var binCount = dataArray.length;
     var nyquist = sampleRate/2;
     var results = [];
     var fundamentalMag = null;
-
     for(var n=1; n<=count; n++){
       var hf = fundamental*n;
       if(hf > nyquist) break;
@@ -837,9 +986,7 @@
     } else {
       results.forEach(function(r){ r.relPct = 0; });
     }
-    results.forEach(function(r){
-      r.norm = Math.max(0, Math.min(1, (r.db - DB_MIN)/(DB_MAX - DB_MIN)));
-    });
+    results.forEach(function(r){ r.norm = Math.max(0, Math.min(1, (r.db - DB_MIN)/(DB_MAX - DB_MIN))); });
     return results;
   }
 
@@ -856,7 +1003,7 @@
       var pct = Math.max(0, Math.min(140, h.relPct));
       var barHeight = Math.max(pct > 0 ? 4 : 2, Math.min(100, pct));
       fill.style.height = barHeight + '%';
-      fill.style.background = h.n === 1 ? '#ffffff' : color;
+      fill.style.background = color;
       track.appendChild(fill);
       var pctLabel = document.createElement('div');
       pctLabel.className = 'h-bar-pct';
@@ -867,10 +1014,7 @@
       var hzLabel = document.createElement('div');
       hzLabel.className = 'h-bar-hz';
       hzLabel.textContent = Math.round(h.freq) + 'Hz';
-      col.appendChild(pctLabel);
-      col.appendChild(track);
-      col.appendChild(label);
-      col.appendChild(hzLabel);
+      col.appendChild(pctLabel); col.appendChild(track); col.appendChild(label); col.appendChild(hzLabel);
       wrap.appendChild(col);
     });
     return wrap;
@@ -936,7 +1080,6 @@
     for(var k in attrs){ e.setAttribute(k, attrs[k]); }
     return e;
   }
-
   function drawStaff(noteInfo){
     while(staffSvg.firstChild) staffSvg.removeChild(staffSvg.firstChild);
     var left = 40, right = 190, top = 40, spacing = 20;
@@ -949,7 +1092,6 @@
     var clefText = el('text', {x:left+6, y: useTreble ? top+64 : top+46, 'font-size': useTreble?66:40, fill:'var(--fg)', 'font-family':'serif'});
     clefText.textContent = clefChar;
     staffSvg.appendChild(clefText);
-
     if(!noteInfo){ return; }
 
     var refIndex = useTreble ? diatonicIndex('E',4) : diatonicIndex('G',2);
@@ -973,15 +1115,12 @@
         staffSvg.appendChild(el('line', {x1:ledgerXs[0], y1:ly2, x2:ledgerXs[1], y2:ly2, stroke:'var(--dim)', 'stroke-width':1.3}));
       }
     }
-
     if(noteInfo.sharp){
       var sharpText = el('text', {x:noteX-24, y:noteY+6, 'font-size':20, fill:'var(--page-accent)', 'font-family':'serif'});
       sharpText.textContent = '\u266F';
       staffSvg.appendChild(sharpText);
     }
-
     staffSvg.appendChild(el('ellipse', {cx:noteX, cy:noteY, rx:9, ry:6.5, fill:'var(--page-accent)', transform:'rotate(-18 '+noteX+' '+noteY+')'}));
-
     staffNote.innerHTML = 'Showing <strong>' + noteInfo.name + noteInfo.octave + '</strong> on the ' + (useTreble?'treble':'bass') + ' clef.';
   }
 
@@ -1024,7 +1163,7 @@
 
     renderHarmonicGroups();
     drawSpectrum(freqData, sampleRate);
-    drawSpectrogramColumn(freqData, sampleRate);
+    pushSpectrogramColumn(freqData, sampleRate);
     drawWave(timeData, sampleRate, fundamental);
 
     rafId = requestAnimationFrame(loop);
@@ -1033,12 +1172,13 @@
   resetLiveReadouts();
   redrawStaticSpectrum();
   redrawStaticWave();
-  resetSpectrogram();
+  initOffscreen();
+  updateVisibleSpectrogram();
+  renderSpecgramYLabels();
   renderHarmonicGroups();
-  axisMinLabel.textContent = FREQ_MIN + ' Hz';
-  axisMaxLabel.textContent = FREQ_MAX + ' Hz';
   window.addEventListener('resize', function(){
-    if(!isListening){ redrawStaticSpectrum(); redrawStaticWave(); resetSpectrogram(); }
+    if(!isListening){ redrawStaticSpectrum(); redrawStaticWave(); }
+    renderSpecgramYLabels();
   });
 })();
 </script>
