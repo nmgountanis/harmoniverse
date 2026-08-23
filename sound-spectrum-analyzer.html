@@ -85,7 +85,7 @@
   .ctrl-btn:hover{border-color:var(--page-accent);color:var(--fg);}
   .ctrl-btn:disabled{opacity:0.4;cursor:not-allowed;}
   .ctrl-btn:disabled:hover{border-color:var(--line);color:var(--mid);}
-  .ctrl-btn.small{font-size:12px;padding:7px 12px;}
+  .ctrl-btn.small{font-size:14px;padding:8px 14px;}
   .ctrl-select{
     font-family:'JetBrains Mono',monospace;font-size:13.5px;
     background:var(--bg-panel);border:1.5px solid var(--line);color:var(--mid);
@@ -100,7 +100,7 @@
   .freeze-chips{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:24px;min-height:32px;}
   .freeze-chip{
     display:inline-flex;align-items:center;gap:7px;
-    font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--mid);
+    font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--mid);
     background:var(--bg-panel);border:1.5px solid var(--line);border-radius:16px;
     padding:5px 10px 5px 12px;cursor:pointer;transition:opacity .15s,border-color .15s;
   }
@@ -108,7 +108,7 @@
   .freeze-chip.hidden-layer{opacity:0.4;}
   .freeze-chip .swatch{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
   .freeze-chip .remove-x{
-    background:none;border:none;color:var(--dim);cursor:pointer;font-size:13px;
+    background:none;border:none;color:var(--dim);cursor:pointer;font-size:15px;
     padding:0 2px;line-height:1;
   }
   .freeze-chip .remove-x:hover{color:var(--bad);}
@@ -122,18 +122,18 @@
     padding:20px 22px 22px;
   }
   .panel h2{
-    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:19px;
     color:var(--fg);margin:0 0 14px;text-transform:uppercase;letter-spacing:0.6px;
     padding-left:12px;border-left:3px solid var(--page-accent);
     display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
   }
   .panel h2 .h2-btns{display:flex;gap:6px;flex-wrap:wrap;text-transform:none;letter-spacing:normal;}
-  .panel-hint{font-size:13px;color:var(--dim);margin:-8px 0 14px;line-height:1.5;}
+  .panel-hint{font-size:16px;color:var(--dim);margin:-6px 0 16px;line-height:1.55;}
 
   .canvas-row{display:flex;gap:8px;position:relative;}
   .y-axis-labels{
-    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);
-    flex-shrink:0;width:44px;text-align:right;position:relative;
+    font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--dim);
+    flex-shrink:0;width:56px;text-align:right;position:relative;
   }
   .y-axis-labels.simple{display:flex;flex-direction:column;justify-content:space-between;padding:4px 0;}
   .y-axis-labels span{white-space:nowrap;}
@@ -145,25 +145,25 @@
   .cw-tooltip{
     position:absolute;pointer-events:none;
     background:var(--bg-panel);border:1px solid var(--page-accent);border-radius:8px;
-    padding:6px 10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--fg);
+    padding:7px 12px;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--fg);
     transform:translate(-50%,-115%);white-space:nowrap;z-index:5;display:none;
     box-shadow:0 8px 20px -8px rgba(0,0,0,0.6);
   }
   .cw-tooltip-fixed{position:fixed;z-index:50;}
 
-  .axis-row{position:relative;height:16px;margin-top:6px;margin-left:76px;}
+  .axis-row{position:relative;height:20px;margin-top:8px;margin-left:92px;}
   .axis-row span{
     position:absolute;transform:translateX(-50%);
-    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);white-space:nowrap;
+    font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--dim);white-space:nowrap;
   }
   .axis-title-x{
-    text-align:center;font-family:'JetBrains Mono',monospace;font-size:11.5px;
-    color:var(--mid);margin:4px 0 0;letter-spacing:0.4px;margin-left:76px;
+    text-align:center;font-family:'JetBrains Mono',monospace;font-size:15px;
+    color:var(--mid);margin:6px 0 0;letter-spacing:0.4px;margin-left:92px;
   }
   .axis-title-y{
     writing-mode:vertical-rl;transform:rotate(180deg);
-    font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mid);
-    display:flex;align-items:center;justify-content:center;flex-shrink:0;width:16px;
+    font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--mid);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;width:20px;
     letter-spacing:0.4px;
   }
 
@@ -174,46 +174,46 @@
   }
   .spectrogram-inner{position:relative;}
   #spectrogramCanvas{display:block;}
-  .spec-time-labels{position:relative;height:16px;}
+  .spec-time-labels{position:relative;height:20px;}
   .spec-time-tick{
     position:absolute;top:0;transform:translateX(-50%);
-    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);white-space:nowrap;
+    font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--dim);white-space:nowrap;
   }
-  .spectrogram-note{font-size:12px;color:var(--dim);margin-top:6px;font-family:'JetBrains Mono',monospace;}
+  .spectrogram-note{font-size:15px;color:var(--dim);margin-top:8px;font-family:'JetBrains Mono',monospace;}
 
   .h-group{margin-bottom:20px;}
   .h-group:last-child{margin-bottom:0;}
   .h-group-label{
-    font-family:'JetBrains Mono',monospace;font-size:12px;margin-bottom:8px;
-    display:flex;align-items:center;gap:7px;
+    font-family:'JetBrains Mono',monospace;font-size:16px;margin-bottom:10px;
+    display:flex;align-items:center;gap:8px;
   }
-  .h-group-label .swatch{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
-  .h-group-empty{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);font-style:italic;}
-  .harmonic-bars{display:flex;align-items:flex-end;gap:7px;height:110px;}
-  .h-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;min-width:0;}
+  .h-group-label .swatch{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+  .h-group-empty{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--dim);font-style:italic;}
+  .harmonic-bars{display:flex;align-items:flex-end;gap:8px;height:130px;}
+  .h-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:5px;min-width:0;}
   .h-bar-track{width:100%;flex:1;display:flex;align-items:flex-end;background:var(--bg-panel2);border-radius:5px 5px 0 0;overflow:hidden;}
   .h-bar-fill{width:100%;border-radius:3px 3px 0 0;transition:height .12s;min-height:2px;}
-  .h-bar-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
-  .h-bar-pct{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--mid);}
-  .h-bar-hz{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--dim);}
+  .h-bar-label{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+  .h-bar-pct{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mid);}
+  .h-bar-hz{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
 
   .pitch-readout{text-align:center;padding:6px 0 18px;}
-  .pitch-note{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:56px;color:var(--fg);line-height:1;}
-  .pitch-freq{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--mid);margin-top:8px;}
+  .pitch-note{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:60px;color:var(--fg);line-height:1;}
+  .pitch-freq{font-family:'JetBrains Mono',monospace;font-size:19px;color:var(--mid);margin-top:8px;}
   .cents-gauge{margin:18px auto 4px;max-width:280px;}
   .cents-track{position:relative;height:10px;background:var(--bg-panel2);border-radius:6px;overflow:visible;border:1px solid var(--line);}
   .cents-center-tick{position:absolute;left:50%;top:-4px;bottom:-4px;width:2px;background:var(--line);transform:translateX(-50%);}
   .cents-needle{position:absolute;top:-5px;width:4px;height:20px;border-radius:2px;background:var(--page-accent);
     left:50%;transform:translateX(-50%);transition:left .1s,background .15s;}
   .cents-labels{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;
-    font-size:10.5px;color:var(--dim);margin-top:6px;}
-  .cents-value{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--mid);margin-top:10px;}
+    font-size:13.5px;color:var(--dim);margin-top:8px;}
+  .cents-value{font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--mid);margin-top:12px;}
   .cents-value.in-tune{color:var(--good);}
 
   .staff-wrap{display:flex;justify-content:center;padding:8px 0 4px;}
   svg#staffSvg{max-width:100%;height:auto;}
 
-  .info-note{font-size:13.5px;color:var(--dim);line-height:1.6;margin:10px 0 4px;}
+  .info-note{font-size:16px;color:var(--dim);line-height:1.6;margin:10px 0 4px;}
   .info-note strong{color:var(--mid);}
 
   .explainer{max-width:840px;margin:44px auto 0;}
@@ -297,7 +297,7 @@
             </div>
           </div>
         </div>
-        <div class="axis-title-x" style="margin-left:76px;">Time (s)</div>
+        <div class="axis-title-x" style="margin-left:92px;">Time (s)</div>
         <div class="cw-tooltip cw-tooltip-fixed" id="spectrogramTooltip" aria-hidden="true"></div>
         <p class="spectrogram-note" id="spectrogramStatus" aria-live="polite">No history yet &mdash; click "Start Listening" to begin recording.</p>
 
@@ -330,13 +330,13 @@
         <h2 style="margin-top:26px;">Waveform</h2>
         <p class="panel-hint">The captured air-pressure waveform over several cycles, automatically scaled and centered on the detected pitch. Frozen waveforms are overlaid in their corresponding colors for comparison.</p>
         <div class="canvas-row">
-          <div class="axis-title-y" style="width:14px;">Amplitude</div>
-          <div class="y-axis-labels simple" style="width:30px;"><span>+</span><span>0</span><span>&minus;</span></div>
+          <div class="axis-title-y" style="width:20px;">Amplitude</div>
+          <div class="y-axis-labels simple" style="width:40px;"><span>+</span><span>0</span><span>&minus;</span></div>
           <div class="canvas-wrap">
             <canvas id="waveCanvas" width="500" height="130" role="img" aria-label="Waveform showing normalized amplitude over time"></canvas>
           </div>
         </div>
-        <div class="axis-title-x" style="margin-left:44px;display:flex;justify-content:space-between;text-align:left;">
+        <div class="axis-title-x" style="margin-left:76px;display:flex;justify-content:space-between;text-align:left;">
           <span>Time</span>
           <span id="waveWindowLabel" style="color:var(--dim);">&mdash;</span>
         </div>
@@ -440,7 +440,7 @@
     ex.restore();
 
     ex.fillStyle = '#a8b6d6';
-    ex.font = '11px "JetBrains Mono", monospace';
+    ex.font = '14px "JetBrains Mono", monospace';
     ex.textAlign = 'right'; ex.textBaseline = 'middle';
     [-10,-32.5,-55,-77.5,-100].forEach(function(db){
       var frac = (db - DB_MIN)/(DB_MAX - DB_MIN);
@@ -451,19 +451,19 @@
     ex.translate(14, topMargin + plotH/2);
     ex.rotate(-Math.PI/2);
     ex.textAlign = 'center'; ex.fillStyle = '#f1f4fb';
-    ex.font = '12px "JetBrains Mono", monospace';
+    ex.font = '15px "JetBrains Mono", monospace';
     ex.fillText('Power (dB)', 0, 0);
     ex.restore();
 
     ex.fillStyle = '#a8b6d6';
-    ex.font = '11px "JetBrains Mono", monospace';
+    ex.font = '14px "JetBrains Mono", monospace';
     ex.textAlign = 'center'; ex.textBaseline = 'alphabetic';
     currentLabelFreqs().forEach(function(f){
       if(f > FREQ_MAX) return;
       var x = leftMargin + freqToX(f, plotW);
       ex.fillText(fmtFreqLabel(f), x, topMargin + plotH + 18);
     });
-    ex.fillStyle = '#f1f4fb'; ex.font = '12px "JetBrains Mono", monospace';
+    ex.fillStyle = '#f1f4fb'; ex.font = '15px "JetBrains Mono", monospace';
     ex.fillText('Frequency (Hz)', leftMargin + plotW/2, topMargin + plotH + 38);
 
     downloadCanvas(exp, 'power-spectrum.png');
@@ -494,7 +494,7 @@
     });
 
     ex.fillStyle = '#a8b6d6';
-    ex.font = '11px "JetBrains Mono", monospace';
+    ex.font = '14px "JetBrains Mono", monospace';
     ex.textAlign = 'right'; ex.textBaseline = 'middle';
     currentLabelFreqs().forEach(function(f){
       if(f > FREQ_MAX) return;
@@ -505,12 +505,12 @@
     ex.translate(14, topMargin + SPEC_HEIGHT/2);
     ex.rotate(-Math.PI/2);
     ex.textAlign = 'center'; ex.fillStyle = '#f1f4fb';
-    ex.font = '12px "JetBrains Mono", monospace';
+    ex.font = '15px "JetBrains Mono", monospace';
     ex.fillText('Frequency (Hz)', 0, 0);
     ex.restore();
 
     ex.fillStyle = '#a8b6d6';
-    ex.font = '11px "JetBrains Mono", monospace';
+    ex.font = '14px "JetBrains Mono", monospace';
     ex.textAlign = 'center'; ex.textBaseline = 'alphabetic';
     var lastSec = -1;
     spectrogramHistory.forEach(function(entry, idx){
@@ -522,7 +522,7 @@
         ex.fillText(m + ':' + (s<10?'0':'') + s, x, topMargin + SPEC_HEIGHT + 18);
       }
     });
-    ex.fillStyle = '#f1f4fb'; ex.font = '12px "JetBrains Mono", monospace';
+    ex.fillStyle = '#f1f4fb'; ex.font = '15px "JetBrains Mono", monospace';
     ex.fillText('Time (s)', leftMargin + usedWidthPx/2, topMargin + SPEC_HEIGHT + 38);
 
     downloadCanvas(exp, 'spectrogram.png');
@@ -1189,10 +1189,11 @@
       pctLabel.textContent = Math.round(h.relPct) + '%';
       var label = document.createElement('div');
       label.className = 'h-bar-label';
-      label.textContent = 'H' + h.n;
+      label.textContent = 'n=' + h.n;
       var hzLabel = document.createElement('div');
       hzLabel.className = 'h-bar-hz';
-      hzLabel.textContent = Math.round(h.freq) + 'Hz';
+      var noteInfo = freqToNoteInfo(h.freq);
+      hzLabel.textContent = Math.round(h.freq) + 'Hz \u00b7 ' + noteInfo.name + noteInfo.octave;
       col.appendChild(pctLabel); col.appendChild(track); col.appendChild(label); col.appendChild(hzLabel);
       wrap.appendChild(col);
     });
