@@ -114,6 +114,7 @@
   .freeze-chip .remove-x:hover{color:var(--bad);}
 
   .analyzer-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;margin-bottom:20px;}
+  .analyzer-grid > .panel{min-width:0;}
   @media(max-width:980px){.analyzer-grid{grid-template-columns:1fr;}}
 
   .panel{
@@ -148,6 +149,7 @@
     transform:translate(-50%,-115%);white-space:nowrap;z-index:5;display:none;
     box-shadow:0 8px 20px -8px rgba(0,0,0,0.6);
   }
+  .cw-tooltip-fixed{position:fixed;z-index:50;}
 
   .axis-row{position:relative;height:16px;margin-top:6px;margin-left:52px;}
   .axis-row span{
@@ -155,10 +157,10 @@
     font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);white-space:nowrap;
   }
 
-  .spectrogram-outer{display:flex;gap:8px;}
+  .spectrogram-outer{display:flex;gap:8px;min-width:0;max-width:100%;}
   .spectrogram-scroll{
     overflow-x:auto;overflow-y:hidden;border-radius:10px;background:var(--bg-panel2);
-    flex:1;min-width:0;
+    flex:1;min-width:0;max-width:100%;
   }
   .spectrogram-inner{position:relative;}
   #spectrogramCanvas{display:block;}
@@ -260,7 +262,7 @@
 
     <div class="analyzer-grid">
       <div class="panel">
-        <h2>Frequency Spectrum <span class="h2-btns"><button class="ctrl-btn small" id="downloadSpecBtn">Download PNG</button></span></h2>
+        <h2>Frequency Spectrum <span class="h2-btns"><button class="ctrl-btn small" id="downloadSpecBtn">Download PNG</button><button class="ctrl-btn small" id="downloadSpecTxtBtn">Download TXT</button></span></h2>
         <p class="panel-hint">Power at every frequency your microphone picks up right now. Hover the graph to read off a frequency. Click "Freeze Spectrum" to snapshot everything &mdash; spectrum, waveform, and harmonics &mdash; in a new color, up to 4 at once.</p>
         <div class="canvas-row">
           <div class="y-axis-labels simple"><span>-10 dB</span><span>-32.5 dB</span><span>-55 dB</span><span>-77.5 dB</span><span>-100 dB</span></div>
@@ -275,6 +277,7 @@
           <span class="h2-btns">
             <button class="ctrl-btn small" id="clearSpectrogramBtn">Clear Spectrogram</button>
             <button class="ctrl-btn small" id="downloadSpectrogramBtn">Download PNG</button>
+            <button class="ctrl-btn small" id="downloadSpectrogramTxtBtn">Download TXT</button>
           </span>
         </h2>
         <p class="panel-hint">A scrolling history of the spectrum, brighter means louder. Keeps recording through Stop/Start, so you can scroll back and look. Hover for time, frequency, and dB. Only "Clear Spectrogram" resets it.</p>
@@ -284,10 +287,10 @@
             <div class="spectrogram-inner" id="spectrogramInner">
               <canvas id="spectrogramCanvas"></canvas>
               <div class="spec-time-labels" id="spectrogramTimeLabels"></div>
-              <div class="cw-tooltip" id="spectrogramTooltip"></div>
             </div>
           </div>
         </div>
+        <div class="cw-tooltip cw-tooltip-fixed" id="spectrogramTooltip"></div>
         <p class="spectrogram-note" id="spectrogramStatus">No history yet &mdash; click "Start Listening" to begin recording.</p>
 
         <h2 style="margin-top:26px;">Harmonic Series</h2>
@@ -366,7 +369,9 @@
   var staffNote = document.getElementById('staffNote');
   var waveWindowLabel = document.getElementById('waveWindowLabel');
   var downloadSpecBtn = document.getElementById('downloadSpecBtn');
+  var downloadSpecTxtBtn = document.getElementById('downloadSpecTxtBtn');
   var downloadSpectrogramBtn = document.getElementById('downloadSpectrogramBtn');
+  var downloadSpectrogramTxtBtn = document.getElementById('downloadSpectrogramTxtBtn');
   var clearSpectrogramBtn = document.getElementById('clearSpectrogramBtn');
   var spectrogramStatus = document.getElementById('spectrogramStatus');
   var specgramYLabelsEl = document.getElementById('specgramYLabels');
@@ -400,8 +405,70 @@
     link.href = canvas.toDataURL('image/png');
     link.click();
   }
+  function downloadText(filename, content){
+    var blob = new Blob([content], {type:'text/plain'});
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.download = filename;
+    link.href = url;
+    link.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }
   downloadSpecBtn.addEventListener('click', function(){ downloadCanvas(spectrumCanvas, 'spectrum.png'); });
   downloadSpectrogramBtn.addEventListener('click', function(){ downloadCanvas(spectrogramCanvas, 'spectrogram.png'); });
+
+  function buildFreqSampleList(){
+    var n = 120, list = [];
+    var minL = Math.log(FREQ_MIN), maxL = Math.log(FREQ_MAX);
+    for(var i=0;i<n;i++){ list.push(Math.round(Math.exp(minL + (i/(n-1))*(maxL-minL)))); }
+    return list;
+  }
+  function sampleCurveAtFreqs(dataArray, sampleRate, freqs){
+    var nyquist = sampleRate/2, binCount = dataArray.length;
+    return freqs.map(function(f){
+      var bin = Math.max(0, Math.min(binCount-1, Math.round((f/nyquist)*binCount)));
+      return dataArray[bin];
+    });
+  }
+  downloadSpecTxtBtn.addEventListener('click', function(){
+    var freqs = buildFreqSampleList();
+    var columns = [], headers = ['Frequency_Hz'];
+    if(lastLiveData && lastSampleRate && isListening){
+      columns.push(sampleCurveAtFreqs(lastLiveData, lastSampleRate, freqs));
+      headers.push('Live_dB');
+    }
+    frozenSpectra.forEach(function(fz, i){
+      if(!fz.visible) return;
+      columns.push(sampleCurveAtFreqs(fz.freqData, fz.sampleRate, freqs));
+      headers.push('Freeze' + (i+1) + '_dB');
+    });
+    if(columns.length === 0){ setStatus('Nothing to export yet.', true); return; }
+    var lines = [headers.join('\t')];
+    freqs.forEach(function(f, idx){
+      var row = [f];
+      columns.forEach(function(col){ row.push(col[idx].toFixed(1)); });
+      lines.push(row.join('\t'));
+    });
+    downloadText('spectrum.txt', lines.join('\n'));
+  });
+
+  downloadSpectrogramTxtBtn.addEventListener('click', function(){
+    if(spectrogramHistory.length === 0){ setStatus('No spectrogram history to export yet.', true); return; }
+    var freqs = currentLabelFreqs().filter(function(f){ return f<=FREQ_MAX; });
+    var headers = ['Time_s'].concat(freqs.map(function(f){ return f+'Hz_dB'; }));
+    var lines = [headers.join('\t')];
+    spectrogramHistory.forEach(function(entry){
+      var nyquist = entry.sampleRate/2;
+      var row = [(entry.t/1000).toFixed(2)];
+      freqs.forEach(function(f){
+        var bin = Math.max(0, Math.min(entry.binCount-1, Math.round((f/nyquist)*entry.binCount)));
+        var db = DB_MIN + (entry.bytes[bin]/255)*(DB_MAX-DB_MIN);
+        row.push(db.toFixed(1));
+      });
+      lines.push(row.join('\t'));
+    });
+    downloadText('spectrogram.txt', lines.join('\n'));
+  });
 
   // ---------- Web Audio setup ----------
   function startListening(){
@@ -750,7 +817,7 @@
   // ---------- spectrogram: scrollable, persistent history ----------
   var COLUMN_PX = 2;
   var MAX_HISTORY = 4000;
-  var SPEC_HEIGHT = 260;
+  var SPEC_HEIGHT = 320;
   var spectrogramHistory = [];
   var spectrogramFull = false;
   var accumulatedMs = 0, segmentStartPerf = null;
@@ -768,9 +835,15 @@
 
   function dbToColor(db){
     var t = Math.max(0, Math.min(1, (db - DB_MIN)/(DB_MAX - DB_MIN)));
+    t = Math.pow(t, 0.55); // gamma boost: makes quiet/mid content far more visible, not just loud peaks
     var stops = [
-      {t:0.0, c:[14,28,51]}, {t:0.35, c:[58,32,96]}, {t:0.62, c:[185,138,255]},
-      {t:0.82, c:[255,111,168]}, {t:1.0, c:[255,229,150]}
+      {t:0.0,  c:[8,14,28]},
+      {t:0.18, c:[35,24,72]},
+      {t:0.40, c:[92,45,150]},
+      {t:0.60, c:[168,80,210]},
+      {t:0.78, c:[255,95,150]},
+      {t:0.92, c:[255,175,90]},
+      {t:1.0,  c:[255,245,190]}
     ];
     var a = stops[0], b = stops[stops.length-1];
     for(var i=0;i<stops.length-1;i++){
@@ -837,7 +910,7 @@
       var bin = Math.max(0, Math.min(n-1, Math.round((freq/nyquist)*n)));
       var db = DB_MIN + (bytes[bin]/255)*(DB_MAX-DB_MIN);
       offscreenCtx.fillStyle = dbToColor(db);
-      offscreenCtx.fillRect(x, y, COLUMN_PX+0.5, 1.5);
+      offscreenCtx.fillRect(x, y, COLUMN_PX, 1);
     }
 
     var sec = Math.floor(t/1000);
@@ -905,8 +978,8 @@
     var db = Math.round(DB_MIN + (entry.bytes[bin]/255)*(DB_MAX-DB_MIN));
     spectrogramTooltip.textContent = fmtTime(entry.t) + '  \u2022  ' + Math.round(freq) + ' Hz  \u2022  ' + db + ' dB';
     spectrogramTooltip.style.display = 'block';
-    spectrogramTooltip.style.left = x + 'px';
-    spectrogramTooltip.style.top = '0px';
+    spectrogramTooltip.style.left = e.clientX + 'px';
+    spectrogramTooltip.style.top = Math.max(8, rect.top - 10) + 'px';
   });
   spectrogramCanvas.addEventListener('mouseleave', function(){ spectrogramTooltip.style.display = 'none'; });
 
