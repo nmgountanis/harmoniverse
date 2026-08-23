@@ -246,28 +246,23 @@
       <button class="listen-btn" id="listenBtn"><span class="dot" aria-hidden="true"></span><span id="listenLabel">Start Listening</span></button>
       <button class="ctrl-btn" id="freezeBtn" disabled>Freeze Spectrum</button>
       <button class="ctrl-btn" id="clearBtn">Clear Spectrum</button>
-      <select class="ctrl-select" id="fftSelect" aria-label="FFT resolution">
-        <option value="4096">Resolution: Standard</option>
-        <option value="8192" selected>Resolution: High</option>
-        <option value="16384">Resolution: Very High</option>
-      </select>
+      <button class="ctrl-btn" id="clearSpectrogramBtn">Clear Spectrogram</button>
       <select class="ctrl-select" id="axisSelect" aria-label="Frequency axis scale">
         <option value="log" selected>Axis: Log (musical)</option>
         <option value="linear">Axis: Linear</option>
       </select>
     </div>
     <p class="status-line" id="statusLine">Not listening. Click "Start Listening" and allow microphone access.</p>
-    <p class="privacy-note"><span aria-hidden="true">&#128274;</span> Audio is processed entirely in your browser. Nothing is recorded, saved, or sent anywhere.</p>
     <div class="freeze-chips" id="freezeChips"></div>
 
     <div class="analyzer-grid">
       <div class="panel">
-        <h2>Frequency Spectrum <span class="h2-btns"><button class="ctrl-btn small" id="downloadSpecBtn">Download PNG</button><button class="ctrl-btn small" id="downloadSpecTxtBtn">Download TXT</button></span></h2>
+        <h2>Power Spectrum <span class="h2-btns"><button class="ctrl-btn small" id="downloadSpecBtn">Download PNG</button><button class="ctrl-btn small" id="downloadSpecTxtBtn">Download TXT</button></span></h2>
         <p class="panel-hint">Power at every frequency your microphone picks up right now. Hover the graph to read off a frequency. Click "Freeze Spectrum" to snapshot everything &mdash; spectrum, waveform, and harmonics &mdash; in a new color, up to 4 at once.</p>
         <div class="canvas-row">
           <div class="y-axis-labels simple"><span>-10 dB</span><span>-32.5 dB</span><span>-55 dB</span><span>-77.5 dB</span><span>-100 dB</span></div>
           <div class="canvas-wrap">
-            <canvas id="spectrumCanvas" width="900" height="280" role="img" aria-label="Live frequency spectrum graph"></canvas>
+            <canvas id="spectrumCanvas" width="900" height="280" role="img" aria-label="Live power spectrum graph"></canvas>
             <div class="cw-tooltip" id="specTooltip"></div>
           </div>
         </div>
@@ -275,7 +270,6 @@
 
         <h2 style="margin-top:26px;">Spectrogram &mdash; How the Spectrum Evolves Over Time
           <span class="h2-btns">
-            <button class="ctrl-btn small" id="clearSpectrogramBtn">Clear Spectrogram</button>
             <button class="ctrl-btn small" id="downloadSpectrogramBtn">Download PNG</button>
             <button class="ctrl-btn small" id="downloadSpectrogramTxtBtn">Download TXT</button>
           </span>
@@ -334,13 +328,6 @@
       </div>
     </div>
 
-    <section class="explainer">
-      <h3>What Am I Looking At?</h3>
-      <p>The <strong>spectrum</strong> shows how much acoustic power is present at every frequency in the sound right now, from a rumbling low note to a bright, high overtone. The y-axis is in decibels (dB), a logarithmic loudness scale, so a curve that looks only slightly taller actually represents meaningfully more energy. Peaks correspond to strong, resonant frequencies; a clean musical tone produces a tall peak at its fundamental frequency, plus a series of smaller peaks at whole-number multiples of it, its harmonics.</p>
-      <p>The <strong>spectrogram</strong> stacks that same information over time instead of freezing a single instant, so you can watch a melody, chord change, or vibrato unfold without touching a button, ideal for whenever your hands are busy playing. It keeps recording across Stop/Start so you can scroll back through what already happened.</p>
-      <p>The analyzer estimates the <strong>fundamental frequency</strong> using autocorrelation, a technique that compares the waveform against time-shifted copies of itself to find its true repeating period, which tends to be far more accurate for musical pitch than simply picking the tallest spectrum peak. From that fundamental, it predicts where each harmonic should sit and measures how strong each one actually is, which is what the harmonic bars show.</p>
-      <p><strong>Cents</strong> measure pitch distance on a scale where 100 cents equal one semitone. The needle shows how far your note sits from the nearest note in standard 12-tone equal temperament (A4 = 440 Hz), which is useful for tuning an instrument or checking intonation precisely.</p>
-    </section>
   </main>
 
   <footer>Harmoniverse &mdash; an interdisciplinary project at The Ohio State University</footer>
@@ -353,7 +340,6 @@
   var freezeBtn = document.getElementById('freezeBtn');
   var clearBtn = document.getElementById('clearBtn');
   var freezeChipsEl = document.getElementById('freezeChips');
-  var fftSelect = document.getElementById('fftSelect');
   var axisSelect = document.getElementById('axisSelect');
   var statusLine = document.getElementById('statusLine');
   var spectrumCanvas = document.getElementById('spectrumCanvas');
@@ -414,7 +400,7 @@
     link.click();
     setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
   }
-  downloadSpecBtn.addEventListener('click', function(){ downloadCanvas(spectrumCanvas, 'spectrum.png'); });
+  downloadSpecBtn.addEventListener('click', function(){ downloadCanvas(spectrumCanvas, 'power-spectrum.png'); });
   downloadSpectrogramBtn.addEventListener('click', function(){ downloadCanvas(spectrogramCanvas, 'spectrogram.png'); });
 
   function buildFreqSampleList(){
@@ -449,7 +435,7 @@
       columns.forEach(function(col){ row.push(col[idx].toFixed(1)); });
       lines.push(row.join('\t'));
     });
-    downloadText('spectrum.txt', lines.join('\n'));
+    downloadText('power-spectrum.txt', lines.join('\n'));
   });
 
   downloadSpectrogramTxtBtn.addEventListener('click', function(){
@@ -482,7 +468,7 @@
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         sourceNode = audioCtx.createMediaStreamSource(stream);
         analyser = audioCtx.createAnalyser();
-        analyser.fftSize = parseInt(fftSelect.value, 10);
+        analyser.fftSize = 16384;
         analyser.smoothingTimeConstant = 0.5;
         analyser.minDecibels = DB_MIN;
         analyser.maxDecibels = DB_MAX;
@@ -587,11 +573,6 @@
     });
   }
 
-  fftSelect.addEventListener('change', function(){
-    if(analyser){
-      analyser.fftSize = parseInt(fftSelect.value, 10);
-    }
-  });
   axisSelect.addEventListener('change', function(){
     axisMode = axisSelect.value;
     renderSpecAxisLabels();
@@ -835,15 +816,17 @@
 
   function dbToColor(db){
     var t = Math.max(0, Math.min(1, (db - DB_MIN)/(DB_MAX - DB_MIN)));
-    t = Math.pow(t, 0.55); // gamma boost: makes quiet/mid content far more visible, not just loud peaks
+    t = Math.pow(t, 0.42); // strong gamma boost for high contrast across the full range
+    // inferno-style ramp: near-black -> deep purple -> magenta -> orange -> bright yellow-white
     var stops = [
-      {t:0.0,  c:[8,14,28]},
-      {t:0.18, c:[35,24,72]},
-      {t:0.40, c:[92,45,150]},
-      {t:0.60, c:[168,80,210]},
-      {t:0.78, c:[255,95,150]},
-      {t:0.92, c:[255,175,90]},
-      {t:1.0,  c:[255,245,190]}
+      {t:0.00, c:[0,0,4]},
+      {t:0.13, c:[40,11,84]},
+      {t:0.29, c:[101,21,110]},
+      {t:0.45, c:[159,42,99]},
+      {t:0.60, c:[212,72,66]},
+      {t:0.75, c:[245,125,21]},
+      {t:0.89, c:[250,193,39]},
+      {t:1.00, c:[252,255,164]}
     ];
     var a = stops[0], b = stops[stops.length-1];
     for(var i=0;i<stops.length-1;i++){
