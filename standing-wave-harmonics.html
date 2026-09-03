@@ -113,19 +113,21 @@
   #waveCanvas{height:150px;}
   #spectrumCanvas{height:300px;}
 
-  .top-controls-panel{max-width:760px;margin:0 auto 24px;}
+  .top-controls-panel{max-width:900px;margin:0 auto 20px;padding:16px 22px 18px;}
   .top-controls-panel .control-block{margin-top:0;padding-top:0;border-top:none;}
   .control-block{margin-top:20px;padding-top:18px;border-top:1px solid var(--line);}
   .control-block h3{
-    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;color:var(--fg);
-    margin:0 0 12px;text-transform:uppercase;letter-spacing:0.5px;
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--fg);
+    margin:0 0 10px;text-transform:uppercase;letter-spacing:0.5px;
   }
-  .air-row{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-bottom:10px;}
+  .air-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
   .air-row .slider-row{margin-bottom:0;}
   .air-row .medium-row{margin-bottom:0;}
+  .air-row .preset-row{margin:0;}
   .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;}
   .slider-row label{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--dim);min-width:120px;}
   .slider-row input[type=range]{flex:1;min-width:140px;accent-color:var(--page-accent);}
+  .air-row .slider-row input[type=range]{flex:none;width:130px;min-width:0;}
   .slider-row .val{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--mid);min-width:110px;text-align:right;}
   .preset-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
   .speed-readout{font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--page-accent);white-space:nowrap;}
@@ -194,12 +196,12 @@
               <span class="val" id="tempVal">20&deg;C</span>
             </div>
           </div>
+          <div class="preset-row" id="tempPresetRow">
+            <button class="ctrl-btn" data-temp="0">0&deg;C Freezing</button>
+            <button class="ctrl-btn" data-temp="20">20&deg;C Room</button>
+            <button class="ctrl-btn" data-temp="37">37&deg;C Breath</button>
+          </div>
           <span class="speed-readout" id="speedReadout"></span>
-        </div>
-        <div class="preset-row" id="tempPresetRow">
-          <button class="ctrl-btn" data-temp="0">0&deg;C Freezing</button>
-          <button class="ctrl-btn" data-temp="20">20&deg;C Room</button>
-          <button class="ctrl-btn" data-temp="37">37&deg;C Breath</button>
         </div>
       </div>
 
