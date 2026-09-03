@@ -81,7 +81,7 @@
     padding:10px 18px;border-radius:20px;cursor:pointer;transition:border-color .15s,color .15s;
   }
   .ctrl-btn:hover{border-color:var(--page-accent);color:var(--fg);}
-  .ctrl-btn.active{border-color:var(--page-accent);background:var(--page-accent);color:#1a0e18;font-weight:700;}
+  .ctrl-btn.active{border-color:var(--page-accent);color:var(--page-accent);font-weight:700;}
 
   .layout-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;}
   @media(max-width:1000px){.layout-grid{grid-template-columns:1fr;}}
@@ -92,13 +92,13 @@
     margin:0 0 14px;text-transform:uppercase;letter-spacing:0.6px;
     padding-left:12px;border-left:3px solid var(--page-accent);
   }
-  .panel-hint{font-size:15px;color:var(--dim);margin:-6px 0 14px;line-height:1.55;}
-  .diagram-caption{font-size:14.5px;color:var(--mid);margin:10px 0 0;line-height:1.5;}
+  .panel-hint{font-size:17px;color:var(--dim);margin:-4px 0 16px;line-height:1.55;}
+  .diagram-caption{font-size:16px;color:var(--mid);margin:12px 0 0;line-height:1.55;}
   .diagram-caption strong{color:var(--fg);}
 
   .length-readout{
     display:flex;gap:20px;flex-wrap:wrap;
-    font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--mid);
+    font-family:'JetBrains Mono',monospace;font-size:16.5px;color:var(--mid);
     background:var(--bg-panel2);border:1px solid var(--line);border-radius:10px;
     padding:10px 14px;margin-top:12px;
   }
@@ -110,52 +110,39 @@
   #waveCanvas{height:150px;}
   #spectrumCanvas{height:300px;}
 
+  .top-controls-panel{max-width:760px;margin:0 auto 24px;}
+  .top-controls-panel .control-block{margin-top:0;padding-top:0;border-top:none;}
   .control-block{margin-top:20px;padding-top:18px;border-top:1px solid var(--line);}
   .control-block h3{
-    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:var(--fg);
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;color:var(--fg);
     margin:0 0 12px;text-transform:uppercase;letter-spacing:0.5px;
   }
   .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;}
-  .slider-row label{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--dim);min-width:110px;}
+  .slider-row label{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--dim);min-width:120px;}
   .slider-row input[type=range]{flex:1;min-width:140px;accent-color:var(--page-accent);}
-  .slider-row .val{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--mid);min-width:100px;text-align:right;}
+  .slider-row .val{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--mid);min-width:110px;text-align:right;}
   .preset-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
-  .speed-readout{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--page-accent);margin-top:10px;}
+  .speed-readout{font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--page-accent);margin-top:10px;}
 
   .medium-row{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap;}
-  .medium-option{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--mid);cursor:pointer;}
+  .medium-option{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--mid);cursor:pointer;}
   .medium-option input{width:16px;height:16px;accent-color:var(--page-accent);}
 
-  .axis-title-x{text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mid);margin-top:6px;}
+  .axis-title-x{text-align:center;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--mid);margin-top:8px;}
 
   .pitch-readout{text-align:center;padding:6px 0 14px;}
   .pitch-note{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--fg);line-height:1;}
-  .pitch-freq{font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--mid);margin-top:8px;}
+  .pitch-freq{font-family:'JetBrains Mono',monospace;font-size:19px;color:var(--mid);margin-top:8px;}
   .cents-gauge{margin:16px auto 4px;max-width:260px;}
   .cents-track{position:relative;height:10px;background:var(--bg-panel2);border-radius:6px;border:1px solid var(--line);}
   .cents-center-tick{position:absolute;left:50%;top:-4px;bottom:-4px;width:2px;background:var(--line);transform:translateX(-50%);}
   .cents-needle{position:absolute;top:-5px;width:4px;height:20px;border-radius:2px;background:var(--page-accent);left:50%;transform:translateX(-50%);transition:left .1s,background .15s;}
-  .cents-labels{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--dim);margin-top:6px;}
-  .cents-value{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--mid);margin-top:10px;}
+  .cents-labels{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim);margin-top:6px;}
+  .cents-value{font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--mid);margin-top:10px;}
   .cents-value.in-tune{color:var(--good);}
 
-  .staff-wrap{display:flex;justify-content:center;padding:8px 0 4px;max-height:560px;overflow-y:auto;overflow-x:hidden;}
-  svg#staffSvg{width:100%;max-width:280px;height:auto;cursor:pointer;pointer-events:all;display:block;flex-shrink:0;}
-
-  .about-box{font-size:15.5px;color:var(--mid);line-height:1.65;}
-  .about-box strong{color:var(--fg);}
-  .about-box .range-line{
-    font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--page-accent);
-    margin-top:10px;
-  }
-
-  .explainer{max-width:860px;margin:44px auto 0;}
-  .explainer h3{
-    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:20px;color:var(--fg);
-    margin:26px 0 10px;padding-left:14px;border-left:3px solid var(--page-accent);
-  }
-  .explainer h3:first-child{margin-top:0;}
-  .explainer p{font-size:16px;color:var(--mid);line-height:1.7;margin:0 0 12px;}
+  .staff-wrap{display:flex;justify-content:center;padding:8px 0 4px;max-height:640px;overflow-y:auto;overflow-x:hidden;}
+  svg#staffSvg{width:100%;max-width:440px;height:auto;cursor:pointer;pointer-events:all;display:block;flex-shrink:0;}
 
   footer{margin-top:50px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--dim);letter-spacing:0.5px;}
 </style>
@@ -174,7 +161,7 @@
   <main>
     <div class="page-intro">
       <h1>Standing Wave Harmonics</h1>
-      <p class="tagline">Four instruments, four geometries, one underlying rule: confine a wave, and only certain patterns survive. Click or drag directly on the instrument to change its effective length, anywhere along its real playable range, and watch the standing waves &mdash; and the sound &mdash; change with them.</p>
+      <p class="tagline">Click or drag on the instrument to change its length. Watch the standing wave and hear the pitch change.</p>
     </div>
 
     <div class="instrument-tabs" id="instrumentTabs"></div>
@@ -182,6 +169,44 @@
     <div class="transport">
       <button class="play-btn" id="playBtn"><span id="playLabel">&#9658; Play</span></button>
       <button class="ctrl-btn" id="resetBtn">&#8634; Reset</button>
+    </div>
+
+    <div class="panel top-controls-panel">
+      <div class="control-block" id="airBlock" hidden>
+        <h3>Medium and Air Conditions</h3>
+        <div class="medium-row">
+          <label class="medium-option"><input type="radio" name="medium" value="air" checked> Air</label>
+          <label class="medium-option"><input type="radio" name="medium" value="water"> Underwater</label>
+        </div>
+        <div id="tempRowWrap">
+          <div class="slider-row">
+            <label for="tempSlider">Temperature</label>
+            <input type="range" id="tempSlider" min="-10" max="45" step="1" value="20">
+            <span class="val" id="tempVal">20&deg;C</span>
+          </div>
+          <div class="preset-row">
+            <button class="ctrl-btn" data-temp="0">0&deg;C Freezing</button>
+            <button class="ctrl-btn" data-temp="20">20&deg;C Room</button>
+            <button class="ctrl-btn" data-temp="37">37&deg;C Breath</button>
+          </div>
+        </div>
+        <p class="speed-readout" id="speedReadout"></p>
+      </div>
+
+      <div class="control-block" id="stringPropsBlock" hidden>
+        <h3>String Properties</h3>
+        <div class="slider-row">
+          <label for="tensionSlider">Tension</label>
+          <input type="range" id="tensionSlider" min="20" max="200" step="0.5" value="74.7">
+          <span class="val" id="tensionVal">74.7 N</span>
+        </div>
+        <div class="slider-row">
+          <label for="densitySlider">Density (&mu;)</label>
+          <input type="range" id="densitySlider" min="0.0004" max="0.0070" step="0.0001" value="0.00115">
+          <span class="val" id="densityVal">1.15 g/m</span>
+        </div>
+        <p class="speed-readout" id="stringSpeedReadout"></p>
+      </div>
     </div>
 
     <div class="layout-grid">
@@ -197,55 +222,19 @@
             <span>Full length: <b id="fullLengthVal">&mdash;</b></span>
             <span>Effective length: <b id="effLengthVal">&mdash;</b></span>
           </div>
-
-          <div class="control-block" id="airBlock" hidden>
-            <h3>Medium &amp; Air Conditions</h3>
-            <div class="medium-row">
-              <label class="medium-option"><input type="radio" name="medium" value="air" checked> Air</label>
-              <label class="medium-option"><input type="radio" name="medium" value="water"> Underwater</label>
-            </div>
-            <div id="tempRowWrap">
-              <div class="slider-row">
-                <label for="tempSlider">Temperature</label>
-                <input type="range" id="tempSlider" min="-10" max="45" step="1" value="20">
-                <span class="val" id="tempVal">20&deg;C</span>
-              </div>
-              <div class="preset-row">
-                <button class="ctrl-btn" data-temp="0">0&deg;C Freezing</button>
-                <button class="ctrl-btn" data-temp="20">20&deg;C Room</button>
-                <button class="ctrl-btn" data-temp="37">37&deg;C Breath</button>
-              </div>
-            </div>
-            <p class="speed-readout" id="speedReadout"></p>
-          </div>
-
-          <div class="control-block" id="stringPropsBlock" hidden>
-            <h3>String Properties</h3>
-            <div class="slider-row">
-              <label for="tensionSlider">Tension</label>
-              <input type="range" id="tensionSlider" min="20" max="200" step="0.5" value="74.7">
-              <span class="val" id="tensionVal">74.7 N</span>
-            </div>
-            <div class="slider-row">
-              <label for="densitySlider">Density (&mu;)</label>
-              <input type="range" id="densitySlider" min="0.0004" max="0.0070" step="0.0001" value="0.00115">
-              <span class="val" id="densityVal">1.15 g/m</span>
-            </div>
-            <p class="speed-readout" id="stringSpeedReadout"></p>
-          </div>
-        </div>
-
-        <div class="panel">
-          <h2>Waveform</h2>
-          <p class="panel-hint">Each faint colored line is one active harmonic over time; the bright line is their sum &mdash; what actually reaches your ear.</p>
-          <canvas id="waveCanvas" width="900" height="150" role="img" aria-label="Animated combined waveform, with individual harmonics shown faintly"></canvas>
         </div>
 
         <div class="panel">
           <h2>Power Spectrum</h2>
-          <p class="panel-hint">Click or drag a dot to change that harmonic's strength. Greyed-out harmonics aren't physically allowed for this instrument's geometry.</p>
+          <p class="panel-hint">Click or drag a dot to change the strength of a harmonic. Greyed out harmonics are not possible for this instrument's geometry.</p>
           <canvas id="spectrumCanvas" width="900" height="300" role="img" aria-label="Interactive power spectrum showing harmonic amplitudes"></canvas>
           <div class="axis-title-x">Frequency (Hz)</div>
+        </div>
+
+        <div class="panel">
+          <h2>Waveform</h2>
+          <p class="panel-hint">Each faint colored line is one active harmonic over time. The bright line is their sum, the wave you actually hear.</p>
+          <canvas id="waveCanvas" width="900" height="150" role="img" aria-label="Animated combined waveform, with individual harmonics shown faintly"></canvas>
         </div>
 
       </div>
@@ -265,26 +254,14 @@
             </div>
             <div class="cents-value" id="centsValue">&mdash;</div>
           </div>
-          <h2 style="margin-top:20px;">Staff <span style="font-size:12px;color:var(--dim);text-transform:none;font-weight:400;letter-spacing:normal;">(click within the guide lines to set that note as the fundamental)</span></h2>
+          <h2 style="margin-top:20px;">Staff</h2>
+          <p class="panel-hint">Click within the guide lines to set that note as the fundamental.</p>
           <div class="staff-wrap">
             <svg id="staffSvg" viewBox="0 0 220 420" width="220" height="420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Staff, click to select a note to play"></svg>
           </div>
         </div>
-
-        <div class="panel">
-          <h2>About This Instrument</h2>
-          <div class="about-box" id="aboutBox"></div>
-        </div>
       </div>
     </div>
-
-    <section class="explainer">
-      <h3>Why These Four Instruments?</h3>
-      <p>Each one confines a wave with a different geometry, and that geometry alone determines which harmonics can exist. A string fixed at both ends and a pipe open at both ends behave the same way mathematically: both support every integer harmonic. A pipe closed at one end only sustains odd harmonics, because the closed end must be a node while the open end must be an antinode.</p>
-      <p>The saxophone is the exception that proves the rule. It's closed at the reed end like a clarinet, but its <strong>conical</strong> bore changes the boundary behavior enough that it acoustically behaves like an open-open pipe: every integer harmonic, not just odd ones.</p>
-      <h3>On the Guitar String</h3>
-      <p>This models a generic fixed-fixed string, the same physics whether it's an acoustic or electric guitar, a bass, or a piano string; nothing here models a pickup, a soundboard, or an amplifier, only the string's own vibration. The defaults (0.65 m scale length, about 75 N tension, 1.15 g/m linear density) are chosen to give a real, in-tune G3 (196.0 Hz) on open string, matching a typical guitar's 3rd (G) string, comfortably within the treble staff rather than requiring many ledger lines.</p>
-    </section>
   </main>
 
   <footer>Harmoniverse &mdash; an interdisciplinary project at The Ohio State University</footer>
@@ -309,38 +286,28 @@
       key:'guitar', label:'Guitar String', kind:'string', allowed:'all',
       totalLength:0.650, semitoneRange:24, refNote:'G3 (196.0 Hz)',
       color:'#ff8c66',
-      hint:'A string fixed at both ends. Click or drag anywhere on the string to fret it and shorten the vibrating length. Range: two octaves, like a full guitar fretboard.',
-      rangeText:'Real range (3rd string, open to 24th fret): G3 to G5, about two octaves.'
+      hint:'A string fixed at both ends. All integer harmonics are allowed. Click or drag on the string to change its vibrating length. This models the 3rd (G) string, from G3 to G5, about two octaves.'
     },
     flute: {
       key:'flute', label:'Flute', kind:'cyl-open-open', allowed:'all',
       totalLength:0.656, semitoneRange:36, refNote:'C4 (261.6 Hz)',
       color:'#5fc2ff',
-      hint:'A cylindrical tube, open at both ends. Both ends are pressure nodes, so every integer harmonic is allowed. Click or drag to reach any note across its full three-octave range.',
-      rangeText:'Real range: C4 to C7, about three octaves, reachable directly here by changing the effective length.'
+      hint:'A cylindrical tube open at both ends. Both ends are pressure nodes, so all integer harmonics are allowed. Click or drag to reach any note from C4 to C7, about three octaves.'
     },
     clarinet: {
       key:'clarinet', label:'Clarinet', kind:'cyl-closed-open', allowed:'odd',
       totalLength:0.584, semitoneRange:44, refNote:'D3 (146.8 Hz)',
       color:'#b98aff',
-      hint:'A cylindrical tube, closed at the reed end, open at the bell. Only odd harmonics satisfy both boundary conditions at once.',
-      rangeText:'Real range: D3 to Bb6, reachable directly here by changing the effective length.'
+      hint:'A cylindrical tube closed at the reed end and open at the bell. Only odd harmonics satisfy both boundary conditions. Click or drag to reach any note from D3 to Bb6.'
     },
     sax: {
       key:'sax', label:'Saxophone', kind:'cone-closed-open', allowed:'all',
       totalLength:1.238, semitoneRange:32, refNote:'Db3 (138.6 Hz)',
       color:'#ff6fa8',
-      hint:'Closed at the reed end like a clarinet, but its conical bore acoustically behaves like an open-open pipe: every integer harmonic survives.',
-      rangeText:'Real range (alto): Db3 to A5. The tube shown here is straightened out; real saxes coil this same length into a compact body.'
+      hint:'Closed at the reed end like a clarinet, but its conical bore acts like an open-open pipe, so all integer harmonics are allowed. This models an alto sax, from Db3 to A5. The tube is shown straightened out. A real sax coils this same length into a compact body.'
     }
   };
   var INSTRUMENT_ORDER = ['guitar','flute','clarinet','sax'];
-  var ABOUT_TEXT = {
-    guitar: 'A plucked string fixed at both ends supports every integer harmonic, the same as an open-open pipe. Its timbre follows the classic plucked-string result: harmonic amplitude falls off as 1/n.',
-    flute: 'Open at both the embouchure and the far end, a flute admits every integer harmonic, but its higher harmonics are naturally weak, giving its famously pure, near-sine tone.',
-    clarinet: 'Closed at the reed and open at the bell, a clarinet can only sustain odd-numbered harmonics, and the 3rd is often nearly as strong as the fundamental, giving its hollow, woody low register.',
-    sax: 'Also closed at the reed, but its conical bore makes it behave like an open-open pipe: every harmonic is available, and they decay slowly, giving the sax its characteristically rich, reedy, buzzing tone.'
-  };
   // physically-motivated default amplitude profiles (index 0 = fundamental).
   // guitar: exact 1/n, the textbook result for an idealized plucked string.
   // flute: steep rolloff (famously pure tone). clarinet: strong 3rd (classic
@@ -488,7 +455,6 @@
   var centsNeedle = document.getElementById('centsNeedle');
   var centsValueEl = document.getElementById('centsValue');
   var staffSvg = document.getElementById('staffSvg');
-  var aboutBoxEl = document.getElementById('aboutBox');
 
   var iCtx = instrumentCanvas.getContext('2d');
   var wCtx = waveCanvas.getContext('2d');
@@ -764,7 +730,7 @@
     var W=dims.w, H=dims.h;
     sCtx.clearRect(0,0,W,H);
     var instr = currentInstrument();
-    var padL=52, padR=20, padT=24, padB=48;
+    var padL=56, padR=20, padT=34, padB=70;
     var plotW=W-padL-padR, plotH=H-padT-padB;
     var baseY = padT+plotH;
 
@@ -772,7 +738,7 @@
     [0,0.25,0.5,0.75,1.0].forEach(function(a){
       var y = padT+(1-a)*plotH;
       sCtx.beginPath(); sCtx.moveTo(padL,y); sCtx.lineTo(padL+plotW,y); sCtx.stroke();
-      sCtx.fillStyle='#93a1c4'; sCtx.font='11px "JetBrains Mono", monospace';
+      sCtx.fillStyle='#93a1c4'; sCtx.font='13px "JetBrains Mono", monospace';
       sCtx.textAlign='right'; sCtx.fillText(a.toFixed(2), padL-8, y+3);
     });
 
@@ -798,14 +764,21 @@
       sCtx.moveTo(p.x, baseY); sCtx.lineTo(p.x, padT);
       sCtx.stroke(); sCtx.setLineDash([]);
 
+      var tier = p.i % 2;
       sCtx.fillStyle = p.allowed ? '#f1f4fb' : '#5c6784';
-      sCtx.font = p.allowed ? 'bold 13px "JetBrains Mono", monospace' : '12px "JetBrains Mono", monospace';
+      sCtx.font = p.allowed ? 'bold 15px "JetBrains Mono", monospace' : '13px "JetBrains Mono", monospace';
       sCtx.textAlign='center';
-      sCtx.fillText('n='+p.n, p.x, padT-8);
-      sCtx.font = '11px "JetBrains Mono", monospace';
+      var topY = tier===0 ? padT-10 : padT-26;
+      sCtx.fillText('n='+p.n, p.x, topY);
+
+      sCtx.font = '13px "JetBrains Mono", monospace';
       var noteInfo = freqToNoteInfo(p.freq);
+      sCtx.fillStyle = p.allowed ? '#d3dcf0' : '#5c6784';
+      var hzY = tier===0 ? baseY+20 : baseY+40;
+      var noteY = tier===0 ? baseY+37 : baseY+57;
+      sCtx.fillText(Math.round(p.freq)+' Hz', p.x, hzY);
       sCtx.fillStyle = p.allowed ? '#a8b6d6' : '#5c6784';
-      sCtx.fillText(Math.round(p.freq)+'Hz \u00b7 '+noteInfo.name+noteInfo.octave, p.x, baseY+18);
+      sCtx.fillText(noteInfo.name+noteInfo.octave, p.x, noteY);
 
       if(p.allowed){
         sCtx.beginPath();
@@ -975,11 +948,10 @@
     state.instrumentKey = key;
     var instr = INSTRUMENTS[key];
     applyDefaultProfile(instr);
-    instrumentPanelTitle.textContent = instr.label + ' \u2014 Standing Waves';
+    instrumentPanelTitle.textContent = instr.label;
     instrumentPanelHint.textContent = instr.hint;
-    diagramCaption.innerHTML = 'Harmonic family: <strong>'+(instr.allowed==='odd'?'odd only (1, 3, 5, 7&hellip;)':'all integers (1, 2, 3, 4&hellip;)')+'</strong>. Each colored curve is one active harmonic; the bright white curve is their sum, the wave you actually hear.';
+    diagramCaption.innerHTML = 'Harmonic family. <strong>'+(instr.allowed==='odd'?'Odd integers only (1, 3, 5, 7)':'All integers (1, 2, 3, 4)')+'</strong>. Each colored curve is one active harmonic. The white curve is their sum, the wave you hear.';
     fullLengthVal.textContent = instr.totalLength.toFixed(3)+' m';
-    aboutBoxEl.innerHTML = '<p>'+ABOUT_TEXT[key]+'</p><p class="range-line">'+instr.rangeText+'</p>';
     renderTabs();
     renderPropertyBlocks();
     onPhysicsChanged();
