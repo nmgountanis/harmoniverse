@@ -54,7 +54,10 @@
     font-size:clamp(32px, 5vw, 52px);letter-spacing:0.5px;margin:0 0 14px;color:var(--fg);line-height:1.08;}
   .page-intro .tagline{font-size:18px;color:var(--mid);max-width:800px;margin:0 auto;line-height:1.6;}
 
-  .instrument-tabs{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:22px;}
+  .top-row{display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:24px;}
+  .top-row-divider{width:1px;height:36px;background:var(--line);}
+  @media(max-width:760px){.top-row-divider{display:none;}}
+  .instrument-tabs{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
   .instr-tab{
     font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;
     background:var(--bg-panel);border:2px solid var(--line);color:var(--mid);
@@ -65,7 +68,7 @@
   .instr-tab.active{border-color:var(--page-accent);color:var(--fg);background:var(--bg-panel2);}
   .instr-tab .family-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 
-  .transport{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:26px;}
+  .transport{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;}
   .play-btn{
     font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;
     background:var(--bg-panel2);border:2px solid var(--page-accent);color:var(--fg);
@@ -105,10 +108,15 @@
   .length-readout b{color:var(--page-accent);}
 
   canvas{display:block;width:100%;border-radius:10px;background:var(--bg-panel2);}
-  #instrumentCanvas{height:230px;cursor:grab;}
+  #instrumentCanvas{height:300px;cursor:grab;}
   #instrumentCanvas.dragging{cursor:grabbing;}
   #waveCanvas{height:150px;}
   #spectrumCanvas{height:300px;}
+  #realisticSpectrumCanvas{height:220px;}
+  .realistic-heading{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--fg);
+    margin:26px 0 8px;padding-left:12px;border-left:3px solid var(--page-accent);
+  }
 
   .top-controls-panel{max-width:760px;margin:0 auto 24px;}
   .top-controls-panel .control-block{margin-top:0;padding-top:0;border-top:none;}
@@ -117,12 +125,15 @@
     font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;color:var(--fg);
     margin:0 0 12px;text-transform:uppercase;letter-spacing:0.5px;
   }
+  .air-row{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-bottom:10px;}
+  .air-row .slider-row{margin-bottom:0;}
+  .air-row .medium-row{margin-bottom:0;}
   .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;}
   .slider-row label{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--dim);min-width:120px;}
   .slider-row input[type=range]{flex:1;min-width:140px;accent-color:var(--page-accent);}
   .slider-row .val{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--mid);min-width:110px;text-align:right;}
   .preset-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
-  .speed-readout{font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--page-accent);margin-top:10px;}
+  .speed-readout{font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--page-accent);white-space:nowrap;}
 
   .medium-row{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap;}
   .medium-option{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--mid);cursor:pointer;}
@@ -164,48 +175,54 @@
       <p class="tagline">Click or drag on the instrument to change its length. Watch the standing wave and hear the pitch change.</p>
     </div>
 
-    <div class="instrument-tabs" id="instrumentTabs"></div>
-
-    <div class="transport">
-      <button class="play-btn" id="playBtn"><span id="playLabel">&#9658; Play</span></button>
-      <button class="ctrl-btn" id="resetBtn">&#8634; Reset</button>
+    <div class="top-row">
+      <div class="instrument-tabs" id="instrumentTabs"></div>
+      <div class="top-row-divider" aria-hidden="true"></div>
+      <div class="transport">
+        <button class="play-btn" id="playBtn"><span id="playLabel">&#9658; Play</span></button>
+        <button class="ctrl-btn" id="resetBtn">&#8634; Reset</button>
+      </div>
     </div>
 
     <div class="panel top-controls-panel">
       <div class="control-block" id="airBlock" hidden>
         <h3>Medium and Air Conditions</h3>
-        <div class="medium-row">
-          <label class="medium-option"><input type="radio" name="medium" value="air" checked> Air</label>
-          <label class="medium-option"><input type="radio" name="medium" value="water"> Underwater</label>
-        </div>
-        <div id="tempRowWrap">
-          <div class="slider-row">
-            <label for="tempSlider">Temperature</label>
-            <input type="range" id="tempSlider" min="-10" max="45" step="1" value="20">
-            <span class="val" id="tempVal">20&deg;C</span>
+        <div class="air-row">
+          <div class="medium-row">
+            <label class="medium-option"><input type="radio" name="medium" value="air" checked> Air</label>
+            <label class="medium-option"><input type="radio" name="medium" value="water"> Underwater</label>
           </div>
-          <div class="preset-row">
-            <button class="ctrl-btn" data-temp="0">0&deg;C Freezing</button>
-            <button class="ctrl-btn" data-temp="20">20&deg;C Room</button>
-            <button class="ctrl-btn" data-temp="37">37&deg;C Breath</button>
+          <div id="tempRowWrap" class="air-row-item">
+            <div class="slider-row">
+              <label for="tempSlider">Temperature</label>
+              <input type="range" id="tempSlider" min="-10" max="45" step="1" value="20">
+              <span class="val" id="tempVal">20&deg;C</span>
+            </div>
           </div>
+          <span class="speed-readout" id="speedReadout"></span>
         </div>
-        <p class="speed-readout" id="speedReadout"></p>
+        <div class="preset-row" id="tempPresetRow">
+          <button class="ctrl-btn" data-temp="0">0&deg;C Freezing</button>
+          <button class="ctrl-btn" data-temp="20">20&deg;C Room</button>
+          <button class="ctrl-btn" data-temp="37">37&deg;C Breath</button>
+        </div>
       </div>
 
       <div class="control-block" id="stringPropsBlock" hidden>
         <h3>String Properties</h3>
-        <div class="slider-row">
-          <label for="tensionSlider">Tension</label>
-          <input type="range" id="tensionSlider" min="20" max="200" step="0.5" value="74.7">
-          <span class="val" id="tensionVal">74.7 N</span>
+        <div class="air-row">
+          <div class="slider-row">
+            <label for="tensionSlider">Tension</label>
+            <input type="range" id="tensionSlider" min="20" max="200" step="0.5" value="74.7">
+            <span class="val" id="tensionVal">74.7 N</span>
+          </div>
+          <div class="slider-row">
+            <label for="densitySlider">Density (&mu;)</label>
+            <input type="range" id="densitySlider" min="0.0004" max="0.0070" step="0.0001" value="0.00115">
+            <span class="val" id="densityVal">1.15 g/m</span>
+          </div>
+          <span class="speed-readout" id="stringSpeedReadout"></span>
         </div>
-        <div class="slider-row">
-          <label for="densitySlider">Density (&mu;)</label>
-          <input type="range" id="densitySlider" min="0.0004" max="0.0070" step="0.0001" value="0.00115">
-          <span class="val" id="densityVal">1.15 g/m</span>
-        </div>
-        <p class="speed-readout" id="stringSpeedReadout"></p>
       </div>
     </div>
 
@@ -215,7 +232,7 @@
         <div class="panel">
           <h2 id="instrumentPanelTitle">Instrument</h2>
           <p class="panel-hint" id="instrumentPanelHint"></p>
-          <canvas id="instrumentCanvas" width="900" height="230" tabindex="0" role="slider"
+          <canvas id="instrumentCanvas" width="900" height="300" tabindex="0" role="slider"
             aria-label="Effective vibrating length control. Click or drag anywhere to change pitch continuously, or use arrow keys."></canvas>
           <p class="diagram-caption" id="diagramCaption"></p>
           <div class="length-readout">
@@ -229,6 +246,11 @@
           <p class="panel-hint">Click or drag a dot to change the strength of a harmonic. Greyed out harmonics are not possible for this instrument's geometry.</p>
           <canvas id="spectrumCanvas" width="900" height="300" role="img" aria-label="Interactive power spectrum showing harmonic amplitudes"></canvas>
           <div class="axis-title-x">Frequency (Hz)</div>
+
+          <h3 class="realistic-heading">What a Microphone Would Actually Measure</h3>
+          <p class="panel-hint">The dots above show the exact theoretical harmonics. A real recording always has background noise, so an actual spectrum analyzer, like the Sound Spectrum Analyzer elsewhere on this site, would show the same peaks sitting on top of a noisy floor, on a decibel scale.</p>
+          <canvas id="realisticSpectrumCanvas" width="900" height="220" role="img" aria-label="Simulated realistic spectrum with noise floor and harmonic peaks"></canvas>
+          <div class="axis-title-x">Frequency (Hz), log scale</div>
         </div>
 
         <div class="panel">
@@ -450,6 +472,7 @@
   var stringSpeedReadout = document.getElementById('stringSpeedReadout');
   var waveCanvas = document.getElementById('waveCanvas');
   var spectrumCanvas = document.getElementById('spectrumCanvas');
+  var realisticCanvas = document.getElementById('realisticSpectrumCanvas');
   var noteNameEl = document.getElementById('noteName');
   var freqReadoutEl = document.getElementById('freqReadout');
   var centsNeedle = document.getElementById('centsNeedle');
@@ -459,6 +482,7 @@
   var iCtx = instrumentCanvas.getContext('2d');
   var wCtx = waveCanvas.getContext('2d');
   var sCtx = spectrumCanvas.getContext('2d');
+  var rCtx = realisticCanvas.getContext('2d');
 
   function resizeCanvas(canvas, ctx){
     var rect = canvas.getBoundingClientRect();
@@ -559,7 +583,7 @@
       iCtx.strokeStyle='#2a3c60'; iCtx.lineWidth=1.5;
       iCtx.beginPath(); iCtx.moveTo(padX,midY); iCtx.lineTo(bridgeX,midY); iCtx.stroke();
 
-      var amp = Math.min(48, H*0.42);
+      var amp = Math.min(85, H*0.42);
       var vibStart = fretX, vibEnd = bridgeX, vibLen = vibEnd-vibStart;
 
       for(var i=0;i<NUM_HARMONICS;i++){
@@ -570,7 +594,7 @@
         for(var s=0;s<=100;s++){
           var frac = s/100;
           var x = vibStart + frac*vibLen;
-          var y = midY - eff*Math.sin(n*Math.PI*frac)*Math.cos(n*t*3.0)*amp/norm;
+          var y = midY - eff*Math.sin(n*Math.PI*frac)*Math.cos(n*t*4.5)*amp/norm;
           if(s===0) iCtx.moveTo(x,y); else iCtx.lineTo(x,y);
         }
         iCtx.strokeStyle = HARMONIC_COLORS[i]; iCtx.lineWidth = (state.editingHarmonic===i)?2.5:1.4;
@@ -588,7 +612,7 @@
           var eff2 = getEffectiveAmplitude(instr,i2);
           if(eff2===0) continue;
           var n2=i2+1;
-          sum += eff2*Math.sin(n2*Math.PI*frac2)*Math.cos(n2*t*3.0)/norm;
+          sum += eff2*Math.sin(n2*Math.PI*frac2)*Math.cos(n2*t*4.5)/norm;
         }
         var y2 = midY - sum*amp;
         if(s2===0) iCtx.moveTo(x2,y2); else iCtx.lineTo(x2,y2);
@@ -604,7 +628,7 @@
     } else {
       var isConical = instr.kind==='cone-closed-open';
       var isClosedAtReed = instr.kind !== 'cyl-open-open'; // clarinet, sax: closed at the reed
-      var narrowH = H*0.13, wideH = H*0.32;
+      var narrowH = H*0.15, wideH = H*0.38;
       var effX = padX + screenFrac*bodyW;
 
       // the reed/mouthpiece is always drawn on the LEFT; the bell (or the far
@@ -652,7 +676,7 @@
           var wfrac = ws/100;
           var wx = padX + wfrac*bodyW*lengthFrac;
           var wLocalHalf = localHalfHeight(wfrac*lengthFrac);
-          var wy = midY - weff*spatialFactor(wn,wfrac)*Math.cos(wn*t*3.0)*wLocalHalf*CONTAIN/norm;
+          var wy = midY - weff*spatialFactor(wn,wfrac)*Math.cos(wn*t*4.5)*wLocalHalf*CONTAIN/norm;
           if(ws===0) iCtx.moveTo(wx,wy); else iCtx.lineTo(wx,wy);
         }
         iCtx.strokeStyle = HARMONIC_COLORS[wi]; iCtx.lineWidth = (state.editingHarmonic===wi)?2.5:1.4;
@@ -671,7 +695,7 @@
           var seff = getEffectiveAmplitude(instr,si);
           if(seff===0) continue;
           var sn=si+1;
-          ssum += seff*spatialFactor(sn,sfrac)*Math.cos(sn*t*3.0)/norm;
+          ssum += seff*spatialFactor(sn,sfrac)*Math.cos(sn*t*4.5)/norm;
         }
         var sy = midY - ssum*sLocalHalf*CONTAIN;
         if(ss===0) iCtx.moveTo(sx,sy); else iCtx.lineTo(sx,sy);
@@ -792,6 +816,77 @@
         sCtx.strokeStyle='#3a4d70'; sCtx.lineWidth=1; sCtx.stroke();
       }
     });
+  }
+
+  // Simulates what a real microphone and FFT would show: the same harmonic
+  // peaks, but sitting on a noisy floor, on a log frequency and dB scale,
+  // using the same conventions as the Sound Spectrum Analyzer tool elsewhere
+  // on this site.
+  var REAL_FREQ_MIN = 20, REAL_FREQ_MAX = 8000, REAL_DB_MIN = -100, REAL_DB_MAX = -10;
+  function hashNoise(x, t){
+    var v = Math.sin(x*12.9898 + t*3.1) * 43758.5453;
+    return v - Math.floor(v);
+  }
+  function drawRealisticSpectrum(){
+    var dims = resizeCanvas(realisticCanvas, rCtx);
+    var W=dims.w, H=dims.h;
+    rCtx.clearRect(0,0,W,H);
+    var padL=56, padR=20, padT=16, padB=40;
+    var plotW=W-padL-padR, plotH=H-padT-padB;
+    var logMin=Math.log(REAL_FREQ_MIN), logMax=Math.log(REAL_FREQ_MAX);
+    function freqToX(f){ return padL + (Math.log(f)-logMin)/(logMax-logMin)*plotW; }
+    function dbToY(db){ return padT + (1-(db-REAL_DB_MIN)/(REAL_DB_MAX-REAL_DB_MIN))*plotH; }
+
+    rCtx.strokeStyle='rgba(255,255,255,0.08)'; rCtx.lineWidth=1;
+    rCtx.font='13px "JetBrains Mono", monospace';
+    [20,50,100,200,500,1000,2000,5000,8000].forEach(function(f){
+      var x=freqToX(f);
+      rCtx.beginPath(); rCtx.moveTo(x,padT); rCtx.lineTo(x,padT+plotH); rCtx.stroke();
+      rCtx.fillStyle='#93a1c4'; rCtx.textAlign='center';
+      rCtx.fillText(f>=1000?(f/1000)+'k':String(f), x, padT+plotH+22);
+    });
+    rCtx.textAlign='right';
+    [-10,-55,-100].forEach(function(db){
+      var y=dbToY(db);
+      rCtx.fillText(db+' dB', padL-8, y+4);
+    });
+
+    var instr = currentInstrument();
+    var f1 = fingeredFundamental(instr);
+    var norm = maxPossibleAmp(instr);
+    var t = state.isPlaying ? (state.visualTime||0) : 0;
+
+    var harmonics = [];
+    for(var i=0;i<NUM_HARMONICS;i++){
+      var eff = getEffectiveAmplitude(instr,i);
+      if(eff<=0.001) continue;
+      harmonics.push({ logf: Math.log(f1*(i+1)), ampNorm: eff/norm });
+    }
+
+    rCtx.beginPath();
+    var started=false;
+    for(var x=0;x<=plotW;x+=2){
+      var f = Math.exp(logMin + (x/plotW)*(logMax-logMin));
+      var logf = Math.log(f);
+      var hump = -96 + 18*Math.exp(-Math.pow((logf-Math.log(60))/1.1,2));
+      var jitter = hashNoise(x*0.7, t)*7 - 3.5;
+      var floorDb = hump + jitter;
+
+      var peakDb = -200;
+      harmonics.forEach(function(h){
+        var width = 0.012;
+        var pdb = 20*Math.log10(Math.max(h.ampNorm,0.0005)) - 12;
+        var shape = (width*width)/(width*width + (logf-h.logf)*(logf-h.logf));
+        var contrib = REAL_DB_MIN + (pdb-REAL_DB_MIN)*shape;
+        if(contrib>peakDb) peakDb = contrib;
+      });
+
+      var finalDb = Math.max(floorDb, peakDb);
+      finalDb = Math.max(REAL_DB_MIN, Math.min(REAL_DB_MAX, finalDb));
+      var y = dbToY(finalDb);
+      if(!started){ rCtx.moveTo(padL+x,y); started=true; } else { rCtx.lineTo(padL+x,y); }
+    }
+    rCtx.strokeStyle = instr.color; rCtx.lineWidth=1.5; rCtx.stroke();
   }
 
   function findNearestHarmonic(x,y){
@@ -1135,6 +1230,7 @@
       drawInstrumentDiagram();
       drawWave();
       drawSpectrum();
+      drawRealisticSpectrum();
     }catch(err){ console.error('render error', err); }
   }
 
