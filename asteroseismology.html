@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Asteroseismology Lab — Harmoniverse</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    color-scheme:dark;
     --bg:#060b16; --bg-panel:#0b1729; --bg-panel2:#0e1c33; --line:#2a3c60;
     --fg:#f1f4fb; --mid:#a8b6d6; --dim:#93a1c4;
     --accent:#5fc2ff;
@@ -21,8 +20,8 @@
   *{box-sizing:border-box;}
   [hidden]{display:none !important;}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);
-    font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:18px;}
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, canvas:focus-visible, summary:focus-visible{
+    font-family:'Inter',system-ui,sans-serif;font-size:18px;}
+  a:focus-visible, button:focus-visible, input:focus-visible, canvas:focus-visible, .term:focus-visible{
     outline:3px solid var(--accent);outline-offset:2px;border-radius:6px;
   }
   body{
@@ -33,7 +32,7 @@
       var(--bg);
     min-height:100vh;
   }
-  .app{max-width:1440px;margin:0 auto;padding:0 28px 60px;}
+  .app{max-width:1440px;margin:0 auto;padding:0 28px 60px;overflow-x:clip;}
   @media(max-width:600px){.app{padding:0 16px 40px;}}
 
   .top-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
@@ -51,181 +50,172 @@
 
   .page-intro{text-align:center;margin-bottom:26px;}
   .page-intro h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(32px,5vw,52px);
-    letter-spacing:0.5px;margin:0 0 14px;color:var(--fg);line-height:1.08;text-wrap:balance;}
-  .page-intro .tagline{font-size:18px;color:var(--mid);max-width:840px;margin:0 auto;line-height:1.6;}
+    letter-spacing:0.5px;margin:0 0 14px;color:var(--fg);line-height:1.08;}
+  .page-intro .tagline{font-size:18px;color:var(--mid);max-width:820px;margin:0 auto;line-height:1.65;}
 
-  .top-row{display:flex;justify-content:center;align-items:center;gap:14px 18px;flex-wrap:wrap;margin-bottom:12px;}
+  .top-row{display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:14px;}
   .top-row-divider{width:1px;height:36px;background:var(--line);}
   @media(max-width:760px){.top-row-divider{display:none;}}
-  .instrument-tabs{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;}
+  .instrument-tabs{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
   .instr-tab{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;
     background:var(--bg-panel);border:2px solid var(--line);color:var(--mid);
-    padding:11px 18px;border-radius:14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px;}
+    padding:12px 22px;border-radius:14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px;}
   .instr-tab:hover{border-color:var(--page-accent);color:var(--fg);}
   .instr-tab.active{border-color:var(--page-accent);color:var(--fg);background:var(--bg-panel2);}
   .instr-tab .family-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 
-  .transport{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;}
+  .transport{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;}
   .play-btn{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;
     background:var(--bg-panel2);border:2px solid var(--page-accent);color:var(--fg);
-    padding:13px 24px;border-radius:30px;cursor:pointer;transition:background .15s,transform .1s;
+    padding:13px 30px;border-radius:30px;cursor:pointer;transition:background .15s,transform .1s;
     display:inline-flex;align-items:center;gap:8px;}
   .play-btn:hover{background:var(--bg-panel);}
   .play-btn:active{transform:scale(0.98);}
   .play-btn.playing{border-color:var(--bad);}
-  .tour-btn{border-color:var(--good);}
   .ctrl-btn{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:0.3px;
     background:var(--bg-panel);border:1.5px solid var(--line);color:var(--mid);
-    padding:9px 16px;border-radius:20px;cursor:pointer;transition:border-color .15s,color .15s,opacity .15s;}
+    padding:10px 18px;border-radius:20px;cursor:pointer;transition:border-color .15s,color .15s,opacity .15s;}
   .ctrl-btn:hover{border-color:var(--page-accent);color:var(--fg);}
-  .ctrl-btn:disabled{opacity:0.4;cursor:not-allowed;}
-  .ctrl-btn.small{font-size:13.5px;padding:7px 12px;}
+  .ctrl-btn.small{font-size:13.5px;padding:7px 13px;}
   .ctrl-btn.active{border-color:var(--page-accent);color:var(--page-accent);}
-  .ctrl-select{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:var(--bg-panel);
-    border:1.5px solid var(--line);color:var(--mid);padding:8px 12px;border-radius:20px;cursor:pointer;max-width:100%;}
-  .check-opt{display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--mid);cursor:pointer;}
-  .check-opt input{width:16px;height:16px;accent-color:var(--page-accent);}
-  .opt-group{display:inline-flex;align-items:center;gap:6px;}
+  .ctrl-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .ctrl-btn:disabled:hover{border-color:var(--line);color:var(--mid);}
 
-  /* help buttons + popover */
-  .info{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);background:var(--bg-panel2);
-    color:var(--mid);font:600 13px/1 'Space Grotesk',sans-serif;cursor:pointer;display:inline-flex;align-items:center;
-    justify-content:center;flex-shrink:0;padding:0;text-transform:none;letter-spacing:0;vertical-align:middle;transition:border-color .15s,color .15s,background .15s;}
-  .info:hover,.info[aria-expanded="true"]{border-color:var(--page-accent);color:var(--bg);background:var(--page-accent);}
-  #pop{position:absolute;z-index:80;width:min(400px, calc(100vw - 32px));background:var(--bg-panel2);
-    border:1px solid var(--page-accent);border-radius:12px;padding:14px 16px 16px;
-    box-shadow:0 18px 40px -12px rgba(0,0,0,0.75);font-size:15.5px;line-height:1.6;color:var(--mid);}
-  #pop h4{font-family:'Space Grotesk',sans-serif;font-size:16.5px;color:var(--fg);margin:0 28px 8px 0;}
-  #pop p{margin:0 0 8px;} #pop p:last-child{margin-bottom:0;}
-  #pop b,#pop strong{color:var(--fg);font-weight:600;}
-  #pop .pop-close{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--dim);font-size:22px;cursor:pointer;line-height:1;padding:4px 8px;}
-  #pop .pop-close:hover{color:var(--fg);}
-  .sw{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:baseline;margin:0 2px;}
+  .status-line{text-align:center;font-size:16px;color:var(--mid);margin:0 auto 22px;max-width:860px;line-height:1.6;min-height:1.6em;}
 
-  /* guided tour */
-  .tour-focus{position:relative;z-index:40;box-shadow:0 0 0 3px var(--good),0 0 0 100vmax rgba(2,5,12,0.66) !important;border-radius:16px;}
-  #tourCard{position:fixed;z-index:60;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));width:min(420px, calc(100vw - 32px));
-    background:var(--bg-panel2);border:2px solid var(--good);border-radius:16px;padding:16px 18px 16px;
-    box-shadow:0 20px 50px -10px rgba(0,0,0,0.8);}
-  @media(max-width:600px){#tourCard{right:16px;left:16px;width:auto;}}
-  #tourCard .t-step{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--good);letter-spacing:0.5px;text-transform:uppercase;}
-  #tourCard h4{font-family:'Space Grotesk',sans-serif;font-size:19px;color:var(--fg);margin:4px 0 8px;}
-  #tourCard p{font-size:15.5px;color:var(--mid);line-height:1.6;margin:0 0 8px;}
-  #tourCard p b{color:var(--fg);}
-  #tourCard .t-nav{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;}
+  .layout-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;}
+  .layout-grid > div, .geom-grid > div{min-width:0;}
+  @media(max-width:1000px){.layout-grid{grid-template-columns:1fr;}}
+  @media(min-width:1001px){.sticky{position:sticky;top:16px;}}
+  .geom-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media(max-width:1000px){.geom-grid{grid-template-columns:1fr;}}
 
-  .status-line{text-align:center;font-size:16px;color:var(--mid);
-    margin:4px auto 20px;max-width:900px;line-height:1.55;min-height:1.4em;}
-
-  .panel{background:var(--bg-panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px 22px;margin-bottom:20px;min-width:0;}
+  .panel{background:var(--bg-panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px 22px;margin-bottom:20px;}
   @media(max-width:600px){.panel{padding:16px 14px 18px;}}
   .panel h2{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18px;color:var(--fg);
     margin:0 0 14px;text-transform:uppercase;letter-spacing:0.6px;padding-left:12px;border-left:3px solid var(--page-accent);
     display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
   .panel h2 .h2-title{display:inline-flex;align-items:center;gap:10px;}
-  .panel h2 .h2-btns{display:flex;gap:8px 12px;flex-wrap:wrap;align-items:center;text-transform:none;letter-spacing:normal;font-weight:400;}
-  .panel-hint{font-size:16px;color:var(--dim);margin:-4px 0 14px;line-height:1.55;}
-  .panel-hint b{color:var(--mid);font-weight:600;}
-  .info-note{font-size:15.5px;color:var(--dim);line-height:1.6;margin:10px 0 4px;}
-  .info-note strong{color:var(--mid);}
+  .step{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;
+    background:var(--page-accent);color:var(--bg);font:700 13px/1 'Space Grotesk',sans-serif;flex-shrink:0;}
+  .panel h2 .h2-btns{display:flex;gap:6px;flex-wrap:wrap;text-transform:none;letter-spacing:normal;}
+  .panel-hint{font-size:16.5px;color:var(--mid);margin:-4px 0 14px;line-height:1.65;}
+  .info-note{font-size:15.5px;color:var(--dim);line-height:1.6;margin:10px 0 0;}
+  .info-note strong{color:var(--mid);font-weight:600;}
+  .nu{text-transform:none;letter-spacing:0;font-family:'Inter',sans-serif;}
 
-  .star-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(330px,100%),1fr));gap:6px 34px;}
-  .control-block h3{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:var(--fg);
-    margin:0 0 10px;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:8px;}
-  .slider-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-  .slider-row label{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--dim);min-width:104px;}
-  .slider-row input[type=range]{flex:1;min-width:60px;accent-color:var(--page-accent);}
-  .slider-row .val{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--mid);min-width:88px;text-align:right;font-variant-numeric:tabular-nums;}
-  @media(max-width:480px){.slider-row label{min-width:84px;font-size:14px;} .slider-row .val{min-width:76px;font-size:14px;}}
-  .derived-row{display:flex;gap:8px 22px;flex-wrap:wrap;align-items:center;font-family:'JetBrains Mono',monospace;font-size:15.5px;color:var(--mid);
-    background:var(--bg-panel2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:10px;}
-  .derived-row b{color:var(--page-accent);font-weight:500;}
+  /* glossary terms (same pattern as the Foundations page) */
+  .term{position:relative;color:var(--fg);font-weight:600;border-bottom:1.5px dotted var(--page-accent);cursor:help;}
+  .term-tip{
+    position:absolute;left:50%;bottom:calc(100% + 10px);--shift:0px;
+    transform:translateX(calc(-50% + var(--shift))) translateY(4px);
+    width:280px;max-width:min(80vw,280px);background:var(--bg-panel2);border:1px solid var(--page-accent);
+    border-radius:10px;padding:14px 16px;box-shadow:0 14px 34px -12px rgba(0,0,0,0.7);
+    font-family:'Inter',sans-serif;font-weight:400;font-size:16px;line-height:1.5;color:var(--fg);
+    text-align:left;text-transform:none;letter-spacing:normal;
+    opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s,transform .15s;z-index:30;
+  }
+  .term-tip::after{content:"";position:absolute;top:100%;left:calc(50% - var(--shift));transform:translateX(-50%);
+    border:7px solid transparent;border-top-color:var(--page-accent);}
+  .term-tip.below{bottom:auto;top:calc(100% + 10px);transform:translateX(calc(-50% + var(--shift))) translateY(-4px);}
+  .term-tip.below::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:var(--page-accent);}
+  .term:hover .term-tip, .term:focus .term-tip, .term:focus-visible .term-tip{
+    opacity:1;visibility:visible;transform:translateX(calc(-50% + var(--shift))) translateY(0);}
 
-  .layout-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;}
-  .layout-grid > div{min-width:0;}
-  @media(max-width:1060px){.layout-grid{grid-template-columns:1fr;}}
+  .top-controls-panel{max-width:1000px;margin:0 auto 20px;padding:16px 22px 18px;}
+  .control-block h3{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--fg);
+    margin:0 0 10px;text-transform:uppercase;letter-spacing:0.5px;}
+  .prop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:4px 26px;}
+  .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+  .slider-row label{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--dim);min-width:96px;}
+  .slider-row input[type=range]{flex:1;min-width:80px;accent-color:var(--page-accent);}
+  .slider-row .val{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--mid);min-width:92px;text-align:right;font-variant-numeric:tabular-nums;}
+  .length-readout{display:flex;gap:8px 22px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:15.5px;color:var(--mid);
+    background:var(--bg-panel2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:8px;}
+  .length-readout b{color:var(--page-accent);font-weight:500;}
+  .length-readout .lr-tag{color:var(--dim);}
 
   canvas{display:block;width:100%;border-radius:10px;background:var(--bg-panel2);}
-  #spectrumCanvas{height:330px;cursor:crosshair;touch-action:pan-y;}
-  #echelleCanvas{height:430px;cursor:pointer;}
-  #lcCanvas{height:200px;}
+  #lcCanvas{height:260px;}
+  #spectrumCanvas{height:360px;cursor:crosshair;touch-action:pan-y;}
+  #spectrumCanvas.dragging{cursor:ew-resize;}
   #sphereCanvas{max-width:340px;margin:0 auto;aspect-ratio:1/1;height:auto;background:transparent;cursor:grab;touch-action:none;}
   #sphereCanvas.dragging{cursor:grabbing;}
-  #rayCanvas{max-width:360px;margin:0 auto;aspect-ratio:1/1;height:auto;background:transparent;}
+  #rayCanvas{max-width:340px;margin:0 auto;aspect-ratio:1/1;height:auto;background:transparent;}
   #csCanvas{height:150px;margin-top:10px;}
-  #hrCanvas{height:250px;}
   .canvas-wrap{position:relative;}
   .cw-tooltip{position:absolute;pointer-events:none;background:var(--bg-panel);border:1px solid var(--page-accent);border-radius:8px;
     padding:7px 12px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--fg);
     transform:translate(-50%,-115%);white-space:nowrap;z-index:5;display:none;box-shadow:0 8px 20px -8px rgba(0,0,0,0.6);}
+  .axis-title-x{text-align:center;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--mid);margin-top:8px;}
 
-  .sel-readout{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--mid);background:var(--bg-panel2);
-    border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:12px;line-height:1.6;}
-  .sel-readout b{color:var(--fg);font-weight:500;}
+  .lc-legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--mid);}
+  .lc-legend span{display:inline-flex;align-items:center;gap:7px;}
+  .lc-legend i{width:18px;height:3px;border-radius:2px;display:inline-block;}
 
-  .key{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:8px 22px;
-    background:var(--bg-panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:12px;
-    font-size:14.5px;color:var(--mid);line-height:1.5;}
-  .key .k-title{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
-  .key .k-items{display:flex;flex-wrap:wrap;gap:4px 14px;}
-  .key .k-items span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
-  .key i.dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
-  .key i.tri{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:9px solid currentColor;display:inline-block;}
-  .key i.tick{width:2px;height:12px;display:inline-block;background:currentColor;}
-  .key i.dash{width:18px;height:0;border-top:2px dashed currentColor;display:inline-block;}
-  .key i.band{width:18px;height:4px;border-radius:2px;background:currentColor;opacity:0.55;display:inline-block;}
-  .step-row{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;}
+  .tobs-box{background:var(--bg-panel2);border:1px solid var(--line);border-radius:12px;padding:12px 16px 14px;margin:0 0 14px;}
+  .tobs-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .tobs-row label{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--dim);}
+  .tobs-row input[type=range]{flex:1;min-width:160px;accent-color:var(--page-accent);}
+  .tobs-row .val{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--page-accent);min-width:90px;text-align:right;}
+  .tobs-res{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--mid);margin-top:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .tobs-res b{color:var(--fg);font-weight:500;}
+  .tobs-box p{font-size:15px;color:var(--dim);line-height:1.6;margin:8px 0 0;}
 
-  .fold-row{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;margin-bottom:12px;}
-  .fold-row label{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--dim);}
-  .fold-row input[type=range]{flex:1;min-width:140px;accent-color:var(--page-accent);}
-  .fold-row .val{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--page-accent);min-width:110px;text-align:right;font-variant-numeric:tabular-nums;}
-  .fold-status{font-family:'JetBrains Mono',monospace;font-size:14.5px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);
-    background:var(--bg-panel2);color:var(--mid);margin-bottom:12px;}
-  .fold-status.ok{border-color:var(--good);color:var(--good);}
+  .key{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:12px 24px;
+    background:var(--bg-panel2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:14px;}
+  .key-item{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;font-size:15px;color:var(--mid);line-height:1.55;}
+  .key-ico{display:flex;justify-content:center;padding-top:5px;}
+  .key-ico i.tri{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid currentColor;}
+  .key-ico i.brk{width:22px;height:8px;border:1.5px solid currentColor;border-bottom:none;}
+  .key-ico i.grass{width:22px;height:10px;background:repeating-linear-gradient(90deg,currentColor 0 1px,transparent 1px 3px);opacity:0.7;}
+  .key-ico i.dash{width:2px;height:16px;background:repeating-linear-gradient(currentColor 0 3px,transparent 3px 6px);}
 
-  details.how{background:var(--bg-panel2);border:1px solid var(--line);border-radius:12px;padding:0 14px;margin-bottom:14px;}
-  details.how summary{cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--fg);padding:12px 0;list-style-position:inside;}
-  details.how[open] summary{border-bottom:1px solid var(--line);margin-bottom:12px;}
-  details.how p{font-size:15.5px;color:var(--mid);line-height:1.65;margin:0 0 10px;}
-  details.how p b{color:var(--fg);}
-  .diag-wrap{overflow-x:auto;margin:4px 0 12px;}
-  #echDiag{display:block;width:100%;min-width:520px;height:auto;}
-
-  .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:st;}
-  .steps li{background:var(--bg-panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;counter-increment:st;position:relative;}
-  .steps li::before{content:counter(st);position:absolute;left:-1px;top:-1px;width:26px;height:26px;border-radius:12px 0 12px 0;
-    background:var(--page-accent);color:var(--bg);font:700 14px/26px 'Space Grotesk',sans-serif;text-align:center;}
-  .steps .s-head{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-left:22px;margin-bottom:6px;}
-  .steps .s-head b{font-family:'Space Grotesk',sans-serif;font-size:16px;color:var(--fg);font-weight:600;}
-  .steps p{font-size:15px;color:var(--dim);line-height:1.55;margin:0 0 8px;}
-  .steps .meas{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--mid);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  .steps .meas b{color:var(--page-accent);font-weight:500;font-size:16px;}
-  .chk{font-family:'JetBrains Mono',monospace;font-size:13px;padding:3px 9px;border-radius:12px;border:1px solid var(--line);color:var(--dim);white-space:nowrap;}
+  .k-lab{color:var(--fg);font-weight:600;}
+  .meas-step{background:var(--bg-panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px 4px;margin-bottom:10px;}
+  .ms-head{display:flex;align-items:center;gap:8px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--fg);}
+  .ms-tag{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:var(--page-accent);color:var(--bg);font:700 12px/1 'Space Grotesk',sans-serif;}
+  .meas-step p{font-size:15px;color:var(--mid);line-height:1.55;margin:6px 0 10px;}
+  .measure-box{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);}
+  .measure-box h3{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;color:var(--fg);
+    margin:0 0 8px;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:10px;}
+  .measure-box .panel-hint{margin:0 0 14px;}
+  .meas-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+  .meas-row label{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--dim);min-width:64px;}
+  .meas-row input[type=range]{flex:1;min-width:120px;accent-color:var(--page-accent);}
+  .meas-row .val{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--page-accent);min-width:104px;text-align:right;font-variant-numeric:tabular-nums;}
+  .meas-row.numax input[type=range]{accent-color:var(--warn);}
+  .meas-row.numax .val{color:var(--warn);}
+  .chk{font-family:'JetBrains Mono',monospace;font-size:13px;padding:3px 10px;border-radius:12px;border:1px solid var(--line);color:var(--dim);white-space:nowrap;}
   .chk.ok{border-color:var(--good);color:var(--good);}
   .chk.no{border-color:var(--warn);color:var(--warn);}
-  .weigh-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:15px;margin-top:4px;font-variant-numeric:tabular-nums;}
-  .weigh-table th{color:var(--dim);font-weight:400;text-align:right;padding:6px 4px;border-bottom:1px solid var(--line);font-size:13.5px;}
-  .weigh-table th:first-child,.weigh-table td:first-child{text-align:left;}
-  .weigh-table td{padding:7px 4px;text-align:right;color:var(--fg);border-bottom:1px solid rgba(42,60,96,0.5);}
-  .weigh-table td.est{color:var(--page-accent);}
-  .weigh-table .diff{font-size:12.5px;display:block;}
-  .formula{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mid);background:var(--bg);
-    border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:12px;line-height:1.9;overflow-x:auto;}
-  .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .fold-status{font-size:15px;line-height:1.55;padding:10px 14px;border-radius:10px;border:1px solid var(--line);
+    background:var(--bg-panel2);color:var(--mid);margin-top:6px;}
+  .fold-status.ok{border-color:var(--good);}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center;}
 
-  .vis-meter{margin-top:10px;}
+  .bridge-step{background:var(--bg-panel2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;}
+  .bridge-flow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;}
+  .b-label{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);text-transform:uppercase;letter-spacing:0.6px;}
+  .b-val{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:25px;color:var(--fg);line-height:1.15;margin-top:2px;font-variant-numeric:tabular-nums;}
+  .b-val.meas{color:var(--page-accent);}
+  .b-val.meas-n{color:var(--warn);}
+  .b-arrow{font-size:22px;color:var(--dim);}
+  .b-rel{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mid);margin-top:8px;}
+  .b-note{font-size:15px;color:var(--mid);line-height:1.6;margin:8px 0 0;}
+  .b-combine{text-align:center;font-size:15px;color:var(--mid);margin:4px 0 12px;}
+  .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .result{text-align:center;background:var(--bg-panel2);border:1px solid var(--page-accent);border-radius:12px;padding:14px 10px 12px;}
+  .result .r-val{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:var(--fg);line-height:1;margin:6px 0 6px;font-variant-numeric:tabular-nums;}
+  .result .r-formula{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);}
+  .result .r-true{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--mid);margin:8px 0 6px;}
+
+  .quick-l{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:12px 0 4px;justify-content:center;}
+  .quick-l .lbl{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--dim);margin-right:4px;}
+  .vis-meter{margin-top:12px;}
   .vis-track{height:10px;background:var(--bg-panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden;}
   .vis-fill{height:100%;background:var(--page-accent);width:0;transition:width .15s;}
-  .vis-label{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--mid);margin-top:6px;display:flex;align-items:center;gap:8px;}
-  .quick-l{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
-  .quick-l .lbl{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--dim);margin-right:4px;}
-
-  .explainer{max-width:860px;margin:40px auto 0;}
-  .explainer h3{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:20px;color:var(--fg);
-    margin:28px 0 10px;padding-left:14px;border-left:3px solid var(--page-accent);text-wrap:balance;}
-  .explainer p{font-size:16.5px;color:var(--mid);line-height:1.7;margin:0 0 12px;}
-  .explainer strong{color:var(--fg);font-weight:600;}
+  .vis-label{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--mid);margin-top:6px;}
 
   footer{margin-top:50px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--dim);letter-spacing:0.5px;}
 </style>
@@ -244,299 +234,310 @@
   <main>
     <div class="page-intro">
       <h1>Asteroseismology Lab</h1>
-      <p class="tagline">Stars ring like instruments. Boiling convection near the surface sets off thousands of sound waves, and their frequencies depend on what lies inside. Pick a star, read its oscillation spectrum, and use it to weigh the star. New here? Take the guided tour, and press any <span class="info" aria-hidden="true" style="pointer-events:none;">?</span> for an explanation.</p>
+      <p class="tagline">Stars like the Sun vibrate. <span data-term="convection">Convection</span> near the surface constantly drives sound waves, and because those waves are trapped inside the star, it rings at a set of specific <span data-term="harmonic">harmonics</span>. Each vibration makes the star brighten and dim very slightly. In this lab you measure those harmonics from the star's light and use them to find the star's mass and radius.</p>
     </div>
 
-    <div class="top-row" id="topRow">
-      <div class="instrument-tabs" id="presetTabsWrap">
-        <div class="instrument-tabs" id="presetTabs"></div>
-        <button class="info" data-help="presets" aria-label="Explain the star choices">?</button>
-      </div>
+    <div class="top-row">
+      <div class="instrument-tabs" id="starTabs"></div>
       <div class="top-row-divider" aria-hidden="true"></div>
       <div class="transport">
-        <button class="play-btn tour-btn" id="tourBtn">&#10148; Guided tour</button>
-        <button class="play-btn" id="listenBtn"><span id="listenLabel">&#9658; Listen to this star</span></button>
-        <button class="info" data-help="listen" aria-label="Explain listening">?</button>
+        <button class="play-btn" id="playBtn"><span id="playLabel">&#9658; Listen</span></button>
         <button class="ctrl-btn" id="resetBtn">&#8634; Reset</button>
-        <button class="info" data-help="reset" aria-label="Explain reset">?</button>
       </div>
     </div>
     <p class="status-line" id="statusLine" aria-live="polite"></p>
 
-    <div class="panel" id="starPanel">
-      <div class="star-controls">
-        <div class="control-block">
-          <h3>Star Properties</h3>
-          <div class="slider-row"><label for="mSlider">Mass</label><button class="info" data-help="mass" aria-label="Explain mass">?</button><input type="range" id="mSlider" min="0.7" max="2.5" step="0.01"><span class="val" id="mVal"></span></div>
-          <div class="slider-row"><label for="rSlider">Radius</label><button class="info" data-help="radius" aria-label="Explain radius">?</button><input type="range" id="rSlider" min="0.7" max="15" step="0.01"><span class="val" id="rVal"></span></div>
-          <div class="slider-row"><label for="tSlider">Teff</label><button class="info" data-help="teff" aria-label="Explain effective temperature">?</button><input type="range" id="tSlider" min="4000" max="7000" step="10"><span class="val" id="tVal"></span></div>
+    <div class="panel top-controls-panel">
+      <div class="control-block">
+        <h3>Star Properties</h3>
+        <div class="prop-grid">
+          <div class="slider-row"><label for="mSlider">Mass</label><input type="range" id="mSlider" min="0.7" max="2.5" step="0.01"><span class="val" id="mVal"></span></div>
+          <div class="slider-row"><label for="rSlider">Radius</label><input type="range" id="rSlider" min="0.7" max="12" step="0.01"><span class="val" id="rVal"></span></div>
+          <div class="slider-row"><label for="tSlider">Surface temp.</label><input type="range" id="tSlider" min="4000" max="7000" step="10"><span class="val" id="tVal"></span></div>
         </div>
-        <div class="control-block">
-          <h3>Rotation and Viewing Angle</h3>
-          <div class="slider-row"><label for="incSlider">Inclination</label><button class="info" data-help="incl" aria-label="Explain inclination">?</button><input type="range" id="incSlider" min="0" max="90" step="1"><span class="val" id="incVal"></span></div>
-          <div class="slider-row"><label for="rotSlider">Rotation</label><button class="info" data-help="rot" aria-label="Explain rotational splitting">?</button><input type="range" id="rotSlider" min="0" max="2" step="0.01"><span class="val" id="rotVal"></span></div>
-          <p class="info-note" style="margin-top:0;" id="rotNote"></p>
+        <div class="length-readout">
+          <span class="lr-tag">Predicted by the model</span>
+          <span>&Delta;&nu; <b id="modelDnu"></b></span>
+          <span>&nu;<sub>max</sub> <b id="modelNumax"></b></span>
+          <span>Luminosity <b id="modelLum"></b></span>
         </div>
-        <div class="control-block" id="coreBlock" hidden>
-          <h3>Red-Giant Core (Mixed Modes) <button class="info" data-help="core" aria-label="Explain mixed modes">?</button></h3>
-          <div class="slider-row"><label for="dpiSlider">&Delta;&Pi;&#8321;</label><button class="info" data-help="dpi" aria-label="Explain period spacing">?</button><input type="range" id="dpiSlider" min="40" max="400" step="1"><span class="val" id="dpiVal"></span></div>
-          <div class="slider-row"><label for="qSlider">Coupling q</label><button class="info" data-help="q" aria-label="Explain coupling">?</button><input type="range" id="qSlider" min="0.02" max="0.40" step="0.01"><span class="val" id="qVal"></span></div>
-          <div class="slider-row"><label for="crSlider">Core spin</label><button class="info" data-help="cr" aria-label="Explain core rotation">?</button><input type="range" id="crSlider" min="1" max="20" step="0.5"><span class="val" id="crVal"></span></div>
-        </div>
-      </div>
-      <div class="derived-row" id="derivedRow">
-        <button class="info" data-help="derived" aria-label="Explain these values">?</button>
-        <span>&Delta;&nu; <b id="dDnu"></b></span>
-        <span>&nu;<sub>max</sub> <b id="dNumax"></b></span>
-        <span>Mean density <b id="dRho"></b></span>
-        <span>log g <b id="dLogg"></b></span>
-        <span>Luminosity <b id="dLum"></b></span>
       </div>
     </div>
 
     <div class="layout-grid">
       <div class="col-main">
 
-        <div class="panel" id="specPanel">
-          <h2><span class="h2-title">Power Spectrum <button class="info" data-help="spectrum" aria-label="How to read the power spectrum">?</button></span>
+        <div class="panel">
+          <h2><span class="h2-title"><span class="step">1</span>Observe the Light Curve</span></h2>
+          <p class="panel-hint">A telescope records how bright the star is over time. This record is called a <span data-term="lightcurve">light curve</span>. Each sound wave inside the star squeezes and heats the <span data-term="photosphere">photosphere</span>, then lets it expand and cool. Hotter gas glows brighter, so the star's brightness rises and falls by a few <span data-term="ppm">ppm</span>.</p>
+          <p class="panel-hint">The telescope also picks up two larger sources of variation that have nothing to do with the vibrations. <span data-term="granulation">Granulation</span> is the flicker of convection cells boiling at the surface. <span data-term="photonnoise">Photon noise</span> is random scatter in how much light arrives each moment.</p>
+          <canvas id="lcCanvas" role="img" aria-label="Simulated light curve. Top trace shows everything the telescope records. Bottom trace shows only the vibrations."></canvas>
+          <div class="axis-title-x" id="lcAxisTitle">Time</div>
+          <div class="lc-legend">
+            <span><i style="background:#93a1c4"></i>everything the telescope records</span>
+            <span><i style="background:#f1f4fb"></i>sum of all vibrations</span>
+            <span><i id="selSwatch" style="background:#5fc2ff"></i>one harmonic (click a peak below)</span>
+          </div>
+          <p class="info-note" id="lcNote"></p>
+        </div>
+
+        <div class="panel">
+          <h2><span class="h2-title"><span class="step">2</span>Transform into a Power Spectrum</span>
             <span class="h2-btns">
-              <span class="opt-group"><select class="ctrl-select" id="viewSelect" aria-label="Spectrum view">
-                <option value="envelope" selected>View: Whole oscillation hump</option>
-                <option value="zoom">View: Zoom on one order</option>
-                <option value="wide">View: Wide (log&ndash;log)</option>
-              </select><button class="info" data-help="view" aria-label="Explain the views">?</button></span>
-              <span class="opt-group"><label class="check-opt"><input type="checkbox" id="noiseToggle" checked> Realistic noise</label><button class="info" data-help="noise" aria-label="Explain noise">?</button></span>
-              <span class="opt-group"><button class="ctrl-btn small" id="newNoiseBtn">New noise</button><button class="info" data-help="newnoise" aria-label="Explain new noise">?</button></span>
+              <button class="ctrl-btn small active" id="structBtn">Spacing labels</button>
+              <button class="ctrl-btn small active" id="labelBtn">Pattern labels</button>
+              <button class="ctrl-btn small active" id="noiseBtn">Noise</button>
             </span>
           </h2>
-          <p class="panel-hint">This is the <b>main measurement</b>. A telescope records the star's brightness for months or years, and a Fourier transform turns that into power at each frequency. <b>Each spike is one note the star is ringing at.</b> Hover over a spike to identify it, click to select it.</p>
+          <p class="panel-hint">A <span data-term="fourier">Fourier transform</span> breaks the light curve into the separate frequencies it contains, the same way the <a href="sound-spectrum.html" style="color:var(--fg)">Sound Spectrum Analyzer</a> breaks a musical note into its harmonics. The result is a <span data-term="powerspectrum">power spectrum</span>. Each harmonic of the star becomes one narrow peak. Granulation and photon noise spread across every frequency as a low <span data-term="background">background</span>. Click any peak to see its single wave in the light curve above.</p>
+
+          <div class="tobs-box">
+            <div class="tobs-row">
+              <label for="tobsSlider">Observing time T</label>
+              <input type="range" id="tobsSlider" min="0" max="1000" step="1">
+              <span class="val" id="tobsVal"></span>
+            </div>
+            <div class="tobs-res"><span><span data-term="resolution">Frequency resolution</span> 1/T = <b id="resVal"></b></span><span class="chk" id="resChk"></span></div>
+            <p>T is the total length of the observation, not the period of a wave. Two peaks closer together than 1/T blur into one. Shorten T and watch the peaks merge and sink into the noise. This is why <span data-term="kepler">Kepler</span> watched the same stars for four years.</p>
+          </div>
+
           <div class="canvas-wrap">
-            <canvas id="spectrumCanvas" role="img" aria-label="Oscillation power spectrum of the star"></canvas>
+            <canvas id="spectrumCanvas" role="img" aria-label="Power spectrum of the star with labeled harmonics and measurement markers"></canvas>
             <div class="cw-tooltip" id="specTooltip" aria-hidden="true"></div>
           </div>
+          <div class="axis-title-x">Frequency (<span data-term="uhz">&mu;Hz</span>)</div>
+
           <div class="key">
-            <div>
-              <div class="k-title">Colour = mode degree l <button class="info" data-help="peaks" aria-label="Explain the colours">?</button></div>
-              <div class="k-items">
-                <span style="color:var(--l0)"><i class="tri"></i><span style="color:var(--mid)">l = 0 radial</span></span>
-                <span style="color:var(--l1)"><i class="tri"></i><span style="color:var(--mid)">l = 1 dipole</span></span>
-                <span style="color:var(--l2)"><i class="tri"></i><span style="color:var(--mid)">l = 2 quadrupole</span></span>
-                <span style="color:var(--l3)"><i class="tri"></i><span style="color:var(--mid)">l = 3 octupole</span></span>
+            <div class="key-item"><div class="key-ico"><i class="tri" style="color:var(--l0)"></i></div>
+              <div><b class="k-lab">Peaks.</b> Each peak is one harmonic. Its color shows the surface pattern, set by the <span data-term="degree">degree l</span>. The <span data-term="order">n</span> labels below the axis number the harmonics.</div></div>
+            <div class="key-item"><div class="key-ico"><i class="brk" style="color:#f1f4fb"></i></div>
+              <div><b class="k-lab"><span data-term="dnu">&Delta;&nu;</span>, the large separation.</b> The spacing between neighboring peaks of the same color. Like the v/2L spacing of a guitar string's harmonics, it is one over the time sound takes to cross the star and back. It measures the star's <span data-term="density">mean density</span>.</div></div>
+            <div class="key-item"><div class="key-ico">
+                <svg width="22" height="14" viewBox="0 0 22 14" aria-hidden="true"><g fill="#ffcf5f"><rect x="1" y="10" width="2" height="4"/><rect x="5" y="6" width="2" height="8"/><rect x="9" y="1" width="2" height="13"/><rect x="13" y="4" width="2" height="10"/><rect x="17" y="9" width="2" height="5"/></g></svg>
+              </div>
+              <div><b class="k-lab"><span data-term="numax">&nu;<sub>max</sub></span>.</b> The frequency where the peaks are tallest. It measures the star's <span data-term="gravity">surface gravity</span>.</div></div>
+            <div class="key-item"><div class="key-ico"><i class="brk" style="color:var(--l2)"></i></div>
+              <div><b class="k-lab"><span data-term="d02">&delta;&nu;<sub>02</sub></span>, the small separation.</b> The narrow gap between a green l = 2 peak and the blue l = 0 peak beside it. It depends on the core, so it changes as the star ages.</div></div>
+            <div class="key-item"><div class="key-ico"><i class="grass" style="color:#5fc2ff"></i></div>
+              <div><b class="k-lab">Background.</b> The low, uneven floor comes from granulation and photon noise. Noise also makes each peak a little taller or shorter at random.</div></div>
+            <div class="key-item"><div class="key-ico"><i class="dash" style="color:#ffcf5f"></i></div>
+              <div><b class="k-lab">Your measurements.</b> The dashed comb shows your &Delta;&nu;. The yellow line shows your &nu;<sub>max</sub>.</div></div>
+          </div>
+
+          <div class="measure-box">
+            <h3><span class="step">3</span>Measure <span class="nu">&Delta;&nu;</span> and <span class="nu">&nu;<sub>max</sub></span></h3>
+            <p class="panel-hint">These are the only two measurements you need.</p>
+
+            <div class="meas-step">
+              <div class="ms-head"><span class="ms-tag">A</span>Set <span class="nu">&Delta;&nu;</span></div>
+              <p>Change the spacing until every dashed line lands on a peak of the same color. Click a peak to anchor the comb there.</p>
+              <div class="meas-row">
+                <label for="dnuSlider">&Delta;&nu;</label>
+                <button class="ctrl-btn small" id="dnuMinus" aria-label="Decrease spacing by 0.2 percent">&minus;</button>
+                <input type="range" id="dnuSlider" min="0" max="3000" step="1">
+                <button class="ctrl-btn small" id="dnuPlus" aria-label="Increase spacing by 0.2 percent">+</button>
+                <span class="val" id="dnuVal"></span>
+                <span class="chk" id="chkDnu"></span>
               </div>
             </div>
-            <div>
-              <div class="k-title">Other marks <button class="info" data-help="marks" aria-label="Explain the other marks">?</button></div>
-              <div class="k-items">
-                <span style="color:var(--mid)"><i class="tick" style="color:var(--l1)"></i>ticks under axis = predicted modes</span>
-                <span style="color:var(--mid)"><i class="band" style="color:#f1f4fb"></i>smoothed hump</span>
-                <span style="color:var(--mid)"><i class="dash" style="color:var(--l3)"></i>your &nu;<sub>max</sub></span>
+
+            <div class="meas-step">
+              <div class="ms-head"><span class="ms-tag" style="background:var(--warn)">B</span>Set <span class="nu">&nu;<sub>max</sub></span></div>
+              <p>Drag the yellow line, or use this slider, to the center of the tallest peaks.</p>
+              <div class="meas-row numax">
+                <label for="numaxSlider">&nu;<sub>max</sub></label>
+                <input type="range" id="numaxSlider" min="0" max="2000" step="1">
+                <span class="val" id="numaxVal"></span>
+                <span class="chk" id="chkNumax"></span>
               </div>
             </div>
-          </div>
-          <div class="step-row">
-            <label class="check-opt"><input type="checkbox" id="peakToggle" checked> Mark peaks</label>
-            <label class="check-opt"><input type="checkbox" id="humpToggle" checked> Smoothed hump</label>
-            <button class="ctrl-btn small" id="prevModeBtn">&#9664; Prev mode</button><button class="ctrl-btn small" id="nextModeBtn">Next mode &#9654;</button>
-            <button class="info" data-help="stepper" aria-label="Explain mode stepping">?</button>
-          </div>
-          <div class="sel-readout" id="selReadout" aria-live="polite"></div>
-        </div>
 
-        <div class="panel" id="echPanel">
-          <h2><span class="h2-title">&Eacute;chelle Diagram <button class="info" data-help="echelle" aria-label="Explain the echelle diagram">?</button></span>
-            <span class="h2-btns"><label class="check-opt"><input type="checkbox" id="idsToggle" checked> Show mode IDs</label><button class="info" data-help="ids" aria-label="Explain mode IDs">?</button></span>
-          </h2>
-          <details class="how" id="echHow" open>
-            <summary>How does an &eacute;chelle diagram work?</summary>
-            <p>In a Sun-like star the peaks repeat in a regular pattern: roughly every <b>&Delta;&nu;</b> (the "large separation") you meet another l = 0 peak, another l = 1 peak, and so on. That spacing is set by how long sound takes to cross the star, so it tells us the star's density.</p>
-            <div class="diag-wrap"><svg id="echDiag" viewBox="0 0 640 300" role="img" aria-label="Diagram: a spectrum is cut into strips of width delta-nu and stacked, so peaks of the same degree line up in columns"></svg></div>
-            <p>So we <b>cut the spectrum into strips</b> of width &Delta;&nu; and <b>stack them</b> like lines of text, lowest frequency at the bottom. If the strip width is exactly &Delta;&nu;, peaks of the same l land in the same column and form <b>vertical ridges</b>. If it is too narrow or too wide, each strip is shifted a little from the one below, and the ridges <b>lean</b>. Finding the width that makes them straight is how you measure &Delta;&nu;. (&Eacute;chelle is French for "ladder".)</p>
-            <p>Reading the plot below: the horizontal axis is position within a strip (frequency modulo &Delta;&nu;), the vertical axis is the frequency where each strip starts, and brighter colour means more power.</p>
-          </details>
-          <div class="fold-row">
-            <label for="foldSlider">Strip width</label>
-            <button class="info" data-help="fold" aria-label="Explain strip width">?</button>
-            <button class="ctrl-btn small" id="foldMinus" aria-label="Decrease strip width slightly">&minus;</button>
-            <input type="range" id="foldSlider" min="0" max="4000" step="1">
-            <button class="ctrl-btn small" id="foldPlus" aria-label="Increase strip width slightly">+</button>
-            <span class="val" id="foldVal"></span>
-            <button class="ctrl-btn small" id="snapBtn">Show me the answer</button>
-            <button class="info" data-help="snap" aria-label="Explain show answer">?</button>
+            <div class="fold-status" id="measStatus" aria-live="polite"></div>
+            <div class="btn-row">
+              <button class="ctrl-btn small" id="answerBtn">Show answer</button>
+              <button class="ctrl-btn small" id="scrambleBtn">Reset measurements</button>
+            </div>
+            <p class="info-note">Astronomers measure &Delta;&nu; to about 1% and &nu;<sub>max</sub> to about 3 to 5%. The checks above use the same targets.</p>
           </div>
-          <div class="fold-status" id="foldStatus" aria-live="polite"></div>
-          <canvas id="echelleCanvas" role="img" aria-label="Echelle diagram of the power spectrum folded at the chosen width"></canvas>
-          <p class="info-note" id="echelleNote"></p>
-        </div>
-
-        <div class="panel" id="lcPanel">
-          <h2><span class="h2-title">Light Curve <button class="info" data-help="lightcurve" aria-label="Explain the light curve">?</button></span>
-            <span class="h2-btns">
-              <label class="check-opt"><input type="checkbox" id="lcOscToggle" checked> <i class="sw" style="background:var(--l3)"></i>Oscillations only</label>
-              <label class="check-opt"><input type="checkbox" id="lcTotToggle" checked> <i class="sw" style="background:#93a1c4"></i>What the telescope sees</label>
-            </span>
-          </h2>
-          <p class="panel-hint">The raw data: how the star's brightness changes over time, in parts per million (ppm). The <b style="color:var(--l3)">yellow</b> curve is the sum of all the oscillation modes. The <b>grey</b> curve adds the slower flicker from granulation (convection cells boiling at the surface), which is what a telescope actually records. You can't pick out individual frequencies by eye, which is why we use the power spectrum above.</p>
-          <canvas id="lcCanvas" role="img" aria-label="Scrolling simulated brightness variations of the star"></canvas>
-          <p class="info-note" id="lcInfo"></p>
         </div>
 
       </div>
 
       <div class="col-side">
+        <div class="panel sticky">
+          <h2><span class="h2-title"><span class="step">4</span>Infer the Star's Properties</span></h2>
+          <p class="panel-hint">The <span data-term="scaling">scaling relations</span> turn your two measurements into the star's density and gravity, and from those its radius and mass. Everything is compared with the Sun.</p>
 
-        <div class="panel" id="weighPanel">
-          <h2><span class="h2-title">Weigh the Star <button class="info" data-help="weigh" aria-label="Explain weighing the star">?</button></span></h2>
-          <p class="panel-hint">Measure two numbers from the oscillations, add the temperature, and the scaling relations give you the star's mass and radius. <span id="weighIntro"></span></p>
-          <ol class="steps">
-            <li>
-              <div class="s-head"><b>Measure &Delta;&nu;</b><span class="chk" id="chkDnu"></span></div>
-              <p>Go to the &eacute;chelle diagram and drag <b>Strip width</b> until the ridges stand straight up.</p>
-              <div class="meas">Your &Delta;&nu; <b id="wDnu"></b></div>
-            </li>
-            <li>
-              <div class="s-head"><b>Measure &nu;<sub>max</sub></b><span class="chk" id="chkNumax"></span></div>
-              <p>Drag this slider until the yellow dashed line in the power spectrum sits on the <b>peak of the pale smoothed hump</b>.</p>
-              <div class="slider-row" style="margin:0;"><label for="numaxSlider" style="min-width:0;">&nu;<sub>max</sub></label><button class="info" data-help="numax" aria-label="Explain nu max">?</button><input type="range" id="numaxSlider" min="0" max="2000" step="1"><span class="val" id="numaxVal"></span></div>
-            </li>
-            <li>
-              <div class="s-head"><b>Add the temperature</b><span class="chk ok">given</span></div>
-              <p>Measured separately from the star's spectrum of light, not from oscillations.</p>
-              <div class="meas">T<sub>eff</sub> <b id="wTeff"></b></div>
-            </li>
-            <li>
-              <div class="s-head"><b>Read the result</b><button class="info" data-help="estimates" aria-label="Explain the results">?</button></div>
-              <table class="weigh-table">
-                <thead><tr><th></th><th>Your estimate</th><th>True value</th></tr></thead>
-                <tbody>
-                  <tr><td>Radius</td><td class="est" id="eR"></td><td id="tR"></td></tr>
-                  <tr><td>Mass</td><td class="est" id="eM"></td><td id="tM"></td></tr>
-                  <tr><td>Density</td><td class="est" id="eRho"></td><td id="tRho"></td></tr>
-                  <tr><td>log g</td><td class="est" id="eLogg"></td><td id="tLogg"></td></tr>
-                </tbody>
-              </table>
-            </li>
-          </ol>
-          <div class="btn-row">
-            <button class="ctrl-btn" id="scrambleBtn">Scramble and try it yourself</button>
+          <div class="bridge-step">
+            <div class="bridge-flow">
+              <div><div class="b-label">Your <span class="nu">&Delta;&nu;</span></div><div class="b-val meas" id="bDnu"></div></div>
+              <div class="b-arrow" aria-hidden="true">&rarr;</div>
+              <div><div class="b-label">Mean density</div><div class="b-val" id="bRho"></div></div>
+            </div>
+            <div class="b-rel">&rho; / &rho;<sub>Sun</sub> = (&Delta;&nu; / 135.1 &mu;Hz)&sup2;</div>
+            <p class="b-note" id="bRhoNote"></p>
+          </div>
+
+          <div class="bridge-step">
+            <div class="bridge-flow">
+              <div><div class="b-label">Your <span class="nu">&nu;<sub>max</sub></span></div><div class="b-val meas-n" id="bNumax"></div></div>
+              <div class="b-arrow" aria-hidden="true">&rarr;</div>
+              <div><div class="b-label">Surface gravity</div><div class="b-val" id="bG"></div></div>
+            </div>
+            <div class="b-rel">g / g<sub>Sun</sub> = (&nu;<sub>max</sub> / 3090 &mu;Hz) &times; (T / 5772 K)<sup>1/2</sup></div>
+            <p class="b-note" id="bGNote"></p>
+          </div>
+
+          <p class="b-combine">Gravity depends on M/R&sup2; and density on M/R&sup3;. Combining them gives</p>
+          <div class="result-grid">
+            <div class="result">
+              <div class="b-label">Radius</div>
+              <div class="r-val" id="bR"></div>
+              <div class="r-formula">R = g &divide; &rho;</div>
+              <div class="r-true" id="bRTrue"></div>
+              <span class="chk" id="chkR"></span>
+            </div>
+            <div class="result">
+              <div class="b-label">Mass</div>
+              <div class="r-val" id="bM"></div>
+              <div class="r-formula">M = g&sup3; &divide; &rho;&sup2;</div>
+              <div class="r-true" id="bMTrue"></div>
+              <span class="chk" id="chkM"></span>
+            </div>
+          </div>
+          <div class="btn-row" style="justify-content:center;">
             <button class="ctrl-btn" id="revealBtn" hidden>Reveal the mystery star</button>
           </div>
-          <div class="formula">
-            R/R<sub>&#9737;</sub> = (&nu;<sub>max</sub>/&nu;<sub>max,&#9737;</sub>) (&Delta;&nu;/&Delta;&nu;<sub>&#9737;</sub>)<sup>&minus;2</sup> (T<sub>eff</sub>/T<sub>eff,&#9737;</sub>)<sup>1/2</sup><br>
-            M/M<sub>&#9737;</sub> = (&nu;<sub>max</sub>/&nu;<sub>max,&#9737;</sub>)<sup>3</sup> (&Delta;&nu;/&Delta;&nu;<sub>&#9737;</sub>)<sup>&minus;4</sup> (T<sub>eff</sub>/T<sub>eff,&#9737;</sub>)<sup>3/2</sup><br>
-            <span style="color:var(--dim);">Sun: &Delta;&nu; = 135.1 &mu;Hz, &nu;<sub>max</sub> = 3090 &mu;Hz, T<sub>eff</sub> = 5772 K</span>
-          </div>
-          <p class="info-note">Because M &prop; &Delta;&nu;<sup>&minus;4</sup>, a 1% error in &Delta;&nu; becomes a 4% error in mass. That is why straight ridges matter.</p>
+          <p class="info-note">Mass depends on &Delta;&nu; to the &minus;4 power, so a 1% error in &Delta;&nu; becomes a 4% error in mass. These relations are calibrated on the Sun and are accurate to a few percent. Kepler and TESS have used them to measure tens of thousands of stars.</p>
         </div>
-
-        <div class="panel" id="surfPanel">
-          <h2><span class="h2-title">Mode on the Surface <button class="info" data-help="surface" aria-label="Explain the surface view">?</button></span></h2>
-          <p class="panel-hint">One mode, shown in 3D with its motion hugely exaggerated. <b>Drag to rotate.</b> The dashed line is the rotation axis, tilted by the inclination. Selecting a peak in the spectrum loads its l and m here.</p>
-          <canvas id="sphereCanvas" role="img" aria-label="3D animated star surface oscillating in the selected mode"></canvas>
-          <div class="btn-row" style="justify-content:center;margin-top:6px;">
-            <label class="check-opt"><input type="checkbox" id="tintToggle" checked> Colour by motion</label><button class="info" data-help="tint" aria-label="Explain colours">?</button>
-            <button class="ctrl-btn small" id="viewResetBtn">Reset view</button>
-          </div>
-          <div class="slider-row" style="margin-top:12px;"><label for="lSlider">Degree l</label><button class="info" data-help="lsl" aria-label="Explain degree l">?</button><input type="range" id="lSlider" min="0" max="30" step="1"><span class="val" id="lVal"></span></div>
-          <div class="slider-row"><label for="mmSlider">Order m</label><button class="info" data-help="msl" aria-label="Explain order m">?</button><input type="range" id="mmSlider" min="0" max="0" step="1"><span class="val" id="mmVal"></span></div>
-          <p class="info-note" id="sphereCaption"></p>
-          <div class="vis-meter">
-            <div class="vis-track"><div class="vis-fill" id="visFill"></div></div>
-            <div class="vis-label"><span id="visLabel"></span><button class="info" data-help="vis" aria-label="Explain disk-integrated signal">?</button></div>
-          </div>
-        </div>
-
-        <div class="panel" id="insidePanel">
-          <h2><span class="h2-title">Inside the Star <button class="info" data-help="inside" aria-label="Explain inside the star">?</button></span></h2>
-          <p class="panel-hint">A slice through the star showing the path a sound wave takes for this mode. The glowing dot is a wave packet travelling along it.</p>
-          <div class="quick-l"><span class="lbl">Degree l:</span></div>
-          <canvas id="rayCanvas" role="img" aria-label="Cross-section of the star showing acoustic ray paths for the selected mode"></canvas>
-          <canvas id="csCanvas" role="img" aria-label="Sound speed versus radius, with the turning point marked"></canvas>
-          <p class="info-note" id="rayCaption"></p>
-        </div>
-
-        <div class="panel" id="hrPanel">
-          <h2><span class="h2-title">Hertzsprung&ndash;Russell Diagram <button class="info" data-help="hr" aria-label="Explain the HR diagram">?</button></span></h2>
-          <canvas id="hrCanvas" role="img" aria-label="HR diagram showing the current star's position"></canvas>
-        </div>
-
       </div>
     </div>
 
-    <section class="explainer">
-      <h3>What is oscillating?</h3>
-      <p>A star is a ball of gas that can resonate. Near-surface convection churns like a pot of boiling water, randomly kicking the star's resonant modes, which ring and fade over days to weeks. For the Sun, the strongest modes have periods around <strong>five minutes</strong>, far too low for us to hear, but the physics is the same as an organ pipe.</p>
-      <p>Most modes we observe in Sun-like stars and red giants are <strong>p modes</strong> (pressure is the restoring force, so they are sound waves). Deep in the core, <strong>g modes</strong> (buoyancy is the restoring force) can also exist. Each mode is labelled by its radial order <strong>n</strong> (nodes along the radius), degree <strong>l</strong> (total nodal lines on the surface), and azimuthal order <strong>m</strong> (nodal lines through the poles).</p>
+    <div class="geom-grid">
+      <div class="panel">
+        <h2><span class="h2-title"><span class="step">5</span>See the Pattern on the Surface</span></h2>
+        <p class="panel-hint">Each peak matches a vibration pattern on the star's surface, shown here hugely exaggerated. Orange regions move outward and blue regions move inward. The degree l is the number of <span data-term="nodal">nodal lines</span>. Drag to rotate.</p>
+        <canvas id="sphereCanvas" role="img" aria-label="Animated 3D star surface vibrating in the selected pattern"></canvas>
+        <div class="quick-l" id="quickL"><span class="lbl">Degree l</span></div>
+        <div class="slider-row" style="margin-top:8px;"><label for="mmSlider">Order m</label><input type="range" id="mmSlider" min="0" max="0" step="1"><span class="val" id="mmVal"></span></div>
+        <p class="info-note" id="sphereCaption" style="margin-top:0;"></p>
+        <div class="vis-meter">
+          <div class="vis-track"><div class="vis-fill" id="visFill"></div></div>
+          <div class="vis-label" id="visLabel"></div>
+        </div>
+        <p class="info-note">A distant star appears as a single point, so we only see the combined light of its whole face. The bright and dark patches of high-l patterns cancel out, which leaves only l = 0 to 3 detectable. The Sun is the exception, because we can image its surface directly.</p>
+      </div>
 
-      <h3>Reading the spectrum: &Delta;&nu; and &nu;<sub>max</sub></h3>
-      <p>High-order p modes follow a nearly regular pattern, &nu;<sub>n,l</sub> &asymp; &Delta;&nu; (n + l/2 + &epsilon;) &minus; &delta;&nu;<sub>0l</sub>. The <strong>large separation &Delta;&nu;</strong> is the inverse of the time sound takes to cross the star and back, which scales with its mean density: &Delta;&nu; &prop; (M/R<sup>3</sup>)<sup>1/2</sup>. The <strong>frequency of maximum power &nu;<sub>max</sub></strong> tracks the acoustic cutoff frequency near the surface and scales with surface gravity: &nu;<sub>max</sub> &prop; g/&radic;T<sub>eff</sub>. Two numbers, two unknowns, so we can solve for M and R.</p>
-
-      <h3>The small separation: a view of the core</h3>
-      <p>Modes with l = 0 and l = 2 travel along nearly the same path, except near the centre. Their small frequency difference &delta;&nu;<sub>02</sub> is sensitive to conditions in the core, which change as hydrogen is converted to helium. It is one of the best age indicators we have for Sun-like stars. Use the "Zoom on one order" view to see it.</p>
-
-      <h3>The Sun: the star we can resolve</h3>
-      <p>For distant stars we see only the total light from an unresolved disk. Bright and dark patches of high-l modes cancel, so only l &le; 3 survive. The Sun is different: we image its surface directly and measure Doppler shifts pixel by pixel, which reveals millions of modes up to l of several thousand. That is <strong>helioseismology</strong>, and it mapped the Sun's internal sound speed and rotation in detail. This lab shows the Sun as it would look from far away so you can compare it with the other stars.</p>
-
-      <h3>Red giants and mixed modes</h3>
-      <p>In red giants the dense helium core supports g modes whose frequencies overlap the p modes. They couple, and each dipole p mode is replaced by a cluster of <strong>mixed modes</strong> that behave like sound waves in the envelope and like gravity waves in the core. Their period spacing &Delta;&Pi;<sub>1</sub> tells stars still climbing the red-giant branch (about 60 to 90 s) apart from helium-burning red-clump stars (about 250 to 350 s), even when they look identical on the surface. Because g-dominated modes feel the core, their rotational splittings showed that red-giant cores spin much faster than their envelopes.</p>
-
-      <h3>What this model simplifies</h3>
-      <p>Frequencies come from the asymptotic relation with curvature, not from solving the full stellar oscillation equations. The ray diagram uses a schematic Sun-like sound-speed profile scaled to the star's mass and radius. Amplitudes, linewidths, granulation, and noise follow approximate empirical scalings. The scaling relations themselves are accurate to a few percent for real stars. The listening mode speeds the oscillations up so that &nu;<sub>max</sub> lands on 440 Hz.</p>
-    </section>
+      <div class="panel">
+        <h2><span class="h2-title"><span class="step">6</span>See What Each Harmonic Probes</span></h2>
+        <p class="panel-hint">Sound travels faster in the hot interior than near the cooler surface. A wave heading inward at an angle bends back outward through <span data-term="refraction">refraction</span>, then reflects off the surface. Each harmonic is trapped between the surface and its <span data-term="turning">turning point</span>, shown as a dashed circle.</p>
+        <canvas id="rayCanvas" role="img" aria-label="Cross-section of the star showing the path of the selected sound wave"></canvas>
+        <canvas id="csCanvas" role="img" aria-label="Sound speed versus depth, with the turning point of the selected wave"></canvas>
+        <p class="info-note" id="rayCaption"></p>
+      </div>
+    </div>
   </main>
 
   <footer>Harmoniverse &mdash; an interdisciplinary project at The Ohio State University</footer>
-</div>
-
-<div id="pop" role="dialog" aria-modal="false" aria-labelledby="popTitle" hidden>
-  <button class="pop-close" id="popClose" aria-label="Close">&times;</button>
-  <h4 id="popTitle"></h4>
-  <div id="popBody"></div>
-</div>
-
-<div id="tourCard" role="dialog" aria-labelledby="tourTitle" hidden>
-  <div class="t-step" id="tourStep"></div>
-  <h4 id="tourTitle"></h4>
-  <div id="tourBody"></div>
-  <div class="t-nav">
-    <button class="ctrl-btn small" id="tourEnd">End tour</button>
-    <button class="ctrl-btn small" id="tourPrev">&#9664; Back</button>
-    <button class="ctrl-btn small" id="tourNext" style="border-color:var(--good);color:var(--fg);">Next &#9654;</button>
-  </div>
 </div>
 
 <script>
 (function(){
   'use strict';
 
-  // ---------- constants and presets ----------
-  var SUN = { dnu:135.1, numax:3090, teff:5772 };
+  // ---------- glossary ----------
+  var GLOSS = {
+    convection:'Heat carried by moving gas. Hot gas rises, cools, and sinks again, like water boiling in a pot.',
+    harmonic:'One of the specific, discrete frequencies a confined wave is allowed to vibrate at.',
+    mode:'One of the specific, allowed patterns a confined system can vibrate in, each with its own characteristic frequency.',
+    lightcurve:'A record of how bright a star is over time.',
+    photosphere:'The visible surface layer of a star, where its light escapes into space.',
+    ppm:'Parts per million. A change of 1 ppm is one millionth of the star’s total brightness.',
+    granulation:'The pattern of bright rising and dark sinking convection cells that covers a star’s surface. It makes the brightness flicker at random.',
+    photonnoise:'Random variation in how much light a detector collects from moment to moment. It limits how precisely brightness can be measured.',
+    fourier:'A mathematical method that breaks a signal into the separate frequencies it contains and measures how strong each one is.',
+    powerspectrum:'A graph showing how much of a signal is present at each frequency.',
+    background:'Signal spread across all frequencies by granulation and photon noise, rather than coming from the star’s harmonics.',
+    resolution:'The smallest gap between two frequencies that can be told apart. It equals 1/T, where T is the total observing time.',
+    kepler:'NASA space telescopes that measure the brightness of stars to a few ppm. Kepler observed from 2009 to 2018. TESS has observed since 2018.',
+    uhz:'Microhertz. One millionth of a cycle per second. A frequency of 3000 μHz means one cycle every 5.6 minutes.',
+    degree:'The number of nodal lines on the star’s surface. It describes the surface pattern of a harmonic.',
+    order:'The number of nodes between the star’s center and its surface. Higher n means a higher harmonic.',
+    dnu:'The large separation. The frequency spacing between neighboring harmonics with the same surface pattern.',
+    numax:'The frequency at which the star’s harmonics are strongest.',
+    d02:'The small separation. The frequency gap between an l = 2 harmonic and the neighboring l = 0 harmonic.',
+    density:'The star’s total mass divided by its total volume.',
+    gravity:'The strength of gravity at the star’s surface. It depends on mass divided by radius squared.',
+    scaling:'Equations calibrated on the Sun that link Δν and νmax to a star’s density and surface gravity.',
+    nodal:'Curves across a vibrating surface that stay completely still while everything around them moves.',
+    order_m:'How many of the nodal lines pass through the star’s poles.',
+    refraction:'The bending of a wave as its speed changes from place to place.',
+    turning:'The depth where an inward-traveling wave has bent fully sideways and begins heading back out.',
+    helioseismology:'The study of the Sun’s interior using its vibrations.',
+    redgiant:'An expanded, evolved star with a much larger radius than it had earlier in its life.',
+    teff:'The temperature of a star’s surface. It is measured from the star’s color or spectrum, not from its vibrations.'
+  };
+  var termCount = 0, activeReposition = null;
+  function enhanceTerms(root){
+    root.querySelectorAll('[data-term]').forEach(function(el){
+      if(el.dataset.tipBound==='1') return;
+      var def = GLOSS[el.dataset.term]; if(!def) return;
+      el.dataset.tipBound='1';
+      el.classList.add('term'); el.tabIndex=0;
+      var tip=document.createElement('span');
+      tip.className='term-tip'; tip.setAttribute('role','tooltip'); tip.id='tip-'+(++termCount); tip.textContent=def;
+      el.setAttribute('aria-describedby', tip.id);
+      el.appendChild(tip);
+      function reposition(){
+        tip.style.transitionProperty='none';
+        var margin=14; tip.classList.remove('below'); tip.style.setProperty('--shift','0px');
+        var r=tip.getBoundingClientRect(), shift=0;
+        if(r.left<margin) shift=margin-r.left; else if(r.right>window.innerWidth-margin) shift=window.innerWidth-margin-r.right;
+        if(shift!==0) tip.style.setProperty('--shift', shift+'px');
+        if(el.getBoundingClientRect().top - margin < r.height + 10) tip.classList.add('below');
+        void tip.offsetHeight;
+        requestAnimationFrame(function(){ tip.style.transitionProperty=''; });
+      }
+      el.addEventListener('mouseenter', function(){ reposition(); activeReposition=reposition; });
+      el.addEventListener('mouseleave', function(){ if(activeReposition===reposition) activeReposition=null; });
+      el.addEventListener('focus', function(){ reposition(); activeReposition=reposition; });
+      el.addEventListener('blur', function(){ if(activeReposition===reposition) activeReposition=null; });
+    });
+  }
+  window.addEventListener('scroll', function(){ if(activeReposition) activeReposition(); }, true);
+  function T(key, text){ return '<span data-term="'+key+'">'+text+'</span>'; }
+  function setHTML(el, html){ el.innerHTML=html; enhanceTerms(el); }
+
+  // ---------- constants ----------
+  var SUN = { dnu:135.1, numax:3090, teff:5772, g:274, rho:1.41 };
   var L_COLORS = ['#5fc2ff','#ff8c66','#5fd98a','#ffcf5f'];
-  var VIS = [1, 1.5, 0.5, 0.04]; // mode visibilities relative to radial (Kepler-like)
+  var INC = 60;
   var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var PRESETS = {
-    sun:     { label:'Sun',        dot:'#ffcf5f', M:1.00, R:1.00, T:5772, incl:83, rot:0.40, dPi:75,  q:0.13, cr:1,
-               blurb:'The Sun: the one star whose surface we can resolve, revealing modes up to l of several thousand. Here it is shown as it would look from far away, a single point of light, so you can compare it with other stars.' },
-    acen:    { label:'α Cen A', dot:'#ffe08a', M:1.10, R:1.22, T:5790, incl:45, rot:0.50, dPi:75,  q:0.13, cr:1,
-               blurb:'α Centauri A, our nearest Sun-like neighbour (4.4 light-years). It is a bit bigger than the Sun, so sound takes longer to cross it and its Δν is smaller.' },
-    rgb:     { label:'Red giant',  dot:'#ff8c66', M:1.20, R:8.00, T:4800, incl:60, rot:0.15, dPi:75,  q:0.13, cr:10,
-               blurb:'A red giant burning hydrogen in a shell around its helium core. It is 8× the Sun’s size, so it oscillates about 50× more slowly. Dipole modes split into clusters of mixed modes, and the core spins about 10× faster than the surface.' },
-    clump:   { label:'Red clump',  dot:'#ff6fa8', M:1.20, R:11.0, T:4700, incl:60, rot:0.08, dPi:300, q:0.28, cr:5,
-               blurb:'A red-clump star, burning helium in its core. From the outside it looks almost like the red giant, but its core g modes are spaced about 4× further apart in period, which gives it away.' }
+    sun:   { label:'Sun', dot:'#ffcf5f', M:1.00, R:1.00, T:5772,
+             blurb:'The Sun. Its strongest harmonics repeat about every five minutes. It is shown here as a single point of light, the way we see every other star.' },
+    acen:  { label:'Alpha Centauri A', dot:'#ffe08a', M:1.10, R:1.22, T:5790,
+             blurb:'Alpha Centauri A, the nearest Sun-like star, 4.4 light-years away. It is slightly larger and less dense than the Sun, so its harmonics sit closer together.' },
+    giant: { label:'Red Giant', dot:'#ff8c66', M:1.20, R:8.00, T:4800,
+             blurb:'A '+T('redgiant','red giant')+' about 8 times wider than the Sun. Its low density and weak surface gravity make it ring about 50 times more slowly, once every few hours.' }
   };
-  var TAB_ORDER = ['sun','acen','rgb','clump','mystery'];
+  var TAB_ORDER = ['sun','acen','giant','mystery'];
 
   var state = {
-    preset:'sun', M:1, R:1, T:5772, incl:83, rot:0.4, dPi:75, q:0.13, cr:1,
-    noise:true, seed:7, view:'envelope', fold:135.1, measNumax:3090,
-    mystery:false, revealed:false, showIds:true, showPeaks:true, showHump:true,
-    exL:0, exM:0, playing:false, tint:true, lcOsc:true, lcTot:true
+    preset:'sun', M:1, R:1, T:5772,
+    mystery:false, revealed:false, mysteryParams:null,
+    measDnu:135, measNumax:3090, anchor:null, tobs:365,
+    noise:true, labels:true, structure:true, sel:null, hoverL:null, seed:7, playing:false,
+    exL:0, exM:0
   };
 
-  var D = null, MODES = [], MODES_V = [], MODE_F = [], SEL = null;
-  var WHITE = 0, HMAX = 1, GMAX = 1;
+  var D = null, MODES = [], SPEC = {};
+  var DNU_LO = 1, DNU_HI = 250, DNU_STEPS = 3000;
+  var NUMAX_LO = 3, NUMAX_HI = 5000, NUMAX_STEPS = 2000;
+  var TOBS_LO = 0.5, TOBS_HI = 1461, TOBS_STEPS = 1000;
 
-  var $ = function(id){ return document.getElementById(id); };
+  function $(id){ return document.getElementById(id); }
   function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
   function hidden(){ return state.mystery && !state.revealed; }
 
@@ -559,39 +560,43 @@
   }
   function fmtF(f){ return f>=100 ? f.toFixed(1) : (f>=10 ? f.toFixed(2) : f.toFixed(3)); }
   function fmtPeriod(sec){
-    if(sec < 120) return sec.toFixed(0) + ' s';
-    if(sec < 3600) return (sec/60).toFixed(1) + ' min';
-    if(sec < 2*86400) return (sec/3600).toFixed(1) + ' h';
-    return (sec/86400).toFixed(1) + ' days';
+    function u(v, s, p){ return v.toFixed(v<10?1:0)+' '+(Math.abs(v-1)<0.05 ? s : p); }
+    if(sec < 120) return u(sec,'second','seconds');
+    if(sec < 3600) return u(sec/60,'minute','minutes');
+    if(sec < 2*86400) return u(sec/3600,'hour','hours');
+    return u(sec/86400,'day','days');
   }
-  function sci(x){
+  function fmtTobs(d){
+    if(d < 2) return (d*24).toFixed(0)+' hours';
+    if(d < 60) return d.toFixed(0)+' days';
+    if(d < 700) return (d/30.44).toFixed(0)+' months';
+    return (d/365.25).toFixed(1)+' years';
+  }
+  var SUP = {'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+  function fmtBig(x){
+    if(x < 1e4) return Math.round(x).toLocaleString();
+    if(x < 1e9) return (+x.toPrecision(2)).toLocaleString();
     var e = Math.floor(Math.log10(x)), m = x/Math.pow(10,e);
-    var sup = {'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
-    return m.toFixed(1) + ' × 10' + String(e).split('').map(function(c){ return sup[c]; }).join('');
+    return m.toFixed(1) + ' × 10' + String(e).split('').map(function(c){ return SUP[c]; }).join('');
   }
   function niceTicks(lo, hi, n){
     var span = hi-lo; if(span<=0) return [lo];
     var step = Math.pow(10, Math.floor(Math.log10(span/n)));
     var err = span/n/step;
     if(err>=7.5) step*=10; else if(err>=3.5) step*=5; else if(err>=1.5) step*=2;
-    var out=[];
+    var out = [];
     for(var v=Math.ceil(lo/step)*step; v<=hi+step*1e-6; v+=step) out.push(+v.toFixed(10));
     return out;
   }
-  function logTicks(lo, hi, decadesOnly){
-    var out=[];
-    for(var e=Math.floor(Math.log10(lo)); e<=Math.ceil(Math.log10(hi)); e++){
-      (decadesOnly ? [1] : [1,2,5]).forEach(function(k){ var v=k*Math.pow(10,e); if(v>=lo && v<=hi) out.push(v); });
-    }
-    return out;
+  function niceCeil(x){
+    var e = Math.pow(10, Math.floor(Math.log10(x))), m = x/e;
+    var steps = [1,1.5,2,2.5,3,4,5,6,8,10];
+    for(var i=0;i<steps.length;i++) if(m<=steps[i]) return steps[i]*e;
+    return 10*e;
   }
-  function fmtTick(v){
-    var a = Math.abs(v);
-    if(v!==0 && (a>=1e5 || a<0.01)) return v.toExponential(0).replace('e+','e');
-    return String(+v.toPrecision(4));
-  }
-  function logSliderToVal(s, lo, hi, steps){ return lo*Math.pow(hi/lo, s/steps); }
-  function valToLogSlider(v, lo, hi, steps){ return Math.round(steps*Math.log(v/lo)/Math.log(hi/lo)); }
+  function fmtTick(v){ return String(+v.toPrecision(4)); }
+  function logToVal(s, lo, hi, steps){ return lo*Math.pow(hi/lo, s/steps); }
+  function valToLog(v, lo, hi, steps){ return Math.round(steps*Math.log(v/lo)/Math.log(hi/lo)); }
 
   function resizeCanvas(canvas, ctx){
     var rect = canvas.getBoundingClientRect();
@@ -604,682 +609,525 @@
     ctx.setTransform(dpr,0,0,dpr,0,0);
     return { w: rect.width, h: cssH, dpr: dpr, changed: changed };
   }
-
-  function viridis(t){
-    var stops = [[68,1,84],[65,68,135],[42,120,142],[34,168,132],[122,209,81],[253,231,37]];
-    t = clamp(t,0,1)*5; var i = Math.min(4, Math.floor(t)), f = t-i;
-    var a = stops[i], b = stops[i+1];
-    return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, a[2]+(b[2]-a[2])*f];
-  }
   function starRGB(T){
     var tab = [[4000,[255,150,80]],[4700,[255,180,110]],[5300,[255,210,150]],[5800,[255,232,190]],[6500,[240,240,255]],[7000,[215,228,255]]];
     if(T<=tab[0][0]) return tab[0][1].slice();
     for(var i=1;i<tab.length;i++){
-      if(T<=tab[i][0]){ var a=tab[i-1], b=tab[i], f=(T-a[0])/(b[0]-a[0]);
-        return [a[1][0]+(b[1][0]-a[1][0])*f, a[1][1]+(b[1][1]-a[1][1])*f, a[1][2]+(b[1][2]-a[1][2])*f]; }
+      if(T<=tab[i][0]){
+        var a=tab[i-1], b=tab[i], f=(T-a[0])/(b[0]-a[0]);
+        return [a[1][0]+(b[1][0]-a[1][0])*f, a[1][1]+(b[1][1]-a[1][1])*f, a[1][2]+(b[1][2]-a[1][2])*f];
+      }
     }
     return tab[tab.length-1][1].slice();
+  }
+  function roundRect(ctx, x, y, w, h, r){
+    ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h);
+    ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
   }
 
   // ---------- stellar model ----------
   function derive(){
-    var M=state.M, R=state.R, tr=state.T/SUN.teff;
-    var d = {};
+    var M=state.M, R=state.R, t=state.T/SUN.teff, d={};
     d.dnu = SUN.dnu*Math.sqrt(M)*Math.pow(R,-1.5);
-    d.numax = SUN.numax*M/(R*R)/Math.sqrt(tr);
-    d.L = R*R*Math.pow(tr,4);
+    d.numax = SUN.numax*M/(R*R)/Math.sqrt(t);
+    d.L = R*R*Math.pow(t,4);
     d.rho = M/(R*R*R);
-    d.logg = 4.438 + Math.log10(M/(R*R));
     d.fwhm = 0.66*Math.pow(d.numax,0.88);
     d.sigma = d.fwhm/2.3548;
-    d.gamma = clamp(Math.pow(tr,10), 0.06, 6);          // linewidth (uHz), steep in Teff
-    d.Amax = 2.5*Math.pow(d.L/M, 0.8);                   // radial-mode amplitude (ppm)
-    d.eps = Math.min(1.45, 0.6 + 0.52*Math.log10(d.dnu));
-    d.alpha = 0.015*Math.pow(d.dnu,-0.32);               // ridge curvature
-    var t = clamp((Math.log(d.dnu)-Math.log(10))/(Math.log(100)-Math.log(10)),0,1);
-    d.d02 = (0.12 + (0.067-0.12)*t)*d.dnu;
-    d.D0 = d.d02/6;
-    d.evolved = d.dnu < 30;
+    d.gamma = clamp(Math.pow(t,10), 0.05, 6);
+    d.Amax = 2.5*Math.pow(d.L/M, 0.8);
+    d.eps = clamp(0.6 + 0.52*Math.log10(d.dnu), 0.5, 1.45);
+    var s = clamp((Math.log(d.dnu)-Math.log(10))/(Math.log(100)-Math.log(10)), 0, 1);
+    d.d02 = (0.12 + (0.067-0.12)*s)*d.dnu;
     d.nmax = d.numax/d.dnu - d.eps;
-    d.agran = 3382*Math.pow(d.numax,-0.609);             // granulation amplitude (ppm)
-    d.bgran = 0.317*Math.pow(d.numax,0.97);              // granulation frequency (uHz)
+    d.agran = 3382*Math.pow(d.numax,-0.609);
+    d.bgran = 0.317*Math.pow(d.numax,0.97);
     return d;
   }
-  function nuP(n,l,d){
-    return d.dnu*(n + l/2 + d.eps + d.alpha/2*(n-d.nmax)*(n-d.nmax)) - l*(l+1)*d.D0;
-  }
-  // relative power of each m component vs inclination (Gizon & Solanki 2003)
-  function epsLM(l, m, inc){
-    var c=Math.cos(inc), s=Math.sin(inc), am=Math.abs(m);
-    if(l===0) return 1;
-    if(l===1) return am===0 ? c*c : 0.5*s*s;
-    if(l===2){ if(am===0){ var x=3*c*c-1; return 0.25*x*x; } if(am===1) return 0.375*Math.pow(Math.sin(2*inc),2); return 0.375*Math.pow(s,4); }
-    if(am===0){ var y=5*c*c-3; return 0.25*c*c*y*y; }
-    if(am===1){ var z=5*c*c-1; return (3/16)*s*s*z*z; }
-    if(am===2) return (15/8)*c*c*Math.pow(s,4);
-    return (5/16)*Math.pow(s,6);
-  }
-  // dipole mixed modes from tan(theta_p) = q tan(theta_g)
-  function mixedModes(n, d){
-    var nup = nuP(n,1,d);
-    var lo = (nuP(n-1,1,d)+nup)/2, hi = (nup+nuP(n+1,1,d))/2;
-    var dPi = state.dPi, q = state.q;
-    var gsp = dPi*Math.pow(nup*1e-6,2)*1e6;
-    var step = Math.min(d.dnu, gsp)/60;
-    function f(nu){
-      var tp = Math.PI*(nu-nup)/d.dnu, tg = Math.PI/(dPi*nu*1e-6);
-      return Math.sin(tp)*Math.cos(tg) - q*Math.cos(tp)*Math.sin(tg);
-    }
-    var out=[], a=lo, fa=f(a);
-    while(a < hi){
-      var b = Math.min(hi, a+step), fb = f(b);
-      if(fa*fb < 0){
-        var x0=a, x1=b, f0=fa;
-        for(var k=0;k<40;k++){ var xm=(x0+x1)/2, fm=f(xm); if(f0*fm<=0) x1=xm; else { x0=xm; f0=fm; } }
-        var nu=(x0+x1)/2;
-        var tp=Math.PI*(nu-nup)/d.dnu, tg=Math.PI/(dPi*nu*1e-6);
-        var cp2=Math.pow(Math.cos(tp),2), cg2=Math.pow(Math.cos(tg),2);
-        var X = nu*nu*dPi*1e-6/d.dnu;
-        var den = cp2 + (X/q)*cg2;
-        // zeta = fraction of mode inertia in the core = [1 + (X/q) cos^2(theta_g)/cos^2(theta_p)]^-1
-        var zeta = den>1e-12 ? cp2/den : 0.5;
-        out.push({ freq:nu, zeta:zeta, frac:1-zeta });
-      }
-      a=b; fa=fb;
-    }
-    var s = out.reduce(function(acc,o){ return acc+o.frac; }, 0) || 1;
-    return out.map(function(o){ o.frac/=s; return o; }).filter(function(o){ return o.frac>=0.002; });
-  }
-  function buildModes(d){
-    var modes=[], inc=state.incl*Math.PI/180;
-    var n0=Math.max(1, Math.floor(d.nmax)-14), n1=Math.floor(d.nmax)+14;
+  function nuP(n, l){ return D.dnu*(n + l/2 + D.eps) - l*(l+1)*D.d02/6; }
+  function buildModes(){
+    var modes = [];
+    var n0 = Math.max(1, Math.floor(D.nmax)-14), n1 = Math.floor(D.nmax)+14;
     for(var n=n0; n<=n1; n++){
-      for(var l=0; l<=3; l++){
-        var nup = nuP(n,l,d);
-        if(nup<=0) continue;
-        var env = Math.exp(-0.5*Math.pow((nup-d.numax)/d.sigma,2));
-        if(env<0.008) continue;
-        var A2 = d.Amax*d.Amax*VIS[l]*env;
-        var comps = (l===1 && d.evolved) ? mixedModes(n,d) : [{freq:nup, zeta:0, frac:1}];
-        for(var ci=0; ci<comps.length; ci++){
-          var c = comps[ci];
-          for(var m=-l; m<=l; m++){
-            var e = epsLM(l,m,inc);
-            if(e<0.003) continue;
-            var split = l===0 ? 0 : (c.zeta*state.rot*state.cr/2 + (1-c.zeta)*state.rot);
-            modes.push({ n:n, l:l, m:m, freq:c.freq + m*split, A2:A2*c.frac*e,
-                         gamma:d.gamma*Math.max(c.frac,0.002), zeta:c.zeta, mixed:(l===1 && d.evolved) });
-          }
-        }
+      for(var l=0; l<=2; l++){
+        var f = nuP(n,l);
+        if(f<=0) continue;
+        var env = Math.exp(-0.5*Math.pow((f-D.numax)/D.sigma,2));
+        if(env < 0.01) continue;
+        modes.push({ n:n, l:l, freq:f, A2:D.Amax*D.Amax*[1,1.5,0.5][l]*env });
       }
     }
     modes.sort(function(a,b){ return a.freq-b.freq; });
     return modes;
   }
 
-  function bg(f){
-    return 0.9003*D.agran*D.agran/D.bgran/(1+Math.pow(f/D.bgran,4)) + WHITE;
-  }
-  function smoothPsd(f){
-    return bg(f) + D.Amax*D.Amax*3.04*Math.exp(-0.5*Math.pow((f-D.numax)/D.sigma,2))/D.dnu;
-  }
-  function modesPsd(f, gmin){
-    var W = 40*Math.max(GMAX, gmin), s = 0;
-    for(var i=lowerBound(MODE_F, f-W); i<MODES.length && MODES[i].freq<=f+W; i++){
-      var m = MODES[i], g = Math.max(m.geff, gmin), x = 2*(f-m.freq)/g;
-      s += m.H*(m.geff/g)/(1+x*x);
+  // Spectrum in ppm^2/uHz. Peak width = max(linewidth, 1/T, display bin), so area is conserved and
+  // short observations give low, broad peaks. The y-axis is fixed per star (set at the longest T).
+  function buildSpectrum(){
+    var half = Math.max(0.9*D.fwhm, 5.5*D.dnu);
+    var lo = Math.max(0.5, D.numax-half), hi = D.numax+half;
+    var N = 1600, bw = (hi-lo)/N;
+    var g0 = Math.max(D.gamma, 2.2*bw);
+    var res = 1e6/(state.tobs*86400);
+    var g = Math.max(g0, res);
+    var hmax0 = 0;
+    MODES.forEach(function(m){ var h0=2*m.A2/(Math.PI*g0); if(h0>hmax0) hmax0=h0; m.H0=h0; m.H=2*m.A2/(Math.PI*g); });
+    var white = 0.025*hmax0;
+    function bg(f){ return 0.9*D.agran*D.agran/D.bgran/(1+Math.pow(f/D.bgran,4)) + white*(1+0.3*Math.pow(D.numax/f,2)); }
+    var freqs = new Float64Array(N), model = new Float64Array(N), noisy = new Float64Array(N);
+    var ymax0 = 0;
+    for(var i=0;i<N;i++){
+      var f = lo+(i+0.5)*bw, b = bg(f), p = b, p0 = b;
+      for(var k=0;k<MODES.length;k++){
+        var dfreq = f-MODES[k].freq;
+        var x = 2*dfreq/g; if(x>-60 && x<60) p += MODES[k].H/(1+x*x);
+        var x0 = 2*dfreq/g0; if(x0>-60 && x0<60) p0 += MODES[k].H0/(1+x0*x0);
+      }
+      var u = -Math.log(rnd(i, state.seed));
+      freqs[i] = f; model[i] = p; noisy[i] = p*u;
+      ymax0 = Math.max(ymax0, p0, p0*u);
     }
-    return s;
+    SPEC = { lo:lo, hi:hi, N:N, freqs:freqs, model:model, noisy:noisy, hmax:hmax0, res:res, layout:null,
+             ytop: niceCeil(ymax0*1.04) };
+    updateTobsReadout();
+  }
+  function updateTobsReadout(){
+    $('tobsVal').textContent = fmtTobs(state.tobs);
+    var res = 1e6/(state.tobs*86400);
+    $('resVal').textContent = (res>=1 ? res.toFixed(1) : res>=0.01 ? res.toFixed(2) : res.toExponential(1))+' μHz';
+    var chk=$('resChk');
+    if(res > D.dnu/3){ chk.className='chk no'; chk.textContent='harmonics blur together'; }
+    else if(res > D.d02/2){ chk.className='chk no'; chk.textContent='l = 2 and l = 0 pairs blurred'; }
+    else { chk.className='chk ok'; chk.textContent='✓ all harmonics resolved'; }
+  }
+
+  function defaultAnchor(){
+    var best=null;
+    MODES.forEach(function(m){ if(m.l===0 && (!best || Math.abs(m.freq-D.numax)<Math.abs(best.freq-D.numax))) best=m; });
+    return best;
+  }
+  function recompute(){
+    D = derive();
+    MODES = buildModes();
+    buildSpectrum();
+    if(state.anchor===null || state.anchor<SPEC.lo || state.anchor>SPEC.hi){ var a=defaultAnchor(); state.anchor = a ? a.freq : D.numax; }
+    reselect();
+    lcReset();
+    if(state.playing) restartAudio();
+  }
+  function reselect(){
+    var old = state.sel, best = null;
+    if(old){
+      MODES.forEach(function(m){ if(m.l===old.l && (!best || Math.abs(m.freq-old.freq)<Math.abs(best.freq-old.freq))) best=m; });
+      if(best && Math.abs(best.freq-old.freq) > 0.6*D.dnu) best=null;
+    }
+    state.sel = best || defaultAnchor();
   }
 
   // ---------- DOM ----------
-  var presetTabs=$('presetTabs'), statusLine=$('statusLine');
-  var listenBtn=$('listenBtn'), listenLabel=$('listenLabel'), resetBtn=$('resetBtn');
+  var starTabs=$('starTabs'), statusLine=$('statusLine');
   var mSlider=$('mSlider'), rSlider=$('rSlider'), tSlider=$('tSlider');
-  var incSlider=$('incSlider'), rotSlider=$('rotSlider');
-  var dpiSlider=$('dpiSlider'), qSlider=$('qSlider'), crSlider=$('crSlider'), coreBlock=$('coreBlock');
-  var viewSelect=$('viewSelect'), noiseToggle=$('noiseToggle'), newNoiseBtn=$('newNoiseBtn');
+  var dnuSlider=$('dnuSlider'), numaxSlider=$('numaxSlider'), tobsSlider=$('tobsSlider');
   var specCanvas=$('spectrumCanvas'), specCtx=specCanvas.getContext('2d'), specTooltip=$('specTooltip');
-  var selReadout=$('selReadout');
-  var foldSlider=$('foldSlider'), foldVal=$('foldVal'), snapBtn=$('snapBtn'), idsToggle=$('idsToggle');
-  var echCanvas=$('echelleCanvas'), echCtx=echCanvas.getContext('2d');
   var lcCanvas=$('lcCanvas'), lcCtx=lcCanvas.getContext('2d');
-  var numaxSlider=$('numaxSlider'), revealBtn=$('revealBtn');
   var sphereCanvas=$('sphereCanvas'), sphCtx=sphereCanvas.getContext('2d');
-  var lSlider=$('lSlider'), mmSlider=$('mmSlider');
   var rayCanvas=$('rayCanvas'), rayCtx=rayCanvas.getContext('2d');
   var csCanvas=$('csCanvas'), csCtx=csCanvas.getContext('2d');
-  var hrCanvas=$('hrCanvas'), hrCtx=hrCanvas.getContext('2d');
+  var mmSlider=$('mmSlider');
 
-  var FOLD_LO=1, FOLD_HI=250, FOLD_STEPS=4000;
-  var NUMAX_LO=3, NUMAX_HI=5000, NUMAX_STEPS=2000;
-
-  // ---------- recompute pipeline ----------
-  function recompute(){
-    D = derive();
-    MODES = buildModes(D);
-    GMAX = 0; HMAX = 0;
-    MODES.forEach(function(m){
-      m.geff = Math.max(m.gamma, 0.02);
-      m.H = 2*m.A2/(Math.PI*m.geff);
-      if(m.geff>GMAX) GMAX=m.geff;
-      if(m.H>HMAX) HMAX=m.H;
-    });
-    MODE_F = MODES.map(function(m){ return m.freq; });
-    WHITE = 0.01*2*D.Amax*D.Amax/(Math.PI*Math.max(D.gamma,0.02));
-    MODES_V = MODES.filter(function(m){ return m.H >= 0.01*HMAX; });
-    reselect();
-    buildSpectrum();
-    lcReset();
-    computeVis();
-    if(state.playing) scheduleAudioRestart();
-    updateReadouts();
-    drawStatic();
-  }
-
-  function defaultSel(){
-    var best=null;
-    MODES_V.forEach(function(m){
-      if(m.l===0 && (!best || Math.abs(m.freq-D.numax) < Math.abs(best.freq-D.numax))) best=m;
-    });
-    return best;
-  }
-  function reselect(){
-    var old = SEL, tracking = old && state.exL===old.l && state.exM===old.m;
-    var best = null;
-    if(old){
-      MODES_V.forEach(function(m){
-        if(m.l===old.l && m.m===old.m && (!best || Math.abs(m.freq-old.freq) < Math.abs(best.freq-old.freq))) best=m;
-      });
-      if(best && Math.abs(best.freq-old.freq) > 0.6*D.dnu) best=null;
-    }
-    SEL = best || defaultSel();
-    if((tracking || !old) && SEL){ state.exL=SEL.l; state.exM=SEL.m; syncExplorer(); }
-  }
-  function selectMode(m){
-    if(!m) return;
-    SEL = m;
-    state.exL = m.l; state.exM = m.m;
-    syncExplorer();
-    if(state.view==='zoom') buildSpectrum();
-    updateSelReadout();
-    drawSpectrum(); drawEchelle(); drawRay();
-  }
-
-  // ---------- spectrum ----------
-  var SPEC = { freqs:[], psd:null, lo:1, hi:2, log:false, layout:null };
-  function viewRange(){
-    if(state.view==='wide') return { lo:D.numax/60, hi:D.numax*3.5, log:true };
-    if(state.view==='zoom'){
-      var c = SEL ? SEL.freq : D.numax;
-      return { lo:Math.max(0.05, c-0.65*D.dnu), hi:c+0.65*D.dnu, log:false };
-    }
-    var half = Math.max(D.fwhm, 4.5*D.dnu);
-    return { lo:Math.max(0.05, D.numax-half), hi:D.numax+half, log:false };
-  }
-  function buildSpectrum(){
-    var vr = viewRange(), N = 3000, fr = [];
-    for(var i=0;i<N;i++){
-      fr.push(vr.log ? vr.lo*Math.pow(vr.hi/vr.lo, i/(N-1)) : vr.lo+(vr.hi-vr.lo)*i/(N-1));
-    }
-    MODES.forEach(function(m){ if(m.freq>vr.lo && m.freq<vr.hi) fr.push(m.freq); });
-    fr.sort(function(a,b){ return a-b; });
-    var psd = new Float64Array(fr.length);
-    for(var j=0;j<fr.length;j++){
-      var p = bg(fr[j]) + modesPsd(fr[j], 0);
-      if(state.noise) p *= -Math.log(rnd(j, state.seed));
-      psd[j] = p;
-    }
-    SPEC.freqs = fr; SPEC.psd = psd; SPEC.lo = vr.lo; SPEC.hi = vr.hi; SPEC.log = vr.log;
-  }
-
+  // ---------- step 2: power spectrum ----------
   function drawSpectrum(){
-    var dims = resizeCanvas(specCanvas, specCtx), W=dims.w, H=dims.h, ctx=specCtx;
+    var dims=resizeCanvas(specCanvas, specCtx), W=dims.w, H=dims.h, ctx=specCtx;
     ctx.clearRect(0,0,W,H);
-    var padL=W<500?58:74, padR=14, padT=36, padB=52, pw=W-padL-padR, ph=H-padT-padB;
-    var lo=SPEC.lo, hi=SPEC.hi, xlog=SPEC.log;
-    function xOf(f){ return padL + (xlog ? Math.log(f/lo)/Math.log(hi/lo) : (f-lo)/(hi-lo))*pw; }
-    function fOfX(x){ var t=(x-padL)/pw; return xlog ? lo*Math.pow(hi/lo,t) : lo+(hi-lo)*t; }
-
-    var nb = Math.max(1, Math.floor(pw)), bmax = new Float64Array(nb);
-    for(var b=0;b<nb;b++) bmax[b]=NaN;
-    for(var i=0;i<SPEC.freqs.length;i++){
-      var k = Math.floor(xOf(SPEC.freqs[i])-padL);
-      if(k<0 || k>=nb) continue;
-      if(!(bmax[k] >= SPEC.psd[i])) bmax[k] = SPEC.psd[i];
-    }
-    var ymax=0, ymin=Infinity;
-    for(var b2=0;b2<nb;b2++){ var v=bmax[b2]; if(v===v){ if(v>ymax) ymax=v; if(v<ymin) ymin=v; } }
-    var ylog = xlog;
-    var yLo = ylog ? Math.max(ymin*0.6, ymax*1e-7) : 0, yHi = ylog ? ymax*2.5 : ymax*1.12;
-    function yOf(p){
-      var t = ylog ? Math.log(Math.max(p,yLo)/yLo)/Math.log(yHi/yLo) : (p-yLo)/(yHi-yLo);
-      return padT + ph - clamp(t,0,1)*ph;
-    }
+    var padL=W<520?58:70, padR=14, padT=64, padB=48, pw=W-padL-padR, ph=H-padT-padB, base=padT+ph;
+    var lo=SPEC.lo, hi=SPEC.hi, psd = state.noise ? SPEC.noisy : SPEC.model;
+    function xOf(f){ return padL+(f-lo)/(hi-lo)*pw; }
+    function fOfX(x){ return lo+(x-padL)/pw*(hi-lo); }
+    function yOf(v){ return base-clamp(v/SPEC.ytop,0,1)*ph; }
     SPEC.layout = { padL:padL, pw:pw, xOf:xOf, fOfX:fOfX };
 
     ctx.font='13px "JetBrains Mono", monospace';
     ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
-    var xt = xlog ? logTicks(lo,hi,false) : niceTicks(lo,hi,W<500?4:7);
-    ctx.fillStyle='#93a1c4'; ctx.textAlign='center';
-    xt.forEach(function(f){
-      var x=xOf(f); ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,padT+ph); ctx.stroke();
-      ctx.fillText(fmtTick(f), x, padT+ph+30);
+    ctx.fillStyle='#93a1c4'; ctx.textAlign='right';
+    niceTicks(0,SPEC.ytop,4).forEach(function(v){
+      var y=yOf(v);
+      ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+pw,y); ctx.stroke();
+      ctx.fillText(fmtTick(v), padL-8, y+4);
     });
-    var yt = ylog ? logTicks(yLo,yHi,true) : niceTicks(0,yHi,4);
-    ctx.textAlign='right';
-    yt.forEach(function(p){
-      var y=yOf(p); ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+pw,y); ctx.stroke();
-      ctx.fillText(fmtTick(p), padL-8, y+4);
+    ctx.save(); ctx.translate(14, padT+ph/2); ctx.rotate(-Math.PI/2); ctx.textAlign='center'; ctx.fillStyle='#a8b6d6';
+    ctx.fillText('Power (ppm² per μHz)', 0, 0); ctx.restore();
+    ctx.textAlign='center'; ctx.fillStyle='#93a1c4';
+    niceTicks(lo,hi,W<520?4:7).forEach(function(f){
+      var x=xOf(f); if(x<padL-1||x>padL+pw+1) return;
+      ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,base); ctx.stroke();
+      ctx.fillText(fmtTick(f), x, base+18);
     });
-    ctx.fillStyle='#a8b6d6'; ctx.textAlign='center'; ctx.font='14px "JetBrains Mono", monospace';
-    ctx.fillText('Frequency (μHz)', padL+pw/2, H-4);
-    ctx.save(); ctx.translate(15, padT+ph/2); ctx.rotate(-Math.PI/2);
-    ctx.fillText('Power (ppm²/μHz)', 0, 0); ctx.restore();
 
-    // smoothed hump (behind curve)
-    if(state.showHump && state.view!=='zoom'){
-      var scale = 1;
-      if(!ylog){ var sm=0; for(var s0=0;s0<=200;s0++){ sm=Math.max(sm, smoothPsd(fOfX(padL+pw*s0/200))); } scale = 0.55*yHi/sm; }
-      ctx.beginPath();
-      for(var s1=0;s1<=200;s1++){
-        var xx=padL+pw*s1/200, yy=yOf(smoothPsd(fOfX(xx))*scale);
-        if(s1===0) ctx.moveTo(xx,yy); else ctx.lineTo(xx,yy);
-      }
-      ctx.strokeStyle='rgba(241,244,251,0.30)'; ctx.lineWidth=6; ctx.lineJoin='round'; ctx.stroke();
-      if(!ylog){
-        ctx.fillStyle='rgba(241,244,251,0.55)'; ctx.font='12px "JetBrains Mono", monospace'; ctx.textAlign='left';
-        ctx.fillText('pale curve: smoothed hump (rescaled)', padL+6, padT+12);
-      }
+    var nb=Math.max(1,Math.floor(pw)), bmax=new Float64Array(nb);
+    for(var b=0;b<nb;b++) bmax[b]=-1;
+    for(var i=0;i<SPEC.N;i++){
+      var k=Math.floor(xOf(SPEC.freqs[i])-padL);
+      if(k>=0 && k<nb && psd[i]>bmax[k]) bmax[k]=psd[i];
     }
-
-    // measured numax marker
-    if(state.measNumax>lo && state.measNumax<hi){
-      var xm=xOf(state.measNumax);
-      ctx.strokeStyle='rgba(255,207,95,0.85)'; ctx.setLineDash([6,4]); ctx.lineWidth=1.8;
-      ctx.beginPath(); ctx.moveTo(xm,padT); ctx.lineTo(xm,padT+ph); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle='#ffcf5f'; ctx.font='12.5px "JetBrains Mono", monospace'; ctx.textAlign='left';
-      ctx.fillText('your νmax', xm+5, padT+28);
-    }
-
-    // curve
     ctx.beginPath(); var started=false, firstX=padL, lastX=padL;
-    for(var b3=0;b3<nb;b3++){
-      var v3=bmax[b3]; if(v3!==v3) continue;
-      var x3=padL+b3+0.5, y3=yOf(v3);
-      if(!started){ ctx.moveTo(x3,y3); started=true; firstX=x3; } else ctx.lineTo(x3,y3);
-      lastX=x3;
+    for(b=0;b<nb;b++){
+      if(bmax[b]<0) continue;
+      var x=padL+b+0.5, y=yOf(bmax[b]);
+      if(!started){ ctx.moveTo(x,y); started=true; firstX=x; } else ctx.lineTo(x,y);
+      lastX=x;
     }
-    var grad = ctx.createLinearGradient(0,padT,0,padT+ph);
+    ctx.strokeStyle='#5fc2ff'; ctx.lineWidth=1.3; ctx.stroke();
+    ctx.lineTo(lastX,base); ctx.lineTo(firstX,base); ctx.closePath();
+    var grad=ctx.createLinearGradient(0,padT,0,base);
     grad.addColorStop(0,'rgba(95,194,255,0.45)'); grad.addColorStop(1,'rgba(95,194,255,0.04)');
-    ctx.strokeStyle='#5fc2ff'; ctx.lineWidth=1.2; ctx.stroke();
-    ctx.lineTo(lastX,padT+ph); ctx.lineTo(firstX,padT+ph); ctx.closePath();
     ctx.fillStyle=grad; ctx.fill();
 
-    // predicted mode ticks under the axis
-    MODES_V.forEach(function(m){
-      if(m.freq<=lo || m.freq>=hi) return;
-      var x=xOf(m.freq);
-      ctx.strokeStyle=L_COLORS[m.l]; ctx.lineWidth=1.5; ctx.globalAlpha=0.35+0.65*Math.sqrt(m.H/HMAX);
-      ctx.beginPath(); ctx.moveTo(x,padT+ph+3); ctx.lineTo(x,padT+ph+11); ctx.stroke();
-    });
-    ctx.globalAlpha=1;
-
-    // peak markers
-    if(state.showPeaks){
-      var thr = state.view==='zoom' ? 0.02 : 0.08;
-      MODES_V.forEach(function(m){
-        if(m.freq<=lo || m.freq>=hi || m.H < thr*HMAX) return;
-        var x=xOf(m.freq), kk=Math.floor(x-padL); if(kk<0||kk>=nb) return;
-        var pk=bmax[kk]; for(var dd=-1;dd<=1;dd++){ var q2=bmax[kk+dd]; if(q2===q2 && q2>pk) pk=q2; }
-        var y=yOf(pk)-5;
-        ctx.beginPath(); ctx.moveTo(x-4.5,y-8); ctx.lineTo(x+4.5,y-8); ctx.lineTo(x,y); ctx.closePath();
+    var hl = state.hoverL!==null ? state.hoverL : (state.sel ? state.sel.l : null);
+    var thr = 0.08*SPEC.hmax*Math.min(1, (SPEC.hmax ? 1 : 1));
+    if(state.labels){
+      MODES.forEach(function(m){
+        if(m.H < 0.08*SPEC.hmax || m.freq<=lo || m.freq>=hi) return;
+        var xm=xOf(m.freq), kk=Math.floor(xm-padL), pk=0;
+        for(var dd=-2;dd<=2;dd++){ var v=bmax[kk+dd]; if(v!==undefined && v>pk) pk=v; }
+        var yt=Math.max(padT+10, yOf(pk)-5);
+        ctx.globalAlpha = (hl===null || hl===m.l) ? 1 : 0.35;
+        ctx.beginPath(); ctx.moveTo(xm-5,yt-9); ctx.lineTo(xm+5,yt-9); ctx.lineTo(xm,yt); ctx.closePath();
         ctx.fillStyle=L_COLORS[m.l]; ctx.fill();
       });
+      ctx.globalAlpha=1;
+      ctx.font='11.5px "JetBrains Mono", monospace'; ctx.fillStyle='#5fc2ff'; ctx.textAlign='center';
+      var lastLab=-1e9;
+      MODES.forEach(function(m){
+        if(m.l!==0 || m.H0<0.08*SPEC.hmax || m.freq<=lo || m.freq>=hi) return;
+        var xm=xOf(m.freq); if(xm-lastLab<40) return;
+        ctx.fillText('n='+m.n, xm, base+36); lastLab=xm;
+      });
     }
 
-    // annotations: large and small separations
-    if(!hidden() && state.view!=='wide'){
-      var radials = MODES.filter(function(m){ return m.l===0 && m.freq>lo && m.freq<hi; });
-      var r0=null, r1=null;
-      if(state.view==='envelope'){
-        radials.forEach(function(m){ if(!r0 || Math.abs(m.freq-D.numax)<Math.abs(r0.freq-D.numax)) r0=m; });
-        if(r0) radials.forEach(function(m){ if(m.n===r0.n+1) r1=m; });
-      } else if(radials.length>=2){ r0=radials[0]; r1=radials[1]; }
-      if(r0 && r1) bracket(ctx, xOf(r0.freq), xOf(r1.freq), padT-24, 'Δν = '+fmtF(r1.freq-r0.freq)+' μHz', '#f1f4fb');
-      if(state.view==='zoom'){
-        radials.forEach(function(r){
-          var f2 = nuP(r.n-1,2,D);
-          if(f2>lo && f2<hi) bracket(ctx, xOf(f2), xOf(r.freq), padT+14, 'δν₀₂ = '+fmtF(r.freq-f2)+' μHz', '#5fd98a');
+    if(state.structure && !hidden()){
+      var r0=defaultAnchor(), r1=null, l2=null;
+      if(r0){
+        MODES.forEach(function(m){
+          if(m.l===0 && m.n===r0.n+1) r1=m;
+          if(m.l===2 && m.n===r0.n-1) l2=m;
         });
+        if(r1) bracket(ctx, xOf(r0.freq), xOf(r1.freq), 2, 'Δν', '#f1f4fb', 0.9);
+        if(l2) bracket(ctx, xOf(l2.freq), xOf(r0.freq), 2, 'δν₀₂', '#5fd98a', 0.9, 'left');
+        ctx.strokeStyle='rgba(241,244,251,0.35)'; ctx.setLineDash([2,3]); ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(xOf(r0.freq),padT-6); ctx.lineTo(xOf(r0.freq),base); ctx.stroke();
+        if(r1){ ctx.beginPath(); ctx.moveTo(xOf(r1.freq),padT-6); ctx.lineTo(xOf(r1.freq),base); ctx.stroke(); }
+        ctx.setLineDash([]);
       }
     }
 
-    // selected mode
-    if(SEL && SEL.freq>lo && SEL.freq<hi){
-      var xs=xOf(SEL.freq);
-      ctx.strokeStyle=L_COLORS[SEL.l]; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
-      ctx.beginPath(); ctx.moveTo(xs,padT); ctx.lineTo(xs,padT+ph); ctx.stroke(); ctx.setLineDash([]);
-      ctx.beginPath(); ctx.arc(xs,padT+ph+7,4.5,0,2*Math.PI); ctx.fillStyle=L_COLORS[SEL.l]; ctx.fill();
-      ctx.strokeStyle='#fff'; ctx.lineWidth=1.2; ctx.stroke();
+    var dn=state.measDnu, a=state.anchor;
+    var kmin=Math.ceil((lo-a)/dn), kmax=Math.floor((hi-a)/dn);
+    var onTarget = !hidden() && Math.abs(dn/D.dnu-1) < 0.01;
+    var combCol = onTarget ? '#5fd98a' : 'rgba(241,244,251,0.8)';
+    if(kmax-kmin <= 90){
+      for(var kc=kmin; kc<=kmax; kc++){
+        var xc=xOf(a+kc*dn);
+        ctx.strokeStyle=combCol; ctx.lineWidth = kc===0 ? 1.8 : 1.2;
+        ctx.globalAlpha = kc===0 ? 1 : 0.7;
+        ctx.setLineDash(kc===0 ? [] : [5,4]);
+        ctx.beginPath(); ctx.moveTo(xc,padT); ctx.lineTo(xc,base); ctx.stroke();
+      }
+      ctx.setLineDash([]); ctx.globalAlpha=1;
+      var kb = (a+dn<hi) ? 1 : -1, x0=xOf(a), x1=xOf(a+kb*dn);
+      if(Math.abs(x1-x0) > 30) bracket(ctx, Math.min(x0,x1), Math.max(x0,x1), 32, 'your Δν = '+fmtF(dn)+' μHz', combCol, 1);
+    } else {
+      ctx.fillStyle='rgba(241,244,251,0.8)'; ctx.textAlign='center'; ctx.font='13px "JetBrains Mono", monospace';
+      ctx.fillText('Your Δν is too small to draw. Increase it.', padL+pw/2, padT+20);
+    }
+
+    if(state.measNumax>lo && state.measNumax<hi){
+      var xn=xOf(state.measNumax);
+      ctx.strokeStyle='#ffcf5f'; ctx.lineWidth=2; ctx.setLineDash([7,4]);
+      ctx.beginPath(); ctx.moveTo(xn,padT); ctx.lineTo(xn,base); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle='#ffcf5f'; roundRect(ctx, xn-27, base-22, 54, 19, 9); ctx.fill();
+      ctx.fillStyle='#060b16'; ctx.font='600 12px "JetBrains Mono", monospace'; ctx.textAlign='center';
+      ctx.fillText('↔ νmax', xn, base-8.5);
+    } else {
+      var left = state.measNumax<=lo;
+      var msg = left ? '◀ your νmax is below this range' : 'your νmax is above this range ▶';
+      ctx.font='600 13px "JetBrains Mono", monospace';
+      var mw=ctx.measureText(msg).width+16, mx0 = left ? padL+4 : padL+pw-4-mw;
+      ctx.fillStyle='#ffcf5f'; roundRect(ctx, mx0, padT+ph*0.5-11, mw, 22, 11); ctx.fill();
+      ctx.fillStyle='#060b16'; ctx.textAlign='center'; ctx.fillText(msg, mx0+mw/2, padT+ph*0.5+4);
+    }
+
+    if(state.sel && state.sel.freq>lo && state.sel.freq<hi){
+      var xs=xOf(state.sel.freq);
+      ctx.beginPath(); ctx.arc(xs, base+4, 4.5, 0, 2*Math.PI);
+      ctx.fillStyle=L_COLORS[state.sel.l]; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.2; ctx.stroke();
     }
   }
-  function bracket(ctx, x0, x1, y, label, color){
-    ctx.strokeStyle=color; ctx.lineWidth=1.2; ctx.globalAlpha=0.85;
-    ctx.beginPath(); ctx.moveTo(x0,y+14); ctx.lineTo(x0,y+8); ctx.lineTo(x1,y+8); ctx.lineTo(x1,y+14); ctx.stroke();
+  function bracket(ctx, x0, x1, y, label, color, alpha, align){
+    ctx.globalAlpha=alpha||1;
+    ctx.strokeStyle=color; ctx.lineWidth=1.3;
+    ctx.beginPath(); ctx.moveTo(x0,y+24); ctx.lineTo(x0,y+18); ctx.lineTo(x1,y+18); ctx.lineTo(x1,y+24); ctx.stroke();
+    ctx.font='12.5px "JetBrains Mono", monospace';
+    var tw=ctx.measureText(label).width, tx, span=x1-x0;
+    if(align==='left') tx = x0 - 8 - tw/2;
+    else if(span < tw+12) tx = x1 + 8 + tw/2;
+    else tx=(x0+x1)/2;
+    ctx.fillStyle='#0e1c33'; ctx.fillRect(tx-tw/2-5, y+2, tw+10, 16);
+    ctx.fillStyle=color; ctx.textAlign='center'; ctx.fillText(label, tx, y+14);
     ctx.globalAlpha=1;
-    ctx.font='12.5px "JetBrains Mono", monospace'; ctx.textAlign='center';
-    var tx = (x0+x1)/2, tw = ctx.measureText(label).width;
-    ctx.fillStyle='rgba(14,28,51,0.9)'; ctx.fillRect(tx-tw/2-4, y-8, tw+8, 15);
-    ctx.fillStyle=color; ctx.fillText(label, tx, y+3);
   }
 
-  var L_NAMES = ['radial','dipole','quadrupole','octupole'];
-  specCanvas.addEventListener('mousemove', function(e){
+  function nearestMode(x, tol){
+    var L=SPEC.layout, best=null, bd=tol;
+    MODES.forEach(function(m){
+      if(m.H0 < 0.03*SPEC.hmax) return;
+      var d=Math.abs(L.xOf(m.freq)-x);
+      if(d<bd){ bd=d; best=m; }
+    });
+    return best;
+  }
+  var dragNumax=false;
+  function nearNumax(x){ var L=SPEC.layout; return L && Math.abs(x-L.xOf(state.measNumax))<12; }
+  specCanvas.addEventListener('pointerdown', function(e){
+    var L=SPEC.layout; if(!L) return;
+    var x=e.clientX-specCanvas.getBoundingClientRect().left;
+    if(nearNumax(x)){
+      dragNumax=true; specCanvas.classList.add('dragging');
+      try{ specCanvas.setPointerCapture(e.pointerId); }catch(err){}
+      return;
+    }
+    var m=nearestMode(x, 12);
+    state.anchor = m ? m.freq : clamp(L.fOfX(x), SPEC.lo, SPEC.hi);
+    if(m) selectMode(m); else drawSpectrum();
+  });
+  specCanvas.addEventListener('pointermove', function(e){
     var L=SPEC.layout; if(!L) return;
     var rect=specCanvas.getBoundingClientRect(), x=e.clientX-rect.left, y=e.clientY-rect.top;
+    if(dragNumax){
+      state.measNumax = clamp(L.fOfX(x), Math.max(NUMAX_LO,SPEC.lo), Math.min(NUMAX_HI,SPEC.hi));
+      syncMeasSliders(); onMeasChanged();
+      specTooltip.style.display='none';
+      return;
+    }
+    specCanvas.style.cursor = nearNumax(x) ? 'ew-resize' : 'crosshair';
     if(x<L.padL || x>L.padL+L.pw){ specTooltip.style.display='none'; return; }
-    var f=L.fOfX(x);
-    var text = fmtF(f)+' μHz';
-    var near=null, nd=7;
-    MODES_V.forEach(function(m){ var d=Math.abs(L.xOf(m.freq)-x); if(d<nd || (d===nd && near && m.H>near.H)){ nd=d; near=m; } });
-    if(near){
-      text = 'l='+near.l+' '+L_NAMES[near.l]+' mode • n='+near.n+', m='+near.m+' • '+fmtF(near.freq)+' μHz';
-      if(near.mixed) text += ' (ζ='+near.zeta.toFixed(2)+')';
-      text += ' • click to select';
-    } else text += ' • no mode here (noise)';
+    var text, m=nearestMode(x, 7), prevHover=state.hoverL;
+    if(nearNumax(x)){ text='Drag to set your νmax'; state.hoverL=null; }
+    else if(m){
+      text='n = '+m.n+', l = '+m.l+' • '+fmtF(m.freq)+' μHz • one cycle every '+fmtPeriod(1/(m.freq*1e-6));
+      state.hoverL=m.l;
+    } else { text=fmtF(L.fOfX(x))+' μHz • background'; state.hoverL=null; }
     specTooltip.textContent=text; specTooltip.style.display='block';
     var tw=specTooltip.offsetWidth;
-    specTooltip.style.left=clamp(x, tw/2+4, rect.width-tw/2-4)+'px'; specTooltip.style.top=Math.max(40,y)+'px';
+    specTooltip.style.left=clamp(x, tw/2+4, rect.width-tw/2-4)+'px';
+    specTooltip.style.top=Math.max(70,y)+'px';
+    if(prevHover!==state.hoverL) drawSpectrum();
   });
-  specCanvas.addEventListener('mouseleave', function(){ specTooltip.style.display='none'; });
-  specCanvas.addEventListener('click', function(e){
-    var L=SPEC.layout; if(!L) return;
-    var x=e.clientX-specCanvas.getBoundingClientRect().left, best=null, bd=12;
-    MODES_V.forEach(function(m){ var d=Math.abs(L.xOf(m.freq)-x); if(d<bd || (d===bd && best && m.H>best.H)){ bd=d; best=m; } });
-    if(best) selectMode(best);
-  });
-  function stepMode(dir){
-    if(!MODES_V.length) return;
-    var idx = SEL ? MODES_V.indexOf(SEL) : -1;
-    if(idx<0){ selectMode(defaultSel()); return; }
-    selectMode(MODES_V[clamp(idx+dir,0,MODES_V.length-1)]);
+  function endNumaxDrag(e){
+    if(dragNumax){ dragNumax=false; specCanvas.classList.remove('dragging'); try{ specCanvas.releasePointerCapture(e.pointerId); }catch(err){} }
   }
-  $('prevModeBtn').addEventListener('click', function(){ stepMode(-1); });
-  $('nextModeBtn').addEventListener('click', function(){ stepMode(1); });
+  specCanvas.addEventListener('pointerup', endNumaxDrag);
+  specCanvas.addEventListener('pointercancel', endNumaxDrag);
+  specCanvas.addEventListener('mouseleave', function(){ specTooltip.style.display='none'; if(state.hoverL!==null){ state.hoverL=null; drawSpectrum(); } });
 
-  function updateSelReadout(){
-    if(!SEL){ selReadout.textContent='No mode selected.'; return; }
-    var life = 1/(Math.PI*SEL.gamma*1e-6);
-    var html = 'Selected: <b style="color:'+L_COLORS[SEL.l]+'">l = '+SEL.l+' ('+L_NAMES[SEL.l]+')</b>, <b>n = '+SEL.n+', m = '+SEL.m+'</b> · ν = <b>'+fmtF(SEL.freq)+' μHz</b> · one oscillation every '+fmtPeriod(1/(SEL.freq*1e-6))+
-      '<br>Peak width '+fmtF(SEL.gamma)+' μHz → each kick rings for about '+fmtPeriod(life);
-    if(SEL.mixed){
-      html += '<br>Mixed mode, ζ = '+SEL.zeta.toFixed(2)+': '+(SEL.zeta>0.85 ? 'mostly a g mode trapped in the core.' : (SEL.zeta<0.6 ? 'mostly a p mode in the envelope.' : 'shared between core and envelope.'));
-    }
-    selReadout.innerHTML = html;
+  function selectMode(m){
+    state.sel = m; state.exL = m.l; state.exM = 0;
+    $('selSwatch').style.background = L_COLORS[m.l];
+    syncExplorer(); drawSpectrum(); drawRay();
   }
 
-  // ---------- echelle ----------
-  var ECH = { dots:[] }, echOff = document.createElement('canvas'), echOffCtx = echOff.getContext('2d');
-  function drawEchelle(){
-    var dims=resizeCanvas(echCanvas,echCtx), W=dims.w, H=dims.h, ctx=echCtx;
-    ctx.clearRect(0,0,W,H);
-    var padL=W<500?64:80, padR=14, padT=12, padB=48, pw=W-padL-padR, ph=H-padT-padB;
-    var fold=state.fold;
-    var half=Math.max(D.fwhm*0.9, 4.5*D.dnu), lo=Math.max(0.05,D.numax-half), hi=D.numax+half;
-    var start=Math.floor(lo/fold)*fold, rows=Math.ceil((hi-start)/fold), MAXR=120, capped=false;
-    if(rows>MAXR){ start=Math.max(0, Math.floor((D.numax-MAXR/2*fold)/fold)*fold); rows=MAXR; capped=true; }
-    rows=Math.max(1,rows);
-    var cols=160, colW=fold/cols, gmin=colW*1.2;
-    var vals=new Float32Array(rows*cols);
-    for(var r=0;r<rows;r++){
-      for(var c=0;c<cols;c++){
-        var f=start+r*fold+(c+0.5)*colW, v=0;
-        if(f>0){
-          var b=bg(f); v=(b+modesPsd(f,gmin))/b;
-          if(state.noise) v *= -Math.log(rnd(r*7919+c*104729+13, state.seed+99));
-        }
-        vals[r*cols+c]=v;
-      }
-    }
-    var sorted=Array.prototype.slice.call(vals).sort(function(a,b){ return a-b; });
-    var vmax=Math.max(2, sorted[Math.floor(sorted.length*0.995)]);
-    echOff.width=cols; echOff.height=rows;
-    var img=echOffCtx.createImageData(cols,rows);
-    for(var r2=0;r2<rows;r2++){
-      for(var c2=0;c2<cols;c2++){
-        var t=Math.sqrt(clamp((vals[r2*cols+c2]-1)/(vmax-1),0,1));
-        var col=viridis(t), p=((rows-1-r2)*cols+c2)*4;
-        img.data[p]=col[0]; img.data[p+1]=col[1]; img.data[p+2]=col[2]; img.data[p+3]=255;
-      }
-    }
-    echOffCtx.putImageData(img,0,0);
-    ctx.imageSmoothingEnabled=false;
-    ctx.drawImage(echOff,0,0,cols,rows,padL,padT,pw,ph);
-    ctx.imageSmoothingEnabled=true;
-
-    var rowH=ph/rows;
-    ECH.dots=[];
-    if(state.showIds){
-      MODES_V.forEach(function(m){
-        if(m.freq<start || m.freq>=start+rows*fold) return;
-        var row=Math.floor((m.freq-start)/fold), xm=((m.freq-start)-row*fold)/fold;
-        var x=padL+xm*pw, y=padT+ph-(row+0.5)*rowH, rad=clamp(2.5+5*Math.sqrt(m.H/HMAX),2.5,8);
-        ctx.beginPath(); ctx.arc(x,y,rad,0,2*Math.PI);
-        ctx.fillStyle=L_COLORS[m.l]+'55'; ctx.fill();
-        ctx.strokeStyle=L_COLORS[m.l]; ctx.lineWidth=1.6; ctx.stroke();
-        ECH.dots.push({x:x,y:y,m:m});
-      });
-      if(SEL){
-        ECH.dots.forEach(function(d){ if(d.m===SEL){ ctx.beginPath(); ctx.arc(d.x,d.y,11,0,2*Math.PI); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke(); } });
-      }
-    }
-
-    ctx.font='13px "JetBrains Mono", monospace'; ctx.fillStyle='#93a1c4';
-    ctx.textAlign='center';
-    niceTicks(0,fold,W<500?3:5).forEach(function(v){
-      var x=padL+v/fold*pw; ctx.fillText(fmtTick(v), x, padT+ph+18);
-    });
-    ctx.textAlign='right';
-    var rs=Math.max(1, Math.ceil(22/rowH));
-    for(var r3=0;r3<rows;r3+=rs){
-      ctx.fillText(fmtTick(+(start+r3*fold).toPrecision(5)), padL-8, padT+ph-(r3+0.5)*rowH+4);
-    }
-    ctx.fillStyle='#a8b6d6'; ctx.textAlign='center'; ctx.font='14px "JetBrains Mono", monospace';
-    ctx.fillText('Position within strip (μHz, frequency mod '+fmtF(fold)+')', padL+pw/2, H-6);
-    ctx.save(); ctx.translate(14, padT+ph/2); ctx.rotate(-Math.PI/2); ctx.fillText('Strip start (μHz)',0,0); ctx.restore();
-
-    var note = 'Each row is one strip of width '+fmtF(fold)+' μHz, lowest frequencies at the bottom.';
-    if(capped) note += ' The strip width is far too small, so only part of the spectrum fits.';
-    if(D.evolved) note += ' In this giant, the dipole (orange) ridge breaks into a zig-zag of mixed modes. Line up the blue l = 0 ridge instead.';
-    $('echelleNote').textContent = note;
-    updateFoldStatus();
-  }
-  function updateFoldStatus(){
-    var el=$('foldStatus');
-    if(hidden()){ el.className='fold-status'; el.textContent='Mystery star: watch the blue l = 0 ridge and make it vertical.'; return; }
-    var err=(state.fold-D.dnu)/D.dnu*100;
-    if(Math.abs(err)<0.4){ el.className='fold-status ok'; el.textContent='✓ Ridges are vertical. Strip width = Δν = '+fmtF(state.fold)+' μHz.'; }
-    else if(Math.abs(err)>25){ el.className='fold-status'; el.textContent='Far off: the picture looks like noise. Drag slowly and look for bright points forming lines.'; }
-    else if(err>0){ el.className='fold-status'; el.textContent='Too wide by '+err.toFixed(1)+'%: ridges lean to the left going up. Make the strips narrower.'; }
-    else { el.className='fold-status'; el.textContent='Too narrow by '+(-err).toFixed(1)+'%: ridges lean to the right going up. Make the strips wider.'; }
-  }
-  echCanvas.addEventListener('click', function(e){
-    var rect=echCanvas.getBoundingClientRect(), x=e.clientX-rect.left, y=e.clientY-rect.top, best=null, bd=14;
-    ECH.dots.forEach(function(d){ var dd=Math.hypot(d.x-x,d.y-y); if(dd<bd){ bd=dd; best=d.m; } });
-    if(best) selectMode(best);
+  tobsSlider.addEventListener('input', function(){
+    state.tobs = logToVal(+tobsSlider.value, TOBS_LO, TOBS_HI, TOBS_STEPS);
+    buildSpectrum(); drawSpectrum();
   });
 
-  // ---------- echelle "how it works" diagram ----------
-  function buildEchDiagram(){
-    var svg=$('echDiag'), NS='http://www.w3.org/2000/svg';
-    function el(tag,a,txt){ var e=document.createElementNS(NS,tag); for(var k in a) e.setAttribute(k,a[k]); if(txt) e.textContent=txt; svg.appendChild(e); return e; }
-    var mono='JetBrains Mono, monospace';
-    var PK=[{o:0.30,h:16,c:L_COLORS[2]},{o:0.38,h:26,c:L_COLORS[0]},{o:0.83,h:22,c:L_COLORS[1]}];
-    // 1: spectrum
-    el('text',{x:10,y:18,fill:'#f1f4fb','font-size':14,'font-family':mono},'1. A spectrum: the pattern repeats every Δν');
-    var x0=20, seg=150, base=70;
-    el('line',{x1:x0,y1:base,x2:x0+4*seg,y2:base,stroke:'#93a1c4','stroke-width':1.5});
-    for(var s=0;s<4;s++){
-      PK.forEach(function(p){ var x=x0+s*seg+p.o*seg; el('line',{x1:x,y1:base,x2:x,y2:base-p.h,stroke:p.c,'stroke-width':3,'stroke-linecap':'round'}); });
-      if(s>0) el('line',{x1:x0+s*seg,y1:base-34,x2:x0+s*seg,y2:base+10,stroke:'#f1f4fb','stroke-width':1.2,'stroke-dasharray':'4 3'});
-      el('text',{x:x0+s*seg+seg/2,y:base+20,fill:'#93a1c4','font-size':11,'font-family':mono,'text-anchor':'middle'},'strip '+(s+1));
-    }
-    el('text',{x:x0+4*seg-2,y:base-38,fill:'#93a1c4','font-size':11,'font-family':mono,'text-anchor':'end'},'cut every Δν ✂');
-    // 2 & 3: stacks
-    function stack(ox, title, drift, verdict, vcol){
-      el('text',{x:ox,y:125,fill:'#f1f4fb','font-size':14,'font-family':mono},title);
-      var w=seg*1.35, rowH=34, top=140;
-      for(var r=0;r<4;r++){
-        var y=top+(3-r)*rowH+rowH-6;
-        el('line',{x1:ox,y1:y,x2:ox+w,y2:y,stroke:'#2a3c60','stroke-width':1});
-        el('text',{x:ox-6,y:y,fill:'#93a1c4','font-size':10,'font-family':mono,'text-anchor':'end'},String(r+1));
-        PK.forEach(function(p){
-          var o=p.o+drift*r; o=o-Math.floor(o);
-          var x=ox+o*w; el('line',{x1:x,y1:y,x2:x,y2:y-p.h*0.9,stroke:p.c,'stroke-width':3,'stroke-linecap':'round'});
-        });
-      }
-      el('text',{x:ox,y:top+4*rowH+18,fill:vcol,'font-size':12.5,'font-family':mono},verdict);
-    }
-    stack(24,'2. Stack them: width = Δν',0,'✓ same-l peaks form straight columns','#5fd98a');
-    stack(350,'3. Width slightly off',-0.05,'✗ columns lean: adjust the width','#ffcf5f');
+  // ---------- step 3: measurement feedback ----------
+  function setChk(el, err, tol){
+    if(hidden()){ el.className='chk'; el.textContent='hidden'; return; }
+    if(Math.abs(err)<tol){ el.className='chk ok'; el.textContent='✓ on target'; }
+    else { el.className='chk no'; el.textContent=(err>0?'high by ':'low by ')+Math.abs(err).toFixed(1)+'%'; }
   }
+  function updateMeasStatus(){
+    $('dnuVal').textContent=fmtF(state.measDnu)+' μHz';
+    $('numaxVal').textContent=fmtF(state.measNumax)+' μHz';
+    var el=$('measStatus');
+    if(hidden()){
+      setChk($('chkDnu'),0,1); setChk($('chkNumax'),0,1);
+      el.className='fold-status';
+      el.textContent='Mystery star. The spacing labels and accuracy checks are hidden until you reveal the answer.';
+      return;
+    }
+    var e1=(state.measDnu/D.dnu-1)*100, e2=(state.measNumax/D.numax-1)*100;
+    setChk($('chkDnu'),e1,1); setChk($('chkNumax'),e2,5);
+    var msg=[];
+    if(Math.abs(e1)<1) msg.push('✓ Every dashed line falls on a peak of the same color, so your Δν matches.');
+    else if(e1>0) msg.push('Your Δν is too large. The dashed lines land further to the right of the peaks the farther they are from the solid line.');
+    else msg.push('Your Δν is too small. The dashed lines land further to the left of the peaks the farther they are from the solid line.');
+    if(Math.abs(e2)<5) msg.push('✓ Your νmax sits at the center of the tallest peaks.');
+    else msg.push(e2>0 ? 'Your νmax is above the center of the tallest peaks.' : 'Your νmax is below the center of the tallest peaks.');
+    el.className='fold-status'+(Math.abs(e1)<1 && Math.abs(e2)<5 ? ' ok' : '');
+    el.textContent=msg.join(' ');
+  }
+  function syncMeasSliders(){
+    dnuSlider.value=valToLog(state.measDnu,DNU_LO,DNU_HI,DNU_STEPS);
+    numaxSlider.value=valToLog(state.measNumax,NUMAX_LO,NUMAX_HI,NUMAX_STEPS);
+  }
+  function onMeasChanged(){ updateMeasStatus(); updateBridge(); drawSpectrum(); }
 
-  // ---------- light curve ----------
-  var LC = { n:600, osc:new Float32Array(600), tot:new Float32Array(600), head:0, modes:[], g:0, acc:0, ys:1, t:0 };
-  var LC_SCREEN_SECONDS = 14;
+  dnuSlider.addEventListener('input', function(){ state.measDnu=logToVal(+dnuSlider.value,DNU_LO,DNU_HI,DNU_STEPS); onMeasChanged(); });
+  numaxSlider.addEventListener('input', function(){ state.measNumax=logToVal(+numaxSlider.value,NUMAX_LO,NUMAX_HI,NUMAX_STEPS); onMeasChanged(); });
+  function nudgeDnu(f){ state.measDnu=clamp(state.measDnu*f,DNU_LO,DNU_HI); syncMeasSliders(); onMeasChanged(); }
+  $('dnuMinus').addEventListener('click', function(){ nudgeDnu(0.998); });
+  $('dnuPlus').addEventListener('click', function(){ nudgeDnu(1.002); });
+  $('answerBtn').addEventListener('click', function(){
+    if(hidden()) return;
+    var a=defaultAnchor();
+    state.measDnu=D.dnu; state.measNumax=D.numax; if(a) state.anchor=a.freq;
+    syncMeasSliders(); onMeasChanged();
+  });
+  $('scrambleBtn').addEventListener('click', function(){ scramble(); syncMeasSliders(); onMeasChanged(); });
+
+  // ---------- step 4: inference ----------
+  function updateBridge(){
+    var dn=state.measDnu, nm=state.measNumax, t=state.T/SUN.teff;
+    var rhoR=Math.pow(dn/SUN.dnu,2), gR=(nm/SUN.numax)*Math.sqrt(t);
+    var R=gR/rhoR, M=Math.pow(gR,3)/Math.pow(rhoR,2);
+
+    $('bDnu').textContent=fmtF(dn)+' μHz';
+    $('bRho').textContent=(rhoR>=0.01 ? rhoR.toFixed(rhoR<10?3:1) : rhoR.toExponential(1))+' × Sun';
+    var cgs=rhoR*SUN.rho;
+    var cgsTxt = cgs>=0.01 ? cgs.toFixed(2) : cgs.toPrecision(2);
+    var cmp = cgs>=0.1 ? 'Water is 1.00 g/cm³ for comparison.' : (cgs>=0.0012 ? 'That is only about '+(cgs/0.0012).toFixed(1)+' times the density of air.' : 'That is thinner than air.');
+    setHTML($('bRhoNote'), 'Sound takes 1/Δν = <strong>'+fmtPeriod(1/(dn*1e-6))+'</strong> to cross this star and come back. A shorter trip means a denser star. The mean density is <strong>'+cgsTxt+' g/cm³</strong>. '+cmp);
+
+    $('bNumax').textContent=fmtF(nm)+' μHz';
+    var gms=gR*SUN.g;
+    $('bG').textContent=gR.toPrecision(3)+' × Sun';
+    setHTML($('bGNote'), 'This step also uses the '+T('teff','surface temperature')+', '+state.T+' K. Surface gravity comes out to <strong>'+gms.toPrecision(3)+' m/s²</strong>, about '+(gms/9.81).toPrecision(2)+' times Earth’s.');
+
+    $('bR').textContent=(R<100?R.toFixed(2):R.toPrecision(3))+' R☉';
+    $('bM').textContent=(M<100?M.toFixed(2):M.toPrecision(3))+' M☉';
+    function trueCell(id, chkId, est, tru, unit){
+      var chk=$(chkId);
+      if(hidden()){ $(id).textContent='True value hidden'; chk.className='chk'; chk.textContent='hidden'; return; }
+      $(id).textContent='True value '+tru.toFixed(2)+' '+unit;
+      var err=(est/tru-1)*100;
+      if(Math.abs(err)<5){ chk.className='chk ok'; chk.textContent='✓ within '+Math.abs(err).toFixed(1)+'%'; }
+      else { chk.className='chk no'; chk.textContent='off by '+Math.abs(err).toFixed(0)+'%'; }
+    }
+    trueCell('bRTrue','chkR',R,state.R,'R☉');
+    trueCell('bMTrue','chkM',M,state.M,'M☉');
+    $('revealBtn').hidden=!hidden();
+    $('answerBtn').disabled=hidden();
+  }
+  $('revealBtn').addEventListener('click', function(){ state.revealed=true; updateAll(); });
+
+  // ---------- step 1: light curve ----------
+  var LC_N = 480, LC_SECONDS = 10;
+  var LC = { obs:new Float32Array(LC_N), osc:new Float32Array(LC_N), each:[], head:0, modes:[], acc:0, t:0, win:1, dt:1,
+             g:0, gphi:0, gkick:0, sph:0, scObs:1, scOsc:1 };
   function lcReset(){
-    LC.win = 30/(D.numax*1e-6); LC.dt = LC.win/LC.n;
-    var list = MODES.slice().sort(function(a,b){ return b.A2-a.A2; }).slice(0,80);
-    LC.modes = list.map(function(m){
-      var tau = 1/(Math.PI*Math.max(m.gamma,0.001)*1e-6), dec = Math.exp(-LC.dt/tau);
-      return { w:2*Math.PI*m.freq*1e-6, ph:Math.random()*2*Math.PI, cr:gauss()*Math.SQRT1_2, ci:gauss()*Math.SQRT1_2,
+    LC.win=25/(D.numax*1e-6); LC.dt=LC.win/LC_N;
+    var tau=1/(Math.PI*Math.max(D.gamma,0.01)*1e-6), dec=Math.exp(-LC.dt/tau);
+    var list=MODES.filter(function(m){ return m.H0 >= 0.03*SPEC.hmax; });
+    LC.modes=list.map(function(m){
+      return { src:m, w:2*Math.PI*m.freq*1e-6, ph:Math.random()*2*Math.PI, cr:gauss()*Math.SQRT1_2, ci:gauss()*Math.SQRT1_2,
                amp:Math.sqrt(2*m.A2), dec:dec, kick:Math.sqrt(1-dec*dec)*Math.SQRT1_2 };
     });
-    var taug = 1/(2*Math.PI*D.bgran*1e-6);
-    LC.gphi = Math.exp(-LC.dt/taug); LC.gkick = D.agran*Math.sqrt(1-LC.gphi*LC.gphi);
-    LC.g = gauss()*D.agran; LC.head=0; LC.ys=0; LC.t=0;
-    for(var i=0;i<LC.n;i++) lcStep();
-    var per = 1/(D.numax*1e-6), speed = LC.win/LC_SCREEN_SECONDS;
-    $('lcInfo').innerHTML = 'Sped up about <strong>'+Math.round(speed).toLocaleString()+'×</strong>: each second on screen is '+fmtPeriod(speed)+' of the star’s time. The strongest modes repeat every ~'+fmtPeriod(per)+', and their size keeps changing because convection kicks them at random.';
+    LC.each=LC.modes.map(function(){ return new Float32Array(LC_N); });
+    var taug=1/(2*Math.PI*D.bgran*1e-6);
+    LC.gphi=Math.exp(-LC.dt/taug); LC.gkick=D.agran*Math.sqrt(1-LC.gphi*LC.gphi);
+    LC.g=gauss()*D.agran; LC.sph=0.5*D.agran;
+    var oscRms=Math.sqrt(list.reduce(function(s,m){ return s+m.A2; },0));
+    var obsRms=Math.sqrt(D.agran*D.agran*1.25 + oscRms*oscRms);
+    LC.scOsc=niceCeil(3.2*oscRms); LC.scObs=niceCeil(3.2*obsRms);
+    LC.head=0; LC.t=0; LC.acc=0;
+    for(var i=0;i<LC_N;i++) lcStep();
+    var speed=LC.win/LC_SECONDS;
+    $('lcNote').innerHTML='Here the noise is about <strong>'+Math.max(2,Math.round(Math.sqrt(1.25)*D.agran/oscRms))+' times larger</strong> than the vibrations, so the harmonics cannot be picked out in the raw data. Time runs <strong>'+fmtBig(speed)+' times faster</strong> than in reality. Each trace keeps one fixed scale for this star.';
   }
   function lcStep(){
     var s=0;
     for(var i=0;i<LC.modes.length;i++){
       var m=LC.modes[i];
-      m.cr = m.cr*m.dec + m.kick*gauss();
-      m.ci = m.ci*m.dec + m.kick*gauss();
-      m.ph += m.w*LC.dt; if(m.ph>6.283185307) m.ph -= 6.283185307*Math.floor(m.ph/6.283185307);
-      s += m.amp*(m.cr*Math.cos(m.ph) - m.ci*Math.sin(m.ph));
+      m.cr=m.cr*m.dec+m.kick*gauss(); m.ci=m.ci*m.dec+m.kick*gauss();
+      m.ph+=m.w*LC.dt; if(m.ph>6.283185307) m.ph-=6.283185307*Math.floor(m.ph/6.283185307);
+      var v=m.amp*(m.cr*Math.cos(m.ph)-m.ci*Math.sin(m.ph));
+      LC.each[i][LC.head]=v; s+=v;
     }
-    LC.g = LC.g*LC.gphi + LC.gkick*gauss();
-    LC.osc[LC.head]=s; LC.tot[LC.head]=s+LC.g;
-    LC.head=(LC.head+1)%LC.n;
-    LC.t += LC.dt;
+    LC.g=LC.g*LC.gphi+LC.gkick*gauss();
+    LC.osc[LC.head]=s; LC.obs[LC.head]=s+LC.g+LC.sph*gauss();
+    LC.head=(LC.head+1)%LC_N; LC.t+=LC.dt;
   }
   function lcAdvance(dt){
-    LC.acc += dt*LC.n/LC_SCREEN_SECONDS;
+    LC.acc+=dt*LC_N/LC_SECONDS;
     var k=0; while(LC.acc>=1 && k<40){ lcStep(); LC.acc-=1; k++; }
     if(k>=40) LC.acc=0;
   }
   function drawLC(){
     var dims=resizeCanvas(lcCanvas,lcCtx), W=dims.w, H=dims.h, ctx=lcCtx;
     ctx.clearRect(0,0,W,H);
-    var padL=62, padR=12, padT=12, padB=36, pw=W-padL-padR, ph=H-padT-padB, mid=padT+ph/2;
-    var mx=0;
-    for(var i=0;i<LC.n;i++){ if(state.lcTot) mx=Math.max(mx, Math.abs(LC.tot[i])); if(state.lcOsc) mx=Math.max(mx, Math.abs(LC.osc[i])); }
-    LC.ys = Math.max(mx*1.1, LC.ys*0.995, 1e-3);
-    var ys=LC.ys;
-    ctx.font='12.5px "JetBrains Mono", monospace'; ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
-    ctx.fillStyle='#93a1c4'; ctx.textAlign='right';
-    niceTicks(-ys,ys,4).forEach(function(v){
-      var y=mid-v/ys*(ph/2); ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+pw,y); ctx.stroke();
-      ctx.fillText(fmtTick(v), padL-6, y+4);
+    var padL=58, padR=12, padT=8, padB=24, gap=16, pw=W-padL-padR;
+    var laneH=(H-padT-padB-gap)/2;
+    var lanes=[{top:padT, sc:LC.scObs, title:'What the telescope records', col:'#93a1c4'},
+               {top:padT+laneH+gap, sc:LC.scOsc, title:'Vibrations only (simulated)', col:'#f1f4fb'}];
+    ctx.font='12px "JetBrains Mono", monospace';
+    lanes.forEach(function(ln){
+      var mid=ln.top+laneH/2;
+      ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1; ctx.fillStyle='#93a1c4'; ctx.textAlign='right';
+      [-1,0,1].forEach(function(s){
+        var y=mid-s*laneH*0.45;
+        ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+pw,y); ctx.stroke();
+        ctx.fillText((s>0?'+':'')+fmtTick(s*ln.sc), padL-6, y+4);
+      });
+      ln.mid=mid;
     });
-    var useDays = LC.win>2*86400, unit = useDays?86400:3600;
+    ctx.save(); ctx.translate(12, padT+(H-padT-padB)/2); ctx.rotate(-Math.PI/2); ctx.textAlign='center'; ctx.fillStyle='#a8b6d6';
+    ctx.fillText('Brightness change (ppm)', 0, 0); ctx.restore();
+
+    var unit, uname;
+    if(LC.win<4*3600){ unit=60; uname='minutes'; } else if(LC.win<3*86400){ unit=3600; uname='hours'; } else { unit=86400; uname='days'; }
     var t1=LC.t, t0=t1-LC.win;
-    ctx.textAlign='center';
-    niceTicks(t0/unit, t1/unit, W<500?4:6).forEach(function(v){
+    ctx.textAlign='center'; ctx.fillStyle='#93a1c4';
+    niceTicks(t0/unit,t1/unit,W<500?4:6).forEach(function(v){
       var x=padL+(v*unit-t0)/LC.win*pw; if(x<padL-1||x>padL+pw+1) return;
-      ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,padT+ph); ctx.stroke();
-      ctx.fillText(fmtTick(v), x, padT+ph+16);
+      ctx.strokeStyle='rgba(255,255,255,0.05)';
+      ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,H-padB); ctx.stroke();
+      ctx.fillText(fmtTick(v), x, H-6);
     });
-    ctx.fillStyle='#a8b6d6'; ctx.font='13px "JetBrains Mono", monospace';
-    ctx.fillText('Time since observing started ('+(useDays?'days':'hours')+')', padL+pw/2, H-2);
-    ctx.save(); ctx.translate(12,mid); ctx.rotate(-Math.PI/2); ctx.fillText('Brightness change (ppm)',0,0); ctx.restore();
-    function trace(arr, color, lw, alpha){
+    $('lcAxisTitle').textContent='Time since the start of observations ('+uname+')';
+
+    function trace(arr, ln, color, lw, alpha){
+      ctx.save(); ctx.beginPath(); ctx.rect(padL, ln.top, pw, laneH); ctx.clip();
       ctx.beginPath();
-      for(var k=0;k<LC.n;k++){
-        var v=arr[(LC.head+k)%LC.n], x=padL+k/(LC.n-1)*pw, y=mid-v/ys*(ph/2);
+      for(var k=0;k<LC_N;k++){
+        var v=arr[(LC.head+k)%LC_N], x=padL+k/(LC_N-1)*pw, y=ln.mid-v/ln.sc*laneH*0.45;
         if(k===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
       }
-      ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.globalAlpha=alpha; ctx.stroke(); ctx.globalAlpha=1;
+      ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.globalAlpha=alpha; ctx.lineJoin='round'; ctx.stroke();
+      ctx.restore(); ctx.globalAlpha=1;
     }
-    if(state.lcTot) trace(LC.tot,'#93a1c4',1,0.55);
-    if(state.lcOsc) trace(LC.osc,'#ffcf5f',1.6,1);
-  }
-  $('lcOscToggle').addEventListener('change', function(){ state.lcOsc=this.checked; LC.ys=0; });
-  $('lcTotToggle').addEventListener('change', function(){ state.lcTot=this.checked; LC.ys=0; });
-
-  // ---------- audio ----------
-  var AUD = { ctx:null, master:null, voices:[], timer:null };
-  function startAudio(){
-    if(!AUD.ctx){ var C=window.AudioContext||window.webkitAudioContext; if(!C) return; AUD.ctx=new C(); }
-    if(AUD.ctx.state==='suspended') AUD.ctx.resume();
-    var ctx=AUD.ctx, now=ctx.currentTime;
-    AUD.master=ctx.createGain(); AUD.master.gain.setValueAtTime(0,now);
-    AUD.master.gain.linearRampToValueAtTime(0.25, now+0.15);
-    AUD.master.connect(ctx.destination);
-    var k = 440/(D.numax*1e-6);
-    var list = MODES.slice().sort(function(a,b){ return b.A2-a.A2; }).slice(0,48);
-    AUD.norm = Math.sqrt(list.reduce(function(s,m){ return s+m.A2; },0))*1.6 || 1;
-    AUD.voices = [];
-    list.forEach(function(m){
-      var f=m.freq*1e-6*k; if(f<25 || f>12000) return;
-      var osc=ctx.createOscillator(); osc.type='sine'; osc.frequency.value=f;
-      var g=ctx.createGain(); g.gain.value=0;
-      osc.connect(g); g.connect(AUD.master); osc.start();
-      AUD.voices.push({ osc:osc, g:g, cr:gauss()*Math.SQRT1_2, ci:gauss()*Math.SQRT1_2, amp:Math.sqrt(m.A2),
-        tau:clamp(1/(Math.PI*Math.max(m.gamma,0.001)*1e-6)/k, 0.08, 6) });
+    trace(LC.obs, lanes[0], '#93a1c4', 1.2, 0.9);
+    trace(LC.osc, lanes[1], '#f1f4fb', 1.6, 0.85);
+    var si=-1;
+    for(var i=0;i<LC.modes.length;i++) if(LC.modes[i].src===state.sel){ si=i; break; }
+    if(si>=0) trace(LC.each[si], lanes[1], L_COLORS[state.sel.l], 2.2, 1);
+    lanes.forEach(function(ln, idx){
+      ctx.font='600 12px "JetBrains Mono", monospace'; ctx.textAlign='left';
+      var tw=ctx.measureText(ln.title).width;
+      ctx.fillStyle='rgba(14,28,51,0.85)'; ctx.fillRect(padL+4, ln.top+2, tw+10, 17);
+      ctx.fillStyle=ln.col; ctx.fillText(ln.title, padL+9, ln.top+15);
+      if(idx===1 && si>=0){
+        var s=state.sel, lab='harmonic n = '+s.n+', l = '+s.l+', '+fmtF(s.freq)+' μHz';
+        ctx.font='12px "JetBrains Mono", monospace'; ctx.textAlign='right';
+        var tw2=ctx.measureText(lab).width;
+        ctx.fillStyle='rgba(14,28,51,0.85)'; ctx.fillRect(padL+pw-tw2-14, ln.top+2, tw2+10, 17);
+        ctx.fillStyle=L_COLORS[s.l]; ctx.fillText(lab, padL+pw-9, ln.top+15);
+      }
     });
   }
-  function stopAudio(){
-    if(!AUD.ctx || !AUD.master) return;
-    var master=AUD.master, voices=AUD.voices, t=AUD.ctx.currentTime;
-    master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value,t); master.gain.linearRampToValueAtTime(0,t+0.08);
-    setTimeout(function(){ voices.forEach(function(v){ try{ v.osc.stop(); v.osc.disconnect(); v.g.disconnect(); }catch(e){} }); try{ master.disconnect(); }catch(e){} }, 150);
-    AUD.master=null; AUD.voices=[];
-  }
-  function audioTick(dt){
-    if(!AUD.master) return;
-    var t=AUD.ctx.currentTime;
-    AUD.voices.forEach(function(v){
-      var dec=Math.exp(-dt/v.tau), kick=Math.sqrt(1-dec*dec)*Math.SQRT1_2;
-      v.cr=v.cr*dec+kick*gauss(); v.ci=v.ci*dec+kick*gauss();
-      v.g.gain.setTargetAtTime(v.amp*Math.sqrt(v.cr*v.cr+v.ci*v.ci)/AUD.norm, t, 0.04);
-    });
-  }
-  function scheduleAudioRestart(){
-    clearTimeout(AUD.timer);
-    AUD.timer=setTimeout(function(){ if(state.playing){ stopAudio(); startAudio(); updateListenInfo(); } }, 120);
-  }
-  listenBtn.addEventListener('click', function(){
-    state.playing=!state.playing;
-    if(state.playing){ startAudio(); listenLabel.innerHTML='&#9632; Stop listening'; listenBtn.classList.add('playing'); }
-    else { stopAudio(); listenLabel.innerHTML='&#9658; Listen to this star'; listenBtn.classList.remove('playing'); }
-    updateListenInfo();
-  });
-  function updateListenInfo(){
-    var p = PRESETS[state.preset];
-    var blurb = state.mystery ? 'Mystery star: you know only its temperature. Measure Δν and νmax, then use Weigh the Star to find its mass and radius.' : (p ? p.blurb : 'Custom star: you have changed its properties with the sliders.');
-    if(state.playing){
-      var k = 440/(D.numax*1e-6);
-      blurb = 'Now playing, sped up ' + sci(k) + '×. An oscillation that takes ' + fmtPeriod(1/(D.numax*1e-6)) + ' becomes a 440 Hz tone. The flutter is convection kicking the modes at random.';
-    }
-    statusLine.textContent = blurb;
-  }
 
-  // ---------- 3D surface ----------
+  // ---------- step 5: 3D surface ----------
   function plm(l, m, x){
     var pmm=1;
     if(m>0){ var s=Math.sqrt(Math.max(0,(1-x)*(1+x))), f=1; for(var i=1;i<=m;i++){ pmm*=f*s; f+=2; } }
@@ -1294,7 +1142,7 @@
     var pmax=0; for(var k=0;k<=720;k++){ pmax=Math.max(pmax, Math.abs(plm(l,am,Math.cos(Math.PI*k/720)))); }
     return pmax||1;
   }
-  var S3 = { yaw:0, pitch:0, key:'', mesh:null, drag:null, vis:0 };
+  var S3 = { yaw:0, pitch:0, key:'', mesh:null, drag:null };
   function buildMesh(){
     var l=state.exL, am=Math.abs(state.exM), key=l+','+am;
     if(S3.key===key) return;
@@ -1312,18 +1160,16 @@
   }
   function computeVis(){
     var S=120, l=state.exL, am=Math.abs(state.exM), m=state.exM, pmax=pmaxOf(l,am);
-    var inc=state.incl*Math.PI/180, ci=Math.cos(inc), si=Math.sin(inc), Sc=0, Ss=0, Sl=0;
+    var inc=INC*Math.PI/180, ci=Math.cos(inc), si=Math.sin(inc), Sc=0, Ss=0, Sl=0;
     for(var py=0;py<S;py++) for(var px=0;px<S;px++){
       var x=(px+0.5)/S*2-1, y=1-(py+0.5)/S*2, r2=x*x+y*y; if(r2>1) continue;
       var z=Math.sqrt(1-r2), ys=y*ci - z*si, zs=y*si + z*ci;
       var P=plm(l,am,zs)/pmax, phi=Math.atan2(ys,x), ld=0.4+0.6*z;
       Sc+=P*ld*Math.cos(m*phi); Ss+=P*ld*Math.sin(m*phi); Sl+=ld;
     }
-    // normalise to radial mode (P=1 everywhere)
-    S3.vis = Sl>0 ? Math.sqrt(Sc*Sc+Ss*Ss)/Sl : 0;
-    var pct=S3.vis*100;
+    var pct=(Sl>0 ? Math.sqrt(Sc*Sc+Ss*Ss)/Sl : 0)*100;
     $('visFill').style.width=clamp(pct,0,100)+'%';
-    $('visLabel').textContent='Signal seen from far away: '+(pct<0.1 ? '< 0.1' : pct.toFixed(pct<10?1:0))+'% of a radial mode'+(state.exL>3 ? ' (undetectable in distant stars)' : '');
+    $('visLabel').textContent='Brightness change seen from far away is '+(pct<0.1 ? 'under 0.1' : pct.toFixed(pct<10?1:0))+'% of an l = 0 pattern'+(state.exL>3 ? ', too small to detect' : '');
   }
   function drawSphere(t){
     var dims=resizeCanvas(sphereCanvas,sphCtx), W=dims.w, H=dims.h, ctx=sphCtx;
@@ -1332,9 +1178,7 @@
     var cx=W/2, cy=H/2, R=Math.min(W,H)*0.36;
     var wt=2*Math.PI*t/(REDUCED?4:1.8);
     var A = l===0 ? 0.08 : 0.16/(1+l/5);
-    // star frame: z_s = rotation axis. Tilt so the axis sits at the inclination from our line of sight
-    // (z_view toward viewer): z_s -> (0, sin a, cos a), y_s -> (0, cos a, -sin a). Then yaw about view y.
-    var ang=state.incl*Math.PI/180 + S3.pitch, yaw=S3.yaw;
+    var ang=INC*Math.PI/180 + S3.pitch, yaw=S3.yaw;
     var ca=Math.cos(ang), sa=Math.sin(ang), cyw=Math.cos(yaw), syw=Math.sin(yaw);
     var nv=(NT+1)*(NP+1);
     for(var k=0;k<nv;k++){
@@ -1360,13 +1204,12 @@
     }
     quads.sort(function(p,q){ return p[0]-q[0]; });
     ctx.clearRect(0,0,W,H);
-    // rotation axis (star frame (0,0,1) -> view)
-    var axY=sa, axZ0=ca, axX=axZ0*syw, axZ=axZ0*cyw;
+    var axY=sa, axX=ca*syw, axZ=ca*cyw;
     function drawAxis(front){
       ctx.save(); ctx.strokeStyle='rgba(241,244,251,0.8)'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
       [1,-1].forEach(function(sg){
         var zz=sg*axZ; if((zz>=0)!==front) return;
-        ctx.beginPath(); ctx.moveTo(cx+sg*axX*R*1.0, cy-sg*axY*R*1.0); ctx.lineTo(cx+sg*axX*R*1.45, cy-sg*axY*R*1.45); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx+sg*axX*R, cy-sg*axY*R); ctx.lineTo(cx+sg*axX*R*1.45, cy-sg*axY*R*1.45); ctx.stroke();
       });
       ctx.restore();
     }
@@ -1375,11 +1218,8 @@
     for(var qi=0;qi<quads.length;qi++){
       var Q=quads[qi];
       var lam=Math.max(0, Q[5]*Lx+Q[6]*Ly+Q[7]*Lz), sh=(0.28+0.72*lam)*(0.7+0.3*Math.max(0,Q[7]));
-      var rr=base[0], gg=base[1], bb=base[2];
-      if(state.tint){
-        var dvv=clamp(Q[8],-1,1), w=Math.min(1,Math.abs(dvv)*1.15), tgt = dvv>=0 ? [255,105,70] : [80,160,255];
-        rr+= (tgt[0]-rr)*w; gg+=(tgt[1]-gg)*w; bb+=(tgt[2]-bb)*w;
-      }
+      var dvv=clamp(Q[8],-1,1), w=Math.min(1,Math.abs(dvv)*1.15), tgt = dvv>=0 ? [255,105,70] : [80,160,255];
+      var rr=base[0]+(tgt[0]-base[0])*w, gg=base[1]+(tgt[1]-base[1])*w, bb=base[2]+(tgt[2]-base[2])*w;
       var col='rgb('+Math.round(rr*sh)+','+Math.round(gg*sh)+','+Math.round(bb*sh)+')';
       ctx.beginPath();
       ctx.moveTo(cx+M.vx[Q[1]]*R, cy-M.vy[Q[1]]*R);
@@ -1390,7 +1230,7 @@
     }
     drawAxis(true);
     ctx.font='12px "JetBrains Mono", monospace'; ctx.fillStyle='#93a1c4'; ctx.textAlign='center';
-    ctx.fillText('viewed from Earth · drag to rotate', cx, H-6);
+    ctx.fillText('l = '+l+', m = '+m, cx, H-6);
   }
   sphereCanvas.addEventListener('pointerdown', function(e){
     S3.drag={x:e.clientX,y:e.clientY,yaw:S3.yaw,pitch:S3.pitch};
@@ -1405,28 +1245,39 @@
   function endDrag(){ S3.drag=null; sphereCanvas.classList.remove('dragging'); }
   sphereCanvas.addEventListener('pointerup', endDrag);
   sphereCanvas.addEventListener('pointercancel', endDrag);
-  $('viewResetBtn').addEventListener('click', function(){ S3.yaw=0; S3.pitch=0; });
-  $('tintToggle').addEventListener('change', function(){ state.tint=this.checked; });
 
   function syncExplorer(){
-    lSlider.value=state.exL;
     mmSlider.min=-state.exL; mmSlider.max=state.exL;
     state.exM=clamp(state.exM,-state.exL,state.exL); mmSlider.value=state.exM;
-    $('lVal').textContent='l = '+state.exL; $('mmVal').textContent='m = '+state.exM;
-    var am=Math.abs(state.exM);
-    $('sphereCaption').innerHTML = state.exL===0
-      ? '<strong>l = 0 (radial)</strong>: the whole star swells and shrinks together, like breathing. No nodal lines.'
-      : '<strong>l = '+state.exL+', m = '+state.exM+'</strong>: '+state.exL+' nodal line'+(state.exL>1?'s':'')+' in total, '+am+' running through the poles and '+(state.exL-am)+' parallel to the equator.'+(state.exM!==0 ? ' With m ≠ 0 the pattern travels around the star, which is why rotation shifts its frequency.' : ' With m = 0 the pattern stands still.');
+    $('mmVal').textContent='m = '+state.exM;
+    var l=state.exL, am=Math.abs(state.exM), cap;
+    var words=['zero','one','two','three'];
+    function num(n){ return n<4 ? words[n] : String(n); }
+    if(l===0) cap='<strong>l = 0.</strong> The whole star swells and shrinks together, with no nodal lines.';
+    else {
+      cap='<strong>l = '+l+', m = '+state.exM+'.</strong> '+num(l).charAt(0).toUpperCase()+num(l).slice(1)+' nodal line'+(l>1?'s':'')+'. ';
+      cap+= num(am).charAt(0).toUpperCase()+num(am).slice(1)+' of them '+(am===1?'passes':'pass')+' through the poles and '+num(l-am)+' '+((l-am)===1?'runs':'run')+' parallel to the equator. ';
+      cap+= state.exM!==0 ? 'Patterns with m ≠ 0 travel around the star.' : 'With m = 0 the pattern stays in place.';
+    }
+    if(state.sel && state.sel.l===l) cap += ' This is the selected peak at '+fmtF(state.sel.freq)+' μHz.';
+    $('sphereCaption').innerHTML=cap;
     S3.key='';
     computeVis();
-    document.querySelectorAll('.quick-l .ctrl-btn').forEach(function(b){ b.classList.toggle('active', +b.dataset.l===state.exL); });
+    document.querySelectorAll('#quickL .ctrl-btn').forEach(function(b){ b.classList.toggle('active', +b.dataset.l===state.exL); });
   }
-  lSlider.addEventListener('input', function(){ state.exL=+lSlider.value; syncExplorer(); drawRay(); });
   mmSlider.addEventListener('input', function(){ state.exM=+mmSlider.value; syncExplorer(); });
+  (function buildQuickL(){
+    var wrap=$('quickL');
+    [0,1,2,3,10,30].forEach(function(l){
+      var b=document.createElement('button'); b.type='button'; b.className='ctrl-btn small'; b.dataset.l=l; b.textContent=l;
+      b.addEventListener('click', function(){ state.exL=l; state.exM=0; syncExplorer(); drawRay(); drawSpectrum(); });
+      wrap.appendChild(b);
+    });
+  })();
 
-  // ---------- ray paths ----------
+  // ---------- step 6: ray paths ----------
   function soundSpeedFn(){
-    var cc = 510e3*Math.sqrt(state.M/state.R)/(state.R*6.957e8); // stellar radii per second
+    var cc = 510e3*Math.sqrt(state.M/state.R)/(state.R*6.957e8);
     var norm = Math.pow(1.002,0.6);
     return function(r){ return cc*Math.pow(Math.max(1-r,0)+0.002,0.6)/norm; };
   }
@@ -1445,27 +1296,23 @@
     }
     return { rt:rt, pts:pts };
   }
-  var RAY = { off:document.createElement('canvas'), path:[], cum:[], total:0, bounceLen:1, col:'#fff', rt:0, nu:0 };
+  var RAY = { off:document.createElement('canvas'), path:[], cum:[], total:1, bounceLen:1, col:'#fff', rt:0, nu:0 };
   function drawRay(){
     var dims=resizeCanvas(rayCanvas,rayCtx), W=dims.w, H=dims.h;
     RAY.off.width=rayCanvas.width; RAY.off.height=rayCanvas.height;
     var ctx=RAY.off.getContext('2d'); ctx.setTransform(dims.dpr,0,0,dims.dpr,0,0);
     ctx.clearRect(0,0,W,H);
-    var cx=W/2, cy=H/2, Rp=Math.min(W,H)*0.44;
+    var cx=W/2, cy=H/2, Rp=Math.min(W,H)*0.46;
     var grad=ctx.createRadialGradient(cx,cy,0,cx,cy,Rp);
     grad.addColorStop(0,'rgba(255,207,95,0.34)'); grad.addColorStop(0.6,'rgba(255,140,102,0.14)'); grad.addColorStop(1,'rgba(255,111,168,0.06)');
     ctx.beginPath(); ctx.arc(cx,cy,Rp,0,2*Math.PI); ctx.fillStyle=grad; ctx.fill();
     ctx.strokeStyle='rgba(255,207,95,0.6)'; ctx.lineWidth=1.5; ctx.stroke();
-    ctx.font='12px "JetBrains Mono", monospace'; ctx.textAlign='center';
-    ctx.fillStyle='#ffcf5f'; ctx.fillText('hot core: fast sound', cx, cy+22);
-    ctx.fillStyle='#a8b6d6'; ctx.fillText('surface: waves reflect', cx, cy-Rp-6);
 
-    var l=state.exL, useSel=SEL && SEL.l===l, nu=useSel ? SEL.freq : D.numax;
+    var l=state.exL, useSel=state.sel && state.sel.l===l, nu=useSel ? state.sel.freq : D.numax;
     var col=L_COLORS[Math.min(l,3)];
     RAY.col=col; RAY.nu=nu;
-    var path=[];
+    var path=[], rt=0;
     ctx.strokeStyle=col; ctx.lineWidth=1.3; ctx.globalAlpha=0.7;
-    var rt=0;
     if(l===0){
       [0,0.5,1.05].forEach(function(a){
         ctx.beginPath(); ctx.moveTo(cx+Rp*Math.sin(a), cy-Rp*Math.cos(a)); ctx.lineTo(cx-Rp*Math.sin(a), cy+Rp*Math.cos(a)); ctx.stroke();
@@ -1494,8 +1341,6 @@
       ctx.globalAlpha=1;
       ctx.setLineDash([5,4]); ctx.strokeStyle=col; ctx.lineWidth=1.5;
       ctx.beginPath(); ctx.arc(cx,cy,Math.max(1,rt*Rp),0,2*Math.PI); ctx.stroke(); ctx.setLineDash([]);
-      if(rt>0.12){ ctx.fillStyle=col; ctx.fillText('turning point', cx, cy-rt*Rp+15); }
-      // one-bounce length for pulse speed
       var bl=0; for(var q=1;q<2*pts.length && q<path.length;q++){ bl+=Math.hypot(path[q][0]-path[q-1][0], path[q][1]-path[q-1][1]); }
       RAY.bounceLen=Math.max(bl,1);
     }
@@ -1505,18 +1350,18 @@
     RAY.total=RAY.cum[RAY.cum.length-1]||1; RAY.rt=rt;
 
     var cap;
-    if(l===0) cap='<strong>l = 0 (radial)</strong>: sound travels straight through the centre and back, so radial modes sample the whole star, core included.';
+    if(l===0) cap='<strong>l = 0.</strong> These waves pass straight through the center. Sound takes <strong>'+fmtPeriod(1/(D.dnu*1e-6))+'</strong> to cross the star and come back, and that round trip sets 1/Δν. Because they cross the center, l = 0 harmonics sample the whole star.';
     else {
-      cap='<strong>l = '+l+'</strong> at '+fmtF(nu)+' μHz: the wave dives in at an angle, <strong>bends back</strong> at r ≈ '+rt.toFixed(2)+' R (dashed circle), returns to the surface, reflects, and repeats. ';
-      cap += l<=3 ? 'Low-degree modes like this reach deep, so their frequencies carry information about the core.' : 'Higher l means a shallower turning point, so these modes only probe the outer layers. Degrees this high are only observable on the resolved Sun.';
-      if(!useSel) cap += ' (Frequency set to νmax. Select a peak of this degree to use its exact frequency.)';
+      cap='<strong>l = '+l+'</strong> at '+fmtF(nu)+' μHz turns around at <strong>'+Math.round(rt*100)+'% of the radius</strong>, where the sound speed equals the sideways speed of the wave pattern (graph below). ';
+      cap += l<=3 ? 'Low-l harmonics reach close to the core, so comparing l = 0 and l = 2 frequencies reveals conditions there.' : 'High-l harmonics stay in the outer layers. Combining many values of l maps the interior layer by layer. This is how '+T('helioseismology','helioseismology')+' mapped the inside of the Sun.';
+      if(!useSel) cap += ' The frequency is set to νmax.';
     }
-    $('rayCaption').innerHTML=cap;
+    setHTML($('rayCaption'), cap);
     drawCs();
   }
   function drawRayFrame(t){
     var dims=resizeCanvas(rayCanvas,rayCtx);
-    if(dims.changed || RAY.off.width!==rayCanvas.width){ drawRay(); }
+    if(dims.changed || RAY.off.width!==rayCanvas.width) drawRay();
     rayCtx.setTransform(1,0,0,1,0,0);
     rayCtx.clearRect(0,0,rayCanvas.width,rayCanvas.height);
     rayCtx.drawImage(RAY.off,0,0);
@@ -1541,14 +1386,17 @@
     function X(r){ return padL+r*pw; } function Y(v){ return padT+ph-clamp(v,0,1.1)/1.1*ph; }
     ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
     ctx.font='12px "JetBrains Mono", monospace'; ctx.fillStyle='#93a1c4';
-    ctx.textAlign='center';
-    [0,0.25,0.5,0.75,1].forEach(function(r){ var x=X(r); ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,padT+ph); ctx.stroke(); ctx.textAlign=r===0?'left':(r===1?'right':'center'); ctx.fillText(r===0?'centre':(r===1?'surface':r.toFixed(2)), x, padT+ph+14); }); ctx.textAlign='center';
-    ctx.fillStyle='#a8b6d6'; ctx.fillText('radius r / R', padL+pw/2, H-2);
+    [0,0.25,0.5,0.75,1].forEach(function(r){
+      var x=X(r); ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,padT+ph); ctx.stroke();
+      ctx.textAlign=r===0?'left':(r===1?'right':'center');
+      ctx.fillText(r===0?'center':(r===1?'surface':r.toFixed(2)), x, padT+ph+14);
+    });
+    ctx.textAlign='center'; ctx.fillStyle='#a8b6d6'; ctx.fillText('distance from center (fraction of radius)', padL+pw/2, H-2);
     ctx.save(); ctx.translate(12,padT+ph/2); ctx.rotate(-Math.PI/2); ctx.fillText('speed',0,0); ctx.restore();
     ctx.beginPath();
     for(var i=0;i<=200;i++){ var r=i/200, y=Y(c(r)/c0); if(i===0) ctx.moveTo(X(r),y); else ctx.lineTo(X(r),y); }
     ctx.strokeStyle='#f1f4fb'; ctx.lineWidth=2.2; ctx.stroke();
-    ctx.textAlign='right'; ctx.fillStyle='#f1f4fb'; ctx.fillText('— sound speed c(r)', X(1), padT+10);
+    ctx.textAlign='right'; ctx.fillStyle='#f1f4fb'; ctx.fillText('— speed of sound', X(1), padT+10);
     var l=state.exL;
     if(l>0){
       var L=Math.sqrt(l*(l+1)), om=2*Math.PI*RAY.nu*1e-6, col=L_COLORS[Math.min(l,3)];
@@ -1556,7 +1404,7 @@
       var rEnd=Math.min(1, 1.1*c0*L/om); ctx.lineTo(X(rEnd), Y(om*rEnd/L/c0));
       ctx.strokeStyle=col; ctx.lineWidth=1.8; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle=col; ctx.textAlign='right';
-      ctx.fillText('- - sideways pattern speed ωr/√(l(l+1))', X(1), padT+26);
+      ctx.fillText('- - sideways speed of the wave pattern', X(1), padT+26);
       if(RAY.rt>0.001 && RAY.rt<0.999){
         var xr=X(RAY.rt);
         ctx.beginPath(); ctx.arc(xr, Y(c(RAY.rt)/c0), 5, 0, 2*Math.PI); ctx.fillStyle='#fff'; ctx.fill();
@@ -1565,318 +1413,156 @@
         ctx.fillText('turns here', xr+(RAY.rt>0.6?-8:8), padT+ph-8);
       }
     } else {
-      ctx.fillStyle='#93a1c4'; ctx.textAlign='right'; ctx.fillText('l = 0 has no sideways motion: no turning point', X(0.98), padT+ph-6);
+      ctx.fillStyle='#93a1c4'; ctx.textAlign='right'; ctx.fillText('l = 0 waves have no turning point', X(0.98), padT+ph-6);
     }
   }
-  (function buildQuickL(){
-    var wrap=document.querySelector('.quick-l');
-    [0,1,2,3,10,20,30].forEach(function(l){
-      var b=document.createElement('button'); b.type='button'; b.className='ctrl-btn small'; b.dataset.l=l; b.textContent=l;
-      b.addEventListener('click', function(){ state.exL=l; state.exM=0; syncExplorer(); drawRay(); });
-      wrap.appendChild(b);
+
+  // ---------- audio ----------
+  var AUD = { ctx:null, master:null, voices:[], timer:null };
+  function startAudio(){
+    if(!AUD.ctx){ var C=window.AudioContext||window.webkitAudioContext; if(!C) return; AUD.ctx=new C(); }
+    if(AUD.ctx.state==='suspended') AUD.ctx.resume();
+    var ctx=AUD.ctx, now=ctx.currentTime;
+    AUD.master=ctx.createGain(); AUD.master.gain.setValueAtTime(0,now);
+    AUD.master.gain.linearRampToValueAtTime(0.22, now+0.15);
+    AUD.master.connect(ctx.destination);
+    var k=440/(D.numax*1e-6);
+    var list=MODES.slice().sort(function(a,b){ return b.A2-a.A2; }).slice(0,30);
+    AUD.norm=Math.sqrt(list.reduce(function(s,m){ return s+m.A2; },0))*1.6 || 1;
+    var tau=clamp(1/(Math.PI*Math.max(D.gamma,0.01)*1e-6)/k, 0.1, 4);
+    AUD.voices=[];
+    list.forEach(function(m){
+      var f=m.freq*1e-6*k; if(f<25||f>12000) return;
+      var osc=ctx.createOscillator(); osc.type='sine'; osc.frequency.value=f;
+      var g=ctx.createGain(); g.gain.value=0;
+      osc.connect(g); g.connect(AUD.master); osc.start();
+      AUD.voices.push({ osc:osc, g:g, cr:gauss()*Math.SQRT1_2, ci:gauss()*Math.SQRT1_2, amp:Math.sqrt(m.A2), tau:tau });
     });
-    var info=document.createElement('button'); info.className='info'; info.dataset.help='quickl'; info.setAttribute('aria-label','Explain degree buttons'); info.textContent='?';
-    wrap.appendChild(info);
-  })();
-
-  // ---------- HR diagram ----------
-  function drawHR(){
-    var dims=resizeCanvas(hrCanvas,hrCtx), W=dims.w, H=dims.h, ctx=hrCtx;
-    ctx.clearRect(0,0,W,H);
-    var padL=58, padR=14, padT=14, padB=40, pw=W-padL-padR, ph=H-padT-padB;
-    var tHi=Math.log10(8000), tLo=Math.log10(3800), lHi=2.7, lLo=-0.8;
-    function X(T){ return padL+(tHi-Math.log10(T))/(tHi-tLo)*pw; }
-    function Y(Lum){ return padT+(lHi-Math.log10(Lum))/(lHi-lLo)*ph; }
-    ctx.font='12.5px "JetBrains Mono", monospace'; ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.fillStyle='#93a1c4'; ctx.lineWidth=1;
-    ctx.textAlign='center';
-    [7000,6000,5000,4000].forEach(function(T){ var x=X(T); ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,padT+ph); ctx.stroke(); ctx.fillText(T, x, padT+ph+16); });
-    ctx.textAlign='right';
-    [0.3,1,10,100].forEach(function(Lum){ var y=Y(Lum); ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+pw,y); ctx.stroke(); ctx.fillText(Lum, padL-6, y+4); });
-    ctx.fillStyle='#a8b6d6'; ctx.textAlign='center'; ctx.font='13px "JetBrains Mono", monospace';
-    ctx.fillText('Surface temperature Teff (K)  ← hotter', padL+pw/2, H-4);
-    ctx.save(); ctx.translate(12,padT+ph/2); ctx.rotate(-Math.PI/2); ctx.fillText('Luminosity (L☉)',0,0); ctx.restore();
-
-    function path(pts, color, w){
-      ctx.beginPath(); pts.forEach(function(p,i){ var x=X(p[0]), y=Y(p[1]); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
-      ctx.strokeStyle=color; ctx.lineWidth=w; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke();
-    }
-    path([[7900,14],[7000,6],[6500,3.3],[6000,1.6],[5772,1],[5300,0.55],[4800,0.3],[4200,0.17]], 'rgba(95,194,255,0.35)', 10);
-    path([[6100,2.3],[5600,2.6],[5100,3.3],[4950,6],[4800,12],[4600,30],[4400,90],[4150,300]], 'rgba(255,140,102,0.32)', 8);
-    ctx.beginPath(); ctx.ellipse(X(4720),Y(50),13,9,0,0,2*Math.PI); ctx.fillStyle='rgba(255,111,168,0.3)'; ctx.fill();
-    ctx.font='12px "JetBrains Mono", monospace'; ctx.textAlign='left';
-    ctx.fillStyle='#5fc2ff'; ctx.fillText('main sequence', X(7600), Y(3.2));
-    ctx.fillStyle='#ff8c66'; ctx.fillText('red-giant branch', X(5250), Y(120));
-    ctx.fillStyle='#ff6fa8'; ctx.fillText('red clump', X(4560), Y(62));
-
-    var sx=X(5772), sy=Y(1);
-    ctx.beginPath(); ctx.arc(sx,sy,6,0,2*Math.PI); ctx.strokeStyle='#ffcf5f'; ctx.lineWidth=1.5; ctx.stroke();
-    ctx.beginPath(); ctx.arc(sx,sy,1.6,0,2*Math.PI); ctx.fillStyle='#ffcf5f'; ctx.fill();
-    ctx.fillStyle='#ffcf5f'; ctx.textAlign='left'; ctx.fillText('Sun', sx+9, sy+14);
-
-    if(!hidden()){
-      var x=clamp(X(state.T),padL,padL+pw), y=clamp(Y(D.L),padT,padT+ph);
-      var gl=ctx.createRadialGradient(x,y,0,x,y,16); gl.addColorStop(0,'rgba(255,255,255,0.6)'); gl.addColorStop(1,'rgba(255,255,255,0)');
-      ctx.fillStyle=gl; ctx.beginPath(); ctx.arc(x,y,16,0,2*Math.PI); ctx.fill();
-      ctx.beginPath(); ctx.arc(x,y,5.5,0,2*Math.PI); ctx.fillStyle='#f1f4fb'; ctx.fill();
-      ctx.fillStyle='#f1f4fb'; ctx.fillText('this star', x+10, y-8);
-    } else {
-      ctx.fillStyle='#a8b6d6'; ctx.textAlign='center'; ctx.font='13px "JetBrains Mono", monospace';
-      ctx.fillText('Mystery star hidden until revealed', padL+pw/2, padT+ph-10);
-    }
   }
-
-  // ---------- readouts ----------
-  function updateReadouts(){
-    var hid=hidden();
-    $('mVal').textContent = hid ? '?' : state.M.toFixed(2)+' M☉';
-    $('rVal').textContent = hid ? '?' : state.R.toFixed(2)+' R☉';
-    $('tVal').textContent = state.T+' K';
-    $('incVal').textContent = state.incl+'°';
-    $('rotVal').textContent = state.rot.toFixed(2)+' μHz';
-    var prd = state.rot>0.005 ? 1/(state.rot*1e-6)/86400 : 0;
-    $('rotNote').textContent = state.rot>0.005 ? 'Splitting of '+state.rot.toFixed(2)+' μHz ≈ one rotation every '+prd.toFixed(prd<10?1:0)+' days.' : 'No rotation: all m peaks of a mode sit at the same frequency.';
-    $('dpiVal').textContent = hid ? '?' : state.dPi+' s';
-    $('qVal').textContent = hid ? '?' : state.q.toFixed(2);
-    $('crVal').textContent = state.cr.toFixed(1)+'×';
-    coreBlock.hidden = !D.evolved;
-    mSlider.disabled = rSlider.disabled = tSlider.disabled = dpiSlider.disabled = qSlider.disabled = hid;
-    $('dDnu').textContent = hid ? '?' : fmtF(D.dnu)+' μHz';
-    $('dNumax').textContent = hid ? '?' : fmtF(D.numax)+' μHz';
-    $('dRho').textContent = hid ? '?' : (D.rho>=0.01 ? D.rho.toFixed(3) : D.rho.toExponential(2))+' ρ☉';
-    $('dLogg').textContent = hid ? '?' : D.logg.toFixed(2);
-    $('dLum').textContent = hid ? '?' : D.L.toFixed(D.L<10?2:1)+' L☉';
-    snapBtn.disabled = hid;
-    revealBtn.hidden = !hid;
-    $('weighIntro').textContent = state.mystery ? 'This is the real challenge: the answers are hidden until you reveal them.' : 'For named stars the sliders start at the right answers so you can see it working. Press Scramble to do it yourself, or pick the Mystery star.';
-    updateWeigh();
-    updateSelReadout();
-    updateListenInfo();
-    renderTabs();
+  function stopAudio(){
+    if(!AUD.ctx || !AUD.master) return;
+    var master=AUD.master, voices=AUD.voices, t=AUD.ctx.currentTime;
+    master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value,t); master.gain.linearRampToValueAtTime(0,t+0.08);
+    setTimeout(function(){
+      voices.forEach(function(v){ try{ v.osc.stop(); v.osc.disconnect(); v.g.disconnect(); }catch(e){} });
+      try{ master.disconnect(); }catch(e){}
+    }, 150);
+    AUD.master=null; AUD.voices=[];
   }
-  function updateWeigh(){
-    var dn=state.fold, nm=state.measNumax, tr=state.T/SUN.teff;
-    foldVal.textContent = fmtF(dn)+' μHz';
-    $('wDnu').textContent = fmtF(dn)+' μHz';
-    $('numaxVal').textContent = fmtF(nm)+' μHz';
-    $('wTeff').textContent = state.T+' K';
-    var eR=(nm/SUN.numax)*Math.pow(dn/SUN.dnu,-2)*Math.sqrt(tr);
-    var eM=Math.pow(nm/SUN.numax,3)*Math.pow(dn/SUN.dnu,-4)*Math.pow(tr,1.5);
-    var eRho=Math.pow(dn/SUN.dnu,2);
-    var eLogg=4.438+Math.log10((nm/SUN.numax)*Math.sqrt(tr));
-    function fmtRho(v){ return v>=0.01 ? v.toFixed(3) : v.toExponential(2); }
-    $('eR').textContent=eR.toFixed(2)+' R☉';
-    $('eM').textContent=eM.toFixed(2)+' M☉';
-    $('eRho').textContent=fmtRho(eRho)+' ρ☉';
-    $('eLogg').textContent=eLogg.toFixed(2);
-    function chk(id, err, tol){
-      var el=$(id);
-      if(hidden()){ el.className='chk'; el.textContent='hidden'; return; }
-      if(Math.abs(err)<tol){ el.className='chk ok'; el.textContent='✓ on target'; }
-      else { el.className='chk no'; el.textContent=(err>0?'too high ':'too low ')+Math.abs(err).toFixed(1)+'%'; }
-    }
-    chk('chkDnu', (dn/D.dnu-1)*100, 0.5);
-    chk('chkNumax', (nm/D.numax-1)*100, 5);
-    function tcell(id, trueVal, est, txt, isLog){
-      if(hidden()){ $(id).innerHTML='?'; return; }
-      var diff = isLog ? (est-trueVal) : (est/trueVal-1)*100;
-      var good = isLog ? Math.abs(diff)<0.02 : Math.abs(diff)<3;
-      var dtxt = isLog ? ((diff>=0?'+':'')+diff.toFixed(2)+' dex') : ((diff>=0?'+':'')+diff.toFixed(1)+'%');
-      $(id).innerHTML = txt+'<span class="diff" style="color:'+(good?'var(--good)':'var(--warn)')+'">you: '+dtxt+'</span>';
-    }
-    tcell('tR', state.R, eR, state.R.toFixed(2)+' R☉');
-    tcell('tM', state.M, eM, state.M.toFixed(2)+' M☉');
-    tcell('tRho', D.rho, eRho, fmtRho(D.rho)+' ρ☉');
-    tcell('tLogg', D.logg, eLogg, D.logg.toFixed(2), true);
+  function audioTick(dt){
+    if(!AUD.master) return;
+    var t=AUD.ctx.currentTime;
+    AUD.voices.forEach(function(v){
+      var dec=Math.exp(-dt/v.tau), kick=Math.sqrt(1-dec*dec)*Math.SQRT1_2;
+      v.cr=v.cr*dec+kick*gauss(); v.ci=v.ci*dec+kick*gauss();
+      v.g.gain.setTargetAtTime(v.amp*Math.sqrt(v.cr*v.cr+v.ci*v.ci)/AUD.norm, t, 0.04);
+    });
   }
+  function restartAudio(){
+    clearTimeout(AUD.timer);
+    AUD.timer=setTimeout(function(){ if(state.playing){ stopAudio(); startAudio(); updateStatus(); } }, 120);
+  }
+  $('playBtn').addEventListener('click', function(){
+    state.playing=!state.playing;
+    if(state.playing){ startAudio(); $('playLabel').innerHTML='&#9632; Stop'; $('playBtn').classList.add('playing'); }
+    else { stopAudio(); $('playLabel').innerHTML='&#9658; Listen'; $('playBtn').classList.remove('playing'); }
+    updateStatus();
+  });
 
-  // ---------- presets and tabs ----------
+  // ---------- stars, tabs, readouts ----------
   function renderTabs(){
-    presetTabs.innerHTML='';
+    starTabs.innerHTML='';
     TAB_ORDER.forEach(function(key){
       var btn=document.createElement('button'); btn.type='button';
       var active = key==='mystery' ? state.mystery : (!state.mystery && state.preset===key);
       btn.className='instr-tab'+(active?' active':'');
       var dot = key==='mystery' ? '#b98aff' : PRESETS[key].dot;
-      btn.innerHTML='<span class="family-dot" style="background:'+dot+';"></span>'+(key==='mystery'?'Mystery star':PRESETS[key].label);
-      btn.addEventListener('click', function(){ applyPreset(key); });
-      presetTabs.appendChild(btn);
+      btn.innerHTML='<span class="family-dot" style="background:'+dot+';"></span>'+(key==='mystery'?'Mystery Star':PRESETS[key].label);
+      btn.addEventListener('click', function(){ loadStar(key, true); });
+      starTabs.appendChild(btn);
     });
   }
-  function syncSliders(){
-    mSlider.value=state.M; rSlider.value=state.R; tSlider.value=state.T;
-    incSlider.value=state.incl; rotSlider.value=state.rot;
-    dpiSlider.value=state.dPi; qSlider.value=state.q; crSlider.value=state.cr;
-    foldSlider.value=valToLogSlider(state.fold,FOLD_LO,FOLD_HI,FOLD_STEPS);
-    numaxSlider.value=valToLogSlider(state.measNumax,NUMAX_LO,NUMAX_HI,NUMAX_STEPS);
-  }
-  function scrambleMeasurements(d){
-    var s1 = Math.random()<0.5 ? -1 : 1, s2 = Math.random()<0.5 ? -1 : 1;
-    state.fold = d.dnu*(1 + s1*(0.04+Math.random()*0.08));
-    state.measNumax = d.numax*(1 + s2*(0.25+Math.random()*0.3));
-  }
-  function applyPreset(key){
-    if(key==='mystery'){
-      var giant=Math.random()<0.5;
-      state.M=+(0.9+Math.random()*0.8).toFixed(2);
-      if(giant){
-        state.R=+(5+Math.random()*7).toFixed(2); state.T=Math.round(4600+Math.random()*500);
-        if(Math.random()<0.5){ state.dPi=Math.round(65+Math.random()*25); state.q=0.13; state.cr=10; }
-        else { state.dPi=Math.round(260+Math.random()*60); state.q=0.28; state.cr=5; }
-        state.rot=0.1;
-      } else {
-        state.R=+(0.95+Math.random()*1.3).toFixed(2); state.T=Math.round((5500+Math.random()*900)/10)*10;
-        state.rot=+(0.2+Math.random()*0.6).toFixed(2); state.cr=1;
-      }
-      state.incl=Math.round(20+Math.random()*70);
-      state.mystery=true; state.revealed=false; state.preset='mystery';
-      scrambleMeasurements(derive());
+  function updateStatus(){
+    var html;
+    if(state.playing){
+      html='Now playing. Every frequency is multiplied by '+fmtBig(440/(D.numax*1e-6))+' so that νmax becomes 440 Hz, concert A. The pattern of harmonics is unchanged. The loudness flickers because convection drives and damps each harmonic at random.';
+    } else if(state.mystery){
+      html = state.revealed ? 'Mystery star revealed. Compare your mass and radius with the true values, or choose Mystery Star again for a new one.'
+        : 'A randomly generated star. Only its surface temperature is known. Measure Δν and νmax, then find its mass and radius.';
+    } else if(PRESETS[state.preset]){
+      html=PRESETS[state.preset].blurb;
     } else {
-      var p=PRESETS[key];
-      state.M=p.M; state.R=p.R; state.T=p.T; state.incl=p.incl; state.rot=p.rot; state.dPi=p.dPi; state.q=p.q; state.cr=p.cr;
-      state.mystery=false; state.revealed=false; state.preset=key;
-      var d=derive(); state.fold=d.dnu; state.measNumax=d.numax;
+      html='A custom star. Bigger stars ring at lower frequencies, and their harmonics sit closer together. Your measurements follow the changes.';
     }
-    SEL=null;
-    syncSliders();
-    recompute();
+    setHTML(statusLine, html);
   }
+  function updateTop(){
+    var hid=hidden();
+    $('mVal').textContent = hid ? '?' : state.M.toFixed(2)+' M☉';
+    $('rVal').textContent = hid ? '?' : state.R.toFixed(2)+' R☉';
+    $('tVal').textContent = state.T+' K';
+    mSlider.disabled = rSlider.disabled = tSlider.disabled = state.mystery;
+    $('modelDnu').textContent = hid ? '?' : fmtF(D.dnu)+' μHz';
+    $('modelNumax').textContent = hid ? '?' : fmtF(D.numax)+' μHz';
+    $('modelLum').textContent = hid ? '?' : D.L.toFixed(D.L<10?2:1)+' × Sun';
+    $('structBtn').disabled = hid;
+  }
+  function updateAll(){
+    renderTabs(); updateTop(); updateStatus(); updateMeasStatus(); updateBridge(); syncExplorer();
+    if(state.sel) $('selSwatch').style.background = L_COLORS[state.sel.l];
+    drawSpectrum(); drawRay();
+  }
+  function syncStarSliders(){ mSlider.value=state.M; rSlider.value=state.R; tSlider.value=state.T; }
 
-  // ---------- control wiring ----------
+  function scramble(){
+    var s1=Math.random()<0.5?-1:1, s2=Math.random()<0.5?-1:1;
+    state.measDnu=clamp(D.dnu*(1+s1*(0.04+Math.random()*0.06)), DNU_LO, DNU_HI);
+    state.measNumax=clamp(D.numax*(1+s2*(0.10+Math.random()*0.08)), NUMAX_LO, NUMAX_HI);
+    var a=defaultAnchor(); state.anchor = a ? a.freq : D.numax;
+  }
+  function loadStar(key, fromTab){
+    if(key==='mystery'){
+      if(fromTab || !state.mysteryParams){
+        var giant=Math.random()<0.4, p={};
+        p.M=+(0.9+Math.random()*0.8).toFixed(2);
+        if(giant){ p.R=+(5+Math.random()*6).toFixed(2); p.T=Math.round((4600+Math.random()*500)/10)*10; }
+        else { p.R=+(0.95+Math.random()*1.3).toFixed(2); p.T=Math.round((5400+Math.random()*1000)/10)*10; }
+        state.mysteryParams=p;
+      }
+      state.M=state.mysteryParams.M; state.R=state.mysteryParams.R; state.T=state.mysteryParams.T;
+      state.mystery=true; state.revealed=false;
+    } else {
+      var pr=PRESETS[key];
+      state.M=pr.M; state.R=pr.R; state.T=pr.T;
+      state.mystery=false; state.revealed=false;
+    }
+    state.preset=key; state.sel=null; state.anchor=null; state.exL=0; state.exM=0;
+    recompute(); scramble();
+    syncStarSliders(); syncMeasSliders();
+    updateAll();
+  }
   function onStarSlider(){
+    var r1=state.measDnu/D.dnu, r2=state.measNumax/D.numax;
     state.M=+mSlider.value; state.R=+rSlider.value; state.T=+tSlider.value;
-    state.preset='custom';
+    state.preset='custom'; state.anchor=null;
     recompute();
+    state.measDnu=clamp(r1*D.dnu,DNU_LO,DNU_HI); state.measNumax=clamp(r2*D.numax,NUMAX_LO,NUMAX_HI);
+    syncMeasSliders();
+    updateAll();
   }
   [mSlider,rSlider,tSlider].forEach(function(s){ s.addEventListener('input', onStarSlider); });
-  incSlider.addEventListener('input', function(){ state.incl=+incSlider.value; recompute(); });
-  rotSlider.addEventListener('input', function(){ state.rot=+rotSlider.value; recompute(); });
-  dpiSlider.addEventListener('input', function(){ state.dPi=+dpiSlider.value; recompute(); });
-  qSlider.addEventListener('input', function(){ state.q=+qSlider.value; recompute(); });
-  crSlider.addEventListener('input', function(){ state.cr=+crSlider.value; recompute(); });
 
-  viewSelect.addEventListener('change', function(){ state.view=viewSelect.value; buildSpectrum(); drawSpectrum(); });
-  noiseToggle.addEventListener('change', function(){ state.noise=noiseToggle.checked; buildSpectrum(); drawSpectrum(); drawEchelle(); });
-  newNoiseBtn.addEventListener('click', function(){ state.seed=Math.floor(Math.random()*1e6); buildSpectrum(); drawSpectrum(); drawEchelle(); });
-  idsToggle.addEventListener('change', function(){ state.showIds=idsToggle.checked; drawEchelle(); });
-  $('peakToggle').addEventListener('change', function(){ state.showPeaks=this.checked; drawSpectrum(); });
-  $('humpToggle').addEventListener('change', function(){ state.showHump=this.checked; drawSpectrum(); });
-
-  function setFold(v){
-    state.fold=clamp(v,FOLD_LO,FOLD_HI);
-    foldSlider.value=valToLogSlider(state.fold,FOLD_LO,FOLD_HI,FOLD_STEPS);
-    updateWeigh(); drawEchelle();
+  $('resetBtn').addEventListener('click', function(){ loadStar(state.preset==='custom' ? 'sun' : state.preset, false); });
+  function toggleBtn(id, key){
+    $(id).addEventListener('click', function(){
+      state[key]=!state[key];
+      this.classList.toggle('active', state[key]);
+      drawSpectrum();
+    });
   }
-  foldSlider.addEventListener('input', function(){
-    state.fold=logSliderToVal(+foldSlider.value,FOLD_LO,FOLD_HI,FOLD_STEPS); updateWeigh(); drawEchelle();
-  });
-  $('foldMinus').addEventListener('click', function(){ setFold(state.fold*0.999); });
-  $('foldPlus').addEventListener('click', function(){ setFold(state.fold*1.001); });
-  snapBtn.addEventListener('click', function(){ if(!hidden()) setFold(D.dnu); });
-  numaxSlider.addEventListener('input', function(){
-    state.measNumax=logSliderToVal(+numaxSlider.value,NUMAX_LO,NUMAX_HI,NUMAX_STEPS); updateWeigh(); drawSpectrum();
-  });
-  revealBtn.addEventListener('click', function(){ state.revealed=true; updateReadouts(); drawStatic(); });
-  $('scrambleBtn').addEventListener('click', function(){
-    scrambleMeasurements(D); syncSliders(); updateWeigh(); drawSpectrum(); drawEchelle();
-  });
-  resetBtn.addEventListener('click', function(){
-    applyPreset(state.preset==='custom' ? 'sun' : state.preset);
-  });
-
-  function drawStatic(){ drawSpectrum(); drawEchelle(); drawRay(); drawHR(); }
-
-  // ---------- help popovers ----------
-  var HELP = {
-    presets:['Choosing a star','<p>Each button loads a star with approximately its measured mass, radius and temperature.</p><p><b>Sun</b> and <b>α Cen A</b> are Sun-like stars in the prime of life (burning hydrogen in their cores). The <b>Red giant</b> and <b>Red clump</b> star are older, puffed-up stars about 8 to 11 times the Sun’s size.</p><p>The <b>Mystery star</b> is random and hides its mass and radius. Your job is to measure them in Weigh the Star.</p>'],
-    listen:['Listening to a star','<p>Plays the strongest modes as tones. Real stellar oscillations are far too slow to hear: the Sun rings about once every 5 minutes (3 mHz). So every frequency is multiplied by the same huge factor, chosen to put νmax at 440 Hz (concert A).</p><p>Because all frequencies are scaled together, the pattern of notes is preserved. The flutter in loudness is real: convection kicks the modes at random, so they keep growing and fading.</p>'],
-    reset:['Reset','<p>Returns the current star to its starting values, including your Δν and νmax measurements and all sliders.</p>'],
-    mass:['Mass','<p>Total mass in solar masses (1 M☉ = 2×10³⁰ kg).</p><p>With the radius it sets the mean density and surface gravity, which set the two main things we measure: Δν ∝ √(M/R³) and νmax ∝ M/R².</p><p>Try it: raise the mass and watch the whole spectrum shift to higher frequency.</p>'],
-    radius:['Radius','<p>Radius in solar radii (1 R☉ = 696,000 km).</p><p>Bigger stars take longer for sound to cross, so they ring at lower frequencies, just as a bigger drum sounds deeper. Δν drops as R<sup>−3/2</sup> and νmax as R<sup>−2</sup>, which is why red giants oscillate over hours to days instead of minutes.</p>'],
-    teff:['Effective temperature','<p>The temperature of the star’s visible surface. The Sun’s is 5772 K.</p><p>It enters νmax only weakly. Its bigger effect is on the peaks themselves: hotter stars have more violent convection, which damps the modes faster, so the peaks get broader.</p><p>Astronomers measure it separately, from the star’s colour or spectrum of light.</p>'],
-    incl:['Inclination','<p>The angle between the star’s <b>rotation axis</b> and our <b>line of sight</b>. At 0° we look straight down on a pole. At 90° we see the equator edge-on. You can see the tilt as the dashed axis in the 3D surface view.</p><p>Inclination does <b>not</b> change any frequency. It changes <b>which peaks we can see</b>. Rotation splits each mode into 2l+1 peaks (one per m). Seen pole-on, only the m = 0 peak shows. Seen edge-on, for l = 1 the two m = ±1 peaks dominate.</p><p><b>Try it:</b> choose the Sun, set Rotation to about 1.5 μHz, switch the spectrum to "Zoom on one order", then sweep this slider and watch the orange l = 1 peaks change. Astronomers use the heights of these peaks to measure how a star is tilted.</p>'],
-    rot:['Rotation','<p>How far apart rotation pushes the m peaks of each mode, in μHz.</p><p>Modes with m ≠ 0 are waves travelling around the star. Waves travelling with the spin are carried along and appear at a slightly higher frequency; waves against it, slightly lower. So one peak splits into several. For a slowly, evenly rotating star the splitting roughly equals the rotation frequency: the Sun’s 0.4 μHz means one turn every ~29 days.</p><p><b>Try it:</b> turn this up and use "Zoom on one order" to see the peaks split.</p>'],
-    core:['Mixed modes','<p>Red giants have a tiny, very dense helium core. Gravity waves (g modes) live in the core, sound waves (p modes) live in the envelope, and in giants their frequencies overlap. The two kinds couple and form <b>mixed modes</b>: sound-like near the surface, gravity-like in the core.</p><p>That means we can hear the core from the surface. These three sliders control what the core is like.</p>'],
-    dpi:['Period spacing ΔΠ₁','<p>g modes are spaced evenly in <b>period</b> (not frequency), by ΔΠ₁ seconds for l = 1.</p><p>Stars burning hydrogen in a shell have ΔΠ₁ ≈ 60–90 s. Stars burning helium in the core (red clump) have ≈ 250–350 s. Their surfaces look nearly identical, so this number is how astronomers tell them apart.</p><p><b>Try it:</b> slide it and watch the orange dipole peaks spread out or bunch up.</p>'],
-    q:['Coupling q','<p>How strongly core g modes and envelope p modes interact through the layer between them.</p><p>Weak coupling: mixed modes cluster tightly around each pure sound mode and the rest are too weak to see. Strong coupling: the clusters spread out and many more g-like modes become visible.</p>'],
-    cr:['Core spin','<p>How fast the core rotates compared with the surface.</p><p>Mixed modes that live mostly in the core feel its rotation, so their peaks split more. The Kepler mission used this to discover that red-giant cores spin about 5–20× faster than their surfaces, and still far slower than theory predicted, which remains a puzzle.</p>'],
-    derived:['True values','<p>Computed directly from the star’s mass, radius and temperature:</p><p><b>Δν</b> (large separation) ∝ √(mean density).<br><b>νmax</b> (frequency of strongest oscillations) ∝ surface gravity / √Teff.<br><b>Mean density</b> relative to the Sun (1.41 g/cm³).<br><b>log g</b>: surface gravity in cgs units (Sun 4.44).<br><b>Luminosity</b> ∝ R² Teff⁴.</p><p>Hidden for the mystery star.</p>'],
-    spectrum:['How to read the power spectrum','<p><b>Horizontal axis:</b> frequency in microhertz (μHz). 3000 μHz means one oscillation every 5.5 minutes.</p><p><b>Vertical axis:</b> how much power (brightness variation squared) the star has at that frequency.</p><p><b>Each tall spike</b> is one mode: a note the star rings at. The <b>coloured triangles</b> on top identify its degree l (see the key below). The small spiky "grass" between them is noise.</p><p>Two patterns to look for: the spikes are <b>evenly spaced</b> (every Δν, marked at the top), and they rise and fall in a <b>hump</b> centred on νmax.</p><p>Hover to identify a spike, click to select it. The selected mode is shown in 3D and inside the star.</p>'],
-    view:['Spectrum views','<p><b>Whole oscillation hump:</b> all the detectable modes. Good for seeing Δν and νmax.</p><p><b>Zoom on one order:</b> about one Δν around the selected mode. Here you can see an l = 2 and l = 0 pair (the small separation δν₀₂, which is sensitive to the star’s age) and rotational splitting.</p><p><b>Wide (log–log):</b> the full spectrum on logarithmic axes. The rising slope at low frequency is granulation noise; the oscillation hump sits on top of it.</p>'],
-    noise:['Realistic noise','<p>Real spectra are noisy. Even a perfect peak shows up as a random cluster of spikes, because each frequency bin scatters randomly around its true value (a χ² distribution with 2 degrees of freedom).</p><p>Turn this off to see the ideal, noise-free model.</p>'],
-    newnoise:['New noise','<p>Draws a fresh random noise pattern, like observing the same star over a different stretch of time. The true peaks stay put while the random spikes move. That is how you can tell them apart.</p>'],
-    peaks:['What the colours mean','<p>Colour shows the mode’s <b>degree l</b>, the number of lines on the surface that stay still (nodal lines):</p><p><span class="sw" style="background:#5fc2ff"></span> <b>l = 0 radial:</b> the whole star swells and shrinks.<br><span class="sw" style="background:#ff8c66"></span> <b>l = 1 dipole:</b> one half swells while the other shrinks.<br><span class="sw" style="background:#5fd98a"></span> <b>l = 2 quadrupole:</b> two nodal lines.<br><span class="sw" style="background:#ffcf5f"></span> <b>l = 3 octupole:</b> three nodal lines, very faint.</p><p>Select a peak and look at the 3D view to see its shape.</p>'],
-    marks:['Other marks','<p><b>Coloured ticks under the axis:</b> every mode the model predicts, even ones buried in noise. Brighter tick = stronger mode.</p><p><b>Pale thick line:</b> the spectrum smoothed over about one Δν. Its peak is νmax. In linear views it is rescaled to fit, so read its shape, not its height.</p><p><b>Yellow dashed line:</b> your νmax estimate, set in Weigh the Star.</p><p><b>Δν bracket at the top:</b> the spacing between two neighbouring l = 0 peaks.</p>'],
-    stepper:['Prev / Next mode','<p>Steps through the visible modes in order of frequency. The selected mode shows up in the readout below, in the échelle diagram (white ring), in the 3D surface view and in Inside the Star.</p>'],
-    echelle:['The échelle diagram','<p>A way to see a repeating pattern in a long spectrum. Cut the spectrum into strips Δν wide and stack them. When the width is right, modes of the same l line up into vertical ridges.</p><p><b>Horizontal axis:</b> where a peak falls inside its strip.<br><b>Vertical axis:</b> the frequency where each strip starts.<br><b>Colour:</b> power, from dark purple (none) to yellow (strongest).</p><p>In Sun-like stars you will see three ridges: l = 2 and l = 0 close together, and l = 1 about halfway across. They curve gently because the spacing changes slightly with frequency.</p>'],
-    fold:['Strip width','<p>The width of each strip, in μHz. When it equals the star’s Δν, the ridges stand straight, and you have measured Δν. The value feeds straight into Weigh the Star.</p><p>Drag for big changes. Use − and + for fine 0.1% steps.</p>'],
-    snap:['Show me the answer','<p>Sets the strip width to the exact Δν of the model. Not available for the mystery star.</p>'],
-    ids:['Mode IDs','<p>Circles mark where the model puts each mode, coloured by l. Click one to select it. Turn them off to practise reading the raw data.</p>'],
-    lightcurve:['The light curve','<p>This is what a telescope actually records: the star’s brightness over time.</p><p><b style="color:#ffcf5f">Yellow:</b> the sum of all the oscillation modes alone.<br><b>Grey:</b> oscillations plus granulation, the slow flicker from convection cells at the surface. This is the realistic signal.</p><p>The changes are tiny: a few parts per million for the Sun (a 0.0005% dimming). Space telescopes like Kepler and TESS measure this for months to years without a break, and the Fourier transform turns it into the power spectrum.</p><p>Time is sped up so you can watch it move. The note under the plot says by how much.</p>'],
-    weigh:['Weighing a star with sound','<p>You measure only two numbers from the oscillations, plus the temperature:</p><p><b>Δν</b> tells you the mean density, because it depends on how long sound takes to cross the star.<br><b>νmax</b> tells you the surface gravity.</p><p>Density and gravity together pin down both mass and radius. The <b>scaling relations</b> (shown at the bottom of the panel) do the algebra, using the Sun as the reference.</p><p>Follow steps 1–4 in order. The badges show whether each measurement is on target.</p>'],
-    numax:['Setting νmax','<p>νmax is the frequency where the oscillations are strongest: the top of the hump.</p><p>Drag until the yellow dashed line in the power spectrum sits at the peak of the pale smoothed curve. It does not need to be exact: real measurements are good to about 2–5%.</p>'],
-    estimates:['Your results','<p><b>Radius</b> and <b>mass</b> come from the scaling relations below.</p><p><b>Density</b> needs only Δν (ρ ∝ Δν²), so it is the most precise. <b>log g</b> needs only νmax and Teff.</p><p>Differences within 3% (0.02 dex for log g) are shown in green, larger ones in amber. Notice how a small error in Δν gets amplified in the mass.</p>'],
-    surface:['Mode on the surface','<p>Shows the shape of one mode on the star, with the motion exaggerated thousands of times (the real surface moves by only tens of centimetres per second for the Sun).</p><p><b>Drag</b> to turn the star. The <b>dashed line</b> is the rotation axis; its tilt matches the Inclination slider, and the default view is how we see the star from Earth.</p><p>Where the surface stays still are the <b>nodal lines</b>.</p>'],
-    tint:['Colour by motion','<p><b style="color:#ff8c66">Orange</b>: the surface is bulging outward.<br><b style="color:#5fc2ff">Blue</b>: it is sinking inward.<br>The star’s own colour: nodal lines, where nothing moves.</p><p>Turn it off to see only the shape.</p>'],
-    lsl:['Degree l','<p>The total number of nodal lines (lines that stay still) on the surface. Higher l means more, smaller patches.</p><p>For distant stars only l ≤ 3 are detectable (see the meter below). On the Sun, which we can resolve, modes up to l ≈ thousands are measured.</p>'],
-    msl:['Order m','<p>How many of the nodal lines run through the poles (the absolute value of m). The rest run parallel to the equator.</p><p>m = 0 patterns stand still. For m ≠ 0 the pattern travels around the star: positive m in one direction, negative m in the other. That is why rotation shifts their frequencies.</p>'],
-    vis:['Signal seen from far away','<p>From Earth, a distant star is a single point, so we add up the light from the whole disk. Bulging and sinking patches cancel.</p><p>This meter shows how much signal survives, compared with an l = 0 mode. Above l = 3 almost nothing is left, which is why only low-degree modes are seen in other stars. Try raising l.</p>'],
-    inside:['Inside the star','<p>A slice through the star. The coloured lines are the paths a sound wave takes for this mode, and the dot is a wave packet travelling along them.</p><p><b>Why the paths curve:</b> the inside of a star is hotter the deeper you go, and sound travels faster in hotter gas. A wave heading in at an angle has its deep side moving faster than its shallow side, so the wavefront turns and bends back up. This is <b>refraction</b>, the same thing that bends light in a lens or sound on a cold night.</p><p><b>Turning point:</b> the depth where the wave has turned fully sideways (dashed circle). Low-l waves go in steeply and dive close to the centre; high-l waves go in at a shallow angle and turn back near the surface.</p><p><b>At the surface</b> the density drops sharply, which reflects the wave back in. The wave is trapped between the surface and its turning point. The mode is the standing wave that fits in that cavity.</p><p>So <b>different modes probe different depths</b>. Comparing their frequencies lets us map the sound speed layer by layer: that is how helioseismology mapped the Sun’s interior.</p>'],
-    quickl:['Degree buttons','<p>Quick picks for l. 0–3 are the degrees seen in distant stars; 10, 20 and 30 show how higher-degree waves stay near the surface. The same l is shown in the 3D view.</p>'],
-    hr:['Hertzsprung–Russell diagram','<p>Every star plotted by surface temperature (hotter to the <b>left</b>, by tradition) and luminosity. Stars spend most of their lives on the <b>main sequence</b>, then swell into <b>red giants</b>, and later settle into the <b>red clump</b> while burning helium.</p><p>The white dot is the current star. Change mass, radius or temperature to move it.</p>']
-  };
-  var pop=$('pop'), popBtn=null;
-  function openPop(btn){
-    var h=HELP[btn.dataset.help]; if(!h) return;
-    if(popBtn===btn && !pop.hidden){ closePop(); return; }
-    if(popBtn) popBtn.setAttribute('aria-expanded','false');
-    popBtn=btn; btn.setAttribute('aria-expanded','true');
-    $('popTitle').textContent=h[0]; $('popBody').innerHTML=h[1];
-    pop.hidden=false;
-    var r=btn.getBoundingClientRect(), w=pop.offsetWidth, ph=pop.offsetHeight;
-    var left=clamp(r.left+r.width/2-w/2, 16, window.innerWidth-16-w)+window.scrollX;
-    var top=r.bottom+8;
-    if(top+ph>window.innerHeight-8 && r.top-ph-8>8) top=r.top-ph-8;
-    pop.style.left=left+'px'; pop.style.top=(top+window.scrollY)+'px';
-  }
-  function closePop(){ pop.hidden=true; if(popBtn){ popBtn.setAttribute('aria-expanded','false'); popBtn=null; } }
-  document.addEventListener('click', function(e){
-    var b=e.target.closest && e.target.closest('button.info');
-    if(b){ e.preventDefault(); e.stopPropagation(); openPop(b); return; }
-    if(!pop.hidden && !e.target.closest('#pop')) closePop();
-  });
-  $('popClose').addEventListener('click', closePop);
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closePop(); if(!$('tourCard').hidden) endTour(); } });
-  window.addEventListener('resize', closePop);
-
-  // ---------- guided tour ----------
-  var TOUR = [
-    { el:'presetTabsWrap', t:'Pick a star', b:'<p>Start with the <b>Sun</b>. Later, compare it with the <b>Red giant</b>: bigger stars ring at much lower frequencies, like a bigger drum.</p><p>Any <span class="info" style="pointer-events:none">?</span> button explains the thing next to it.</p>' },
-    { el:'starPanel', t:'The star’s properties', b:'<p>These sliders set what the star is really like. The bar at the bottom shows the two numbers we will measure: <b>Δν</b> and <b>νmax</b>.</p><p>Try dragging <b>Radius</b> and watch Δν fall.</p>' },
-    { el:'lcPanel', t:'What the telescope records', b:'<p>The raw data: tiny brightness changes, a few parts per million. <b>Yellow</b> is the oscillations alone, <b>grey</b> includes surface convection noise.</p><p>Dozens of modes are mixed together here, so we need the next step to separate them.</p>' },
-    { el:'specPanel', t:'The power spectrum', b:'<p>A Fourier transform of the light curve. <b>Each tall spike is one mode</b>; the triangle colour tells you its degree l.</p><p>Notice two things: the spikes are <b>evenly spaced</b> (Δν, marked at the top), and they form a <b>hump</b> that peaks at νmax.</p>' },
-    { el:'echPanel', t:'The échelle diagram', b:'<p>Cut the spectrum into strips of equal width and stack them. When the width equals Δν, peaks line up into <b>vertical ridges</b>.</p><p>Try it: drag <b>Strip width</b> a little and watch the ridges tilt. The green bar tells you when you have it.</p>' },
-    { el:'weighPanel', t:'Weigh the star', b:'<p>Your Δν and νmax go into the scaling relations and give mass and radius. Follow the numbered steps.</p><p>Press <b>Scramble</b> to try it yourself, or choose the <b>Mystery star</b> for a real challenge.</p>' },
-    { el:'surfPanel', t:'What a mode looks like', b:'<p>The selected mode in 3D, hugely exaggerated. <b>Drag</b> to turn the star. Orange bulges out, blue sinks in.</p><p>Click a different coloured peak in the spectrum to see its shape here.</p>' },
-    { el:'insidePanel', t:'Inside the star', b:'<p>Sound speeds up with depth, so waves bend back toward the surface. Each mode is trapped between the surface and a <b>turning point</b>.</p><p>Tap l = 0, 1, 10, 30 to see low-degree waves dive deep and high-degree waves skim the top. The graph below shows where each wave turns around.</p>' },
-    { el:'hrPanel', t:'Where the star sits', b:'<p>The HR diagram places the star among others. Switch between the Sun and the Red giant to see it jump from the main sequence to the giant branch.</p><p>That’s the tour. Press <b>Listen to this star</b> at the top to hear it.</p>' }
-  ];
-  var tourI=0, tourEl=null;
-  function showTour(i){
-    tourI=clamp(i,0,TOUR.length-1);
-    if(tourEl) tourEl.classList.remove('tour-focus');
-    var s=TOUR[tourI]; tourEl=$(s.el); tourEl.classList.add('tour-focus');
-    $('tourStep').textContent='Step '+(tourI+1)+' of '+TOUR.length;
-    $('tourTitle').textContent=s.t; $('tourBody').innerHTML=s.b;
-    $('tourPrev').disabled = tourI===0;
-    $('tourNext').innerHTML = tourI===TOUR.length-1 ? 'Finish' : 'Next &#9654;';
-    $('tourCard').hidden=false;
-    tourEl.scrollIntoView({behavior: REDUCED?'auto':'smooth', block:'center'});
-  }
-  function endTour(){ if(tourEl) tourEl.classList.remove('tour-focus'); tourEl=null; $('tourCard').hidden=true; }
-  $('tourBtn').addEventListener('click', function(){ closePop(); showTour(0); });
-  $('tourNext').addEventListener('click', function(){ if(tourI>=TOUR.length-1) endTour(); else showTour(tourI+1); });
-  $('tourPrev').addEventListener('click', function(){ showTour(tourI-1); });
-  $('tourEnd').addEventListener('click', endTour);
+  toggleBtn('noiseBtn','noise');
+  toggleBtn('labelBtn','labels');
+  toggleBtn('structBtn','structure');
 
   // ---------- animation loop ----------
   var lastT=null, clock=0;
@@ -1885,18 +1571,21 @@
     var dt = lastT===null ? 0 : Math.min(0.1,(now-lastT)/1000);
     lastT=now; clock+=dt;
     try{
+      lcAdvance(dt); drawLC();
       drawSphere(clock);
       drawRayFrame(clock);
-      lcAdvance(dt); drawLC();
       if(state.playing) audioTick(dt);
     }catch(err){ console.error(err); }
   }
-
   var resizeTimer=null;
-  window.addEventListener('resize', function(){ clearTimeout(resizeTimer); resizeTimer=setTimeout(drawStatic, 80); });
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTimer);
+    resizeTimer=setTimeout(function(){ drawSpectrum(); drawRay(); if(activeReposition) activeReposition(); }, 80);
+  });
 
-  buildEchDiagram();
-  applyPreset('sun');
+  enhanceTerms(document);
+  tobsSlider.value = valToLog(state.tobs, TOBS_LO, TOBS_HI, TOBS_STEPS);
+  loadStar('sun', false);
   requestAnimationFrame(frame);
 })();
 </script>
