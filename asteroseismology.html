@@ -321,7 +321,7 @@
             <div class="key-item"><div class="key-ico"><i class="grass" style="color:#5fc2ff"></i></div>
               <div><b class="k-lab">Background.</b> The low, uneven floor comes from granulation and photon noise. Noise also makes each peak a little taller or shorter at random.</div></div>
             <div class="key-item"><div class="key-ico"><i class="dash" style="color:#ffcf5f"></i></div>
-              <div><b class="k-lab">Your measurements.</b> The dashed comb shows your &Delta;&nu;. The yellow line shows your &nu;<sub>max</sub>.</div></div>
+              <div><b class="k-lab">Your measurements.</b> The white spacing lines are set one &Delta;&nu; apart, using your value. The yellow line shows your &nu;<sub>max</sub>.</div></div>
           </div>
 
           <div class="measure-box">
@@ -330,7 +330,7 @@
 
             <div class="meas-step">
               <div class="ms-head"><span class="ms-tag">A</span>Set <span class="nu">&Delta;&nu;</span></div>
-              <p>Change the spacing until every dashed line lands on a peak of the same color. Click a peak to anchor the comb there.</p>
+              <p>The white spacing lines start at the solid line and repeat every &Delta;&nu;. Change &Delta;&nu; until every line lands on a peak of the same color. Click any peak to move the starting line there.</p>
               <div class="meas-row">
                 <label for="dnuSlider">&Delta;&nu;</label>
                 <button class="ctrl-btn small" id="dnuMinus" aria-label="Decrease spacing by 0.2 percent">&minus;</button>
@@ -960,9 +960,9 @@
     var e1=(state.measDnu/D.dnu-1)*100, e2=(state.measNumax/D.numax-1)*100;
     setChk($('chkDnu'),e1,1); setChk($('chkNumax'),e2,5);
     var msg=[];
-    if(Math.abs(e1)<1) msg.push('✓ Every dashed line falls on a peak of the same color, so your Δν matches.');
-    else if(e1>0) msg.push('Your Δν is too large. The dashed lines land further to the right of the peaks the farther they are from the solid line.');
-    else msg.push('Your Δν is too small. The dashed lines land further to the left of the peaks the farther they are from the solid line.');
+    if(Math.abs(e1)<1) msg.push('✓ Every spacing line falls on a peak of the same color, so your Δν matches.');
+    else if(e1>0) msg.push('Your Δν is too large. The spacing lines land further to the right of the peaks the farther they are from the starting line.');
+    else msg.push('Your Δν is too small. The spacing lines land further to the left of the peaks the farther they are from the starting line.');
     if(Math.abs(e2)<5) msg.push('✓ Your νmax sits at the center of the tallest peaks.');
     else msg.push(e2>0 ? 'Your νmax is above the center of the tallest peaks.' : 'Your νmax is below the center of the tallest peaks.');
     el.className='fold-status'+(Math.abs(e1)<1 && Math.abs(e2)<5 ? ' ok' : '');
